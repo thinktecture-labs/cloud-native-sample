@@ -9,3 +9,4 @@ spec:
   metadata:
   - name: host
     value: "amqp://localhost:5672"
+---
