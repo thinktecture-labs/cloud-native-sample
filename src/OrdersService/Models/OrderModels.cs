@@ -1,8 +1,13 @@
+using Swashbuckle.AspNetCore.Annotations;
+
 namespace OrdersService.Models
 {
+    [SwaggerSchema()]
     public class CreateOrderModel
     {
+        [SwaggerSchema("Name of the customer")]
         public string? CustomerName {get;set;}
+        [SwaggerSchema("List of order positions")]
         public IEnumerable<OrderPositionModel>? Positions { get; set; }
     }
 

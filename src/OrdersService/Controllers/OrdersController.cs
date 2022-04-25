@@ -4,10 +4,12 @@ using Microsoft.Extensions.Options;
 using OrdersService.Configuration;
 using OrdersService.Entities;
 using OrdersService.Models;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace OrdersService.Controllers;
 
 [ApiController]
+[Produces("application/json")]
 [Route("orders")]
 public class OrdersController : ControllerBase
 {
@@ -26,6 +28,10 @@ public class OrdersController : ControllerBase
 
     [HttpPost]
     [Route("", Name = "CreateOrder")]
+    [SwaggerOperation(OperationId = "CreateOrder", Tags=new []{"Orders"}, Summary = "Create a new order", Description = "Invoke this endpoint to place a new order")]
+    [SwaggerResponse(202, Description = "Order has been accepted")]
+    [SwaggerResponse(400)]
+    [SwaggerResponse(500)]
     public async Task<IActionResult> CreateOrderAsync([FromBody]CreateOrderModel model)
     {
 
@@ -43,6 +49,11 @@ public class OrdersController : ControllerBase
 
     [HttpGet]
     [Route("{id:guid}", Name = "GetOrderById")]
+    [SwaggerOperation(OperationId = "GetOrderById", Tags=new []{"Orders"}, Summary = "Load an order", Description = "This endpoint tries to load an order by its id")]
+    [SwaggerResponse(200, Description = "The order", Type = typeof(OrderDetailsModel))]
+    [SwaggerResponse(400)]
+    [SwaggerResponse(404, Description = "No order with given id was found")]
+    [SwaggerResponse(500)]
     public async Task<IActionResult> GetOrderByIdAsync([FromRoute] Guid id)
     {
         //todo!: load order from store

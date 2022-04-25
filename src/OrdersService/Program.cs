@@ -1,4 +1,5 @@
 using Dapr.Client;
+using Microsoft.OpenApi.Models;
 using OrdersService.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,7 +19,21 @@ builder.Services.AddSingleton(cfg);
 builder.Services.AddScoped<DaprClient>(_ => new DaprClientBuilder().Build()!);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.EnableAnnotations();
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Orders Service",
+        Description = "Fairly simple .NET API to interact with orders",
+        Contact = new OpenApiContact
+        {
+            Name = "Thinktecture AG",
+            Email = "info@thinktecture.com",
+            Url = new Uri("https://thinktecture.com")
+        }
+    });
+});
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
