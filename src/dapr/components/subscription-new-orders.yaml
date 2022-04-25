@@ -1,9 +1,9 @@
 apiVersion: dapr.io/v1alpha1
 kind: Subscription
 metadata:
-  name: order-pub-sub
+  name: sub-new-orders
 spec:
-  topic: new-orders
+  topic: new_orders
   route: /orders
   pubsubname: orders
 scopes:
