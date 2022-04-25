@@ -6,6 +6,7 @@ namespace OrdersService.Entities;
 public class Order
 {
     public Guid Id { get; set; }
+    public string UserId { get; set; }
     public string? CustomerName {get;set;}
     public IEnumerable<OrderPosition>? Positions {get;set;}
     public DateTime SubmittedAt {get;set;}

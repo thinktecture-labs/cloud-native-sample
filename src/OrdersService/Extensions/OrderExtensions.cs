@@ -17,6 +17,7 @@ public static class OrderExtensions
         return new Order
         {
             Id = id,
+            UserId = m.UserId,
             CustomerName = m.CustomerName,
             Positions = m.Positions == null? Enumerable.Empty<OrderPosition>() : m.Positions.Select(p=> p.FromApiModel()),
             SubmittedAt = n

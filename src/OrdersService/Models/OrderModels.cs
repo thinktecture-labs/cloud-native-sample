@@ -7,6 +7,8 @@ namespace OrdersService.Models
     {
         [SwaggerSchema("Name of the customer")]
         public string? CustomerName {get;set;}
+        [SwaggerSchema("User's unique identifier")]
+        public string? UserId { get; set; }
         [SwaggerSchema("List of order positions")]
         public IEnumerable<OrderPositionModel>? Positions { get; set; }
     }
