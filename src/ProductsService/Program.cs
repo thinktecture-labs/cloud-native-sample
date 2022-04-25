@@ -16,7 +16,16 @@ else
 }
 
 builder.Services.AddSingleton(cfg);
-builder.Services.AddScoped<IProductsRepository, FakeProductsRepository>();
+builder.Services.AddScoped<IProductsRepository>(serviceProvider =>
+{
+    var c = serviceProvider.GetRequiredService<ProductsServiceConfiguration>();
+    if (c.UseFakeImplementation)
+    {
+        var l = serviceProvider.GetRequiredService<ILogger<FakeProductsRepository>>();
+        return new FakeProductsRepository(l);
+    }
+    throw new NotFiniteNumberException("No live implementation here yet...");
+});
 builder.Services.AddHealthChecks();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
