@@ -18,10 +18,10 @@ public class OrdersController : ControllerBase
     private readonly OrdersServiceConfiguration _config;
     private readonly ILogger<OrdersController> _logger;
 
-    public OrdersController(DaprClient dapr, IOptions<OrdersServiceConfiguration> options, ILogger<OrdersController> logger)
+    public OrdersController(DaprClient dapr, OrdersServiceConfiguration config, ILogger<OrdersController> logger)
     {
         _dapr = dapr;
-        _config = options.Value ?? throw new ArgumentNullException(nameof(options));
+        _config = config;
         _logger = logger;
     }
 
