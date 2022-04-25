@@ -8,14 +8,14 @@ namespace ProductsService.Controllers;
 public class ProductsController : ControllerBase
 { 
 
+    private readonly ILogger<ProductsController> _logger;
+    private readonly IProductsRepository _repository;
+    
     public ProductsController(IProductsRepository repository, ILogger<ProductsController> logger)
     {
         _repository = repository;
         _logger = logger;
     }
-
-    private readonly ILogger<ProductsController> _logger;
-    private readonly IProductsRepository _repository;
 
     [HttpGet]
     [Route("", Name= "GetAllProducts")]
@@ -26,11 +26,12 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet]
-    [Route("{id}", Name = "GetProductById")]
+    [Route("{id:guid}", Name = "GetProductById")]
     public async Task<IActionResult> GetProductByIdAsync([FromRoute]Guid id){
         var res = await _repository.GetByIdAsync(id);
         if (res == null) 
         {
+            _logger.LogTrace("Product with id {Id} not found. Will result in 404", id);
             return NotFound();
         }
         return Ok(res);
