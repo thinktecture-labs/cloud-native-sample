@@ -1,0 +1,24 @@
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-focal AS base
+WORKDIR /app
+EXPOSE 5002
+
+ENV ASPNETCORE_URLS=http://+:5002
+
+RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
+USER appuser
+
+FROM mcr.microsoft.com/dotnet/sdk:6.0-focal AS build
+WORKDIR /src
+COPY ["OrdersService.csproj", "./"]
+RUN dotnet restore "OrdersService.csproj"
+COPY . .
+WORKDIR "/src/."
+RUN dotnet build "OrdersService.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "OrdersService.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "OrdersService.dll"]
