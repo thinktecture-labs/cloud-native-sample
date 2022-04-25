@@ -1,3 +1,4 @@
+using Microsoft.OpenApi.Models;
 using ProductsService.Configuration;
 using ProductsService.Repositories;
 
@@ -29,7 +30,22 @@ builder.Services.AddScoped<IProductsRepository>(serviceProvider =>
 builder.Services.AddHealthChecks();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.EnableAnnotations();
+    c.SwaggerDoc("v1", new OpenApiInfo()
+    {
+        Version = "v1",
+        Title = "Products Service",
+        Description = "Fairly simple .NET API to interact with product data",
+        Contact = new OpenApiContact
+        {
+            Name = "Thinktecture AG",
+            Email = "info@thinktecture.com",
+            Url = new Uri("https://thinktecture.com")
+        }
+    });
+});
 
 var app = builder.Build();
 

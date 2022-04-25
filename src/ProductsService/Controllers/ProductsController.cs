@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
+using ProductsService.Models;
 using ProductsService.Repositories;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace ProductsService.Controllers;
 
 [ApiController]
 [Route("products")]
+[Produces("application/json")]
 public class ProductsController : ControllerBase
 { 
 
@@ -19,6 +22,9 @@ public class ProductsController : ControllerBase
 
     [HttpGet]
     [Route("", Name= "GetAllProducts")]
+    [SwaggerOperation(OperationId = "GetAllProducts", Tags = new []{"Products"}, Summary = "Get all products", Description = "Call into this endpoint to retrieve a list of all products")]
+    [SwaggerResponse(200, Description = "A list with all products", Type = typeof(IEnumerable<ProductListModel>))]
+    [SwaggerResponse(500)]
     public async Task<IActionResult> GetAllProductsAsync()
     {
         var res = await _repository.GetAllAsync();
@@ -27,6 +33,11 @@ public class ProductsController : ControllerBase
 
     [HttpGet]
     [Route("{id:guid}", Name = "GetProductById")]
+    [SwaggerOperation(OperationId = "GetProductById", Tags = new []{"Products"}, Summary = "Get a product by its id", Description = "Call into this endpoint to retrieve a particular product by its identifier")]
+    [SwaggerResponse(200, Description = "The found product", Type = typeof(ProductDetailsModel))]
+    [SwaggerResponse(400)]
+    [SwaggerResponse(404, Description = "No product was found with the given id")]
+    [SwaggerResponse(500)]
     public async Task<IActionResult> GetProductByIdAsync([FromRoute]Guid id){
         var res = await _repository.GetByIdAsync(id);
         if (res == null) 
