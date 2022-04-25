@@ -24,6 +24,7 @@ public class OrdersController : Controller
     [Route("processed")]
     public async Task<IActionResult> OnOrderProcessedAsync([FromBody]CloudEvent<DispatchedOrder> e)
     {
+        _logger.LogTrace("OrderProcessed invoked for User {UserId} and order {OrderId}", e.Data.UserId, e.Data.OrderId);
         var group = _hubContext.Clients.Group(e.Data.UserId.ToString());
         if (group == null)
         {
