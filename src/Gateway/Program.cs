@@ -30,8 +30,7 @@ builder.Services.AddResponseCompression(options =>
     }));
 });
 builder.Services.AddReverseProxy()
-    .LoadFromConfig(builder.Configuration.GetSection(cfg.ConfigSection))
-    .AddTransforms<RequestLogTransformProvider>()
+    .LoadFromConfig(builder.Configuration.GetSection(cfg.ConfigSection)) 
     .AddTransforms<DaprTransformProvider>();
 builder.Services.AddHealthChecks();
 builder.Services.AddOpenTelemetryTracing(b =>

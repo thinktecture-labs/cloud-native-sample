@@ -2,6 +2,6 @@ namespace Gateway;
 
 public class Constants
 {
-    public const string ProductsRouteName = "Products";
-    public const string OrdersRouteName = "Orders";
+    public const string ProductsRouteName = "products";
+    public const string OrdersRouteName = "orders";
 }

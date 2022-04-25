@@ -6,15 +6,18 @@ namespace Gateway.TransformProviders {
     public class DaprTransformProvider : ITransformProvider
     {
         private readonly GatewayConfiguration _config;
+        private readonly ILogger<DaprTransformProvider> _logger;
         private readonly string[] _daprRoutes = { Constants.OrdersRouteName, Constants.ProductsRouteName }; 
-        public DaprTransformProvider(GatewayConfiguration config)
+        public DaprTransformProvider(GatewayConfiguration config, ILogger<DaprTransformProvider> logger)
         {
             _config = config;
+            _logger = logger;
         }
         public void Apply(TransformBuilderContext context)
         {
             if(_daprRoutes.Contains(context.Route.RouteId))
             {
+                _logger.LogTrace("Daprizing route with id {RouteId}", context.Route.RouteId);
                 context.AddRequestTransform(t => {
                     Thread.Sleep(3000);
                     t.ProxyRequest.RequestUri = new Uri($"{_config.DaprEndpoint}/v1.0/invoke/products/method{t.Path.Value}");
