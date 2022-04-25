@@ -3,18 +3,22 @@ package shipping
 import (
 	"context"
 	"fmt"
+
 	"time"
 
 	dapr "github.com/dapr/go-sdk/client"
+	"github.com/sirupsen/logrus"
 )
 
 type Shipping struct {
 	cfg *ShippingServiceConfiguration
+	log *logrus.Logger
 }
 
-func NewShipping(cfg *ShippingServiceConfiguration) *Shipping {
+func NewShipping(cfg *ShippingServiceConfiguration, log *logrus.Logger) *Shipping {
 	return &Shipping{
 		cfg: cfg,
+		log: log,
 	}
 }
 
@@ -50,6 +54,9 @@ func (s *Shipping) ProcessOrder(o *Order) error {
 		return fmt.Errorf("Error while creating dapr client %s", err)
 	}
 
+	// invoke business logic
+	s.log.Infof("Applying shipping business logic on message %s", o.Id)
+	time.Sleep(time.Second * 2)
 	m := &ShippingProcessed{
 		CustomerName: o.CustomerName,
 		OrderId:      o.Id,

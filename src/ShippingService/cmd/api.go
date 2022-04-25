@@ -13,6 +13,7 @@ import (
 )
 
 type cloudEvent struct {
+	id   string
 	Data shipping.Order
 }
 
@@ -41,16 +42,24 @@ func main() {
 			ctx.AbortWithStatus(400)
 			return
 		}
-		s := shipping.NewShipping(cfg)
+		log.Infof("Processing CloudEvent with id %s", orderEnvelope.id)
+		s := shipping.NewShipping(cfg, log)
 		if err = s.ProcessOrder(&orderEnvelope.Data); err != nil {
 			ctx.AbortWithStatus(500)
 			return
 		}
-		ctx.Status(200)
+		// ctx.Status(200)
+		// we must send at least! an empty JSON object, otherwise dapr component will treat response incorrectly and log
+		// skipping status check due to error parsing result from pub/sub event
+		// https://github.com/dapr/dapr/issues/2235
+		ctx.JSON(200, daprResponse{})
 
 	})
 	p := getPort()
 	r.Run(fmt.Sprintf(":%d", p))
+}
+
+type daprResponse struct {
 }
 
 func getPort() int {
