@@ -1,0 +1,38 @@
+﻿@page "/productslist"
+
+@inject HttpClient Http
+
+@using ProductsService.Models
+
+<PageTitle>Products</PageTitle>
+
+@if (_products == null)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <MudTable Items="_products" Hover="true" SortLabel="Sort By" Elevation="0">
+        <HeaderContent>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ProductListModel, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<ProductListModel, object>(x=>x.Price)">Price</MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Price">@context.Price</MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new int[]{50, 100}" />
+        </PagerContent>
+    </MudTable>
+}
+
+
+@code {
+    private ProductListModel[]? _products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _products = await Http.GetFromJsonAsync<ProductListModel[]>("");
+    }
+}

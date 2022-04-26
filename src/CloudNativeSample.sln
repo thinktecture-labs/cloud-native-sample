@@ -1,5 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrdersService", "OrdersService\OrdersService.csproj", "{5CDE857D-89F3-43ED-8283-5AD14E4120F8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductsService", "ProductsService\ProductsService.csproj", "{470BB960-5DEE-4C60-A758-842C28CC06DC}"
@@ -7,6 +8,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gateway", "Gateway\Gateway.csproj", "{7014B688-D76A-4FD4-A6AE-C19B9CDEBCF7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService", "NotificationService\NotificationService.csproj", "{FE393A35-D71C-4FDF-AEB6-66019C0E1CE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderMonitorClient", "OrderMonitorClient\OrderMonitorClient.csproj", "{D7BBED6B-9622-4ED8-BF34-73AD52BED7DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +33,9 @@ Global
 		{FE393A35-D71C-4FDF-AEB6-66019C0E1CE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE393A35-D71C-4FDF-AEB6-66019C0E1CE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE393A35-D71C-4FDF-AEB6-66019C0E1CE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7BBED6B-9622-4ED8-BF34-73AD52BED7DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7BBED6B-9622-4ED8-BF34-73AD52BED7DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7BBED6B-9622-4ED8-BF34-73AD52BED7DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7BBED6B-9622-4ED8-BF34-73AD52BED7DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
