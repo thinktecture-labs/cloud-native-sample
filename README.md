@@ -36,3 +36,9 @@ dapr run --app-id products --app-port 5001 --dapr-http-port 9001 --dapr-grpc-por
 cd src/Gateway
 dotnet run
 ```
+
+## Load Testing
+
+```bash
+hey -c 1 -n 1000 http://localhost:5000/products
+```
