@@ -33,6 +33,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _products = await Http.GetFromJsonAsync<ProductListModel[]>("");
+        _products = await Http.GetFromJsonAsync<ProductListModel[]>("/products");
     }
 }
