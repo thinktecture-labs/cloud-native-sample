@@ -19,7 +19,6 @@ namespace Gateway.TransformProviders {
             {
                 _logger.LogTrace("Daprizing route with id {RouteId}", context.Route.RouteId);
                 context.AddRequestTransform(t => {
-                    Thread.Sleep(3000);
                     t.ProxyRequest.RequestUri = new Uri($"{_config.DaprEndpoint}/v1.0/invoke/products/method{t.Path.Value}");
                     return ValueTask.CompletedTask;
                 });
