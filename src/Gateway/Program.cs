@@ -44,7 +44,7 @@ builder.Services.AddHealthChecks();
 builder.Services.AddOpenTelemetryTracing(b =>
 { 
     b.AddAspNetCoreInstrumentation()
-        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(typeof(Program).Assembly.GetName().Name))
+        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(typeof(Program).Assembly.GetName().Name!.ToLowerInvariant()))
         .AddHttpClientInstrumentation()
         .AddConsoleExporter()
         .AddZipkinExporter(options =>{
