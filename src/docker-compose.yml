@@ -1,0 +1,137 @@
+version: "3.9"
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:1.22
+    container_name: jeager    
+    environment:
+      COLLECTOR_ZIPKIN_HOST_PORT: 9412
+    ports:
+      - "16686:16686"
+    networks:
+      - cloud-native
+  rabbit:
+    image: rabbitmq:management-alpine
+    container_name: rabbitmq
+    ports:
+      - "15672:15672"
+    networks:
+      - cloud-native
+  gateway:
+    build: ./Gateway
+    container_name: gateway
+    environment:
+      ASPNETCORE_ENVIRONMENT: DockerCompose
+    networks:
+      - cloud-native
+    ports: 
+      - "5000:5000"
+  gateway-dapr:
+    image: "daprio/daprd:edge"
+    command: [ "./daprd",
+               "-app-id", "gateway",
+               "-app-port", "5000",
+               "-dapr-http-port", "9000",
+               "-dapr-grpc-port", "10000",
+               "-components-path", "/dapr/components",
+               "-config", "/dapr/docker-compose-config.yaml" ]
+    network_mode: "service:gateway"
+    volumes:
+      - ./dapr:/dapr
+    depends_on:
+      - gateway
+  orders:
+    build: ./OrdersService
+    networks:
+      - cloud-native
+    depends_on:
+      - jaeger
+      - rabbit
+  orders-dapr:
+    image: "daprio/daprd:edge"
+    command: [ "./daprd",
+               "-app-id", "orders",
+               "-app-port", "5002",
+               "-dapr-http-port", "9002",
+               "-dapr-grpc-port", "10002",
+               "-components-path", "/dapr/components",
+               "-config", "/dapr/docker-compose-config.yaml"]
+    network_mode: "service:orders"
+    volumes:
+      - ./dapr:/dapr
+    depends_on:
+      - orders
+  products:
+    build: ./ProductsService
+    networks:
+      - cloud-native
+    depends_on:
+      - jaeger
+  products-dapr:
+    image: "daprio/daprd:edge"
+    container_name: products-dapr
+    command: [ "./daprd",
+               "-app-id", "products",
+               "-app-port", "5001",
+               "-dapr-http-port", "9001",
+               "-dapr-grpc-port", "10001",
+               "-components-path", "/dapr/components",
+               "-config", "/dapr/docker-compose-config.yaml" ]
+    network_mode: "service:products"
+    volumes:
+      - ./dapr:/dapr
+    depends_on:
+      - products
+  notification:
+    build: ./NotificationService
+    networks:
+      - cloud-native
+    depends_on:
+      - jaeger
+      - rabbit
+  notification-dapr:
+    image: "daprio/daprd:edge"
+    container_name: notification-dapr
+    command: [ "./daprd",
+               "-app-id", "products",
+               "-app-port", "5004",
+               "-dapr-http-port", "9004",
+               "-dapr-grpc-port", "10004",
+               "-components-path", "/dapr/components",
+               "-config", "/dapr/docker-compose-config.yaml" ]
+    network_mode: "service:notification"
+    volumes:
+      - ./dapr:/dapr
+    depends_on:
+      - notification
+  shipping:
+    build: ./ShippingService
+    networks:
+      - cloud-native
+    depends_on:
+      - jaeger
+      - rabbit
+  shipping-dapr:
+    image: "daprio/daprd:edge"
+    container_name: shipping-dapr
+    command: [ "./daprd",
+               "-app-id", "shipping",
+               "-app-port", "5003",
+               "-dapr-http-port", "9003",
+               "-dapr-grpc-port", "10003",
+               "-components-path", "/dapr/components",
+               "-config", "/dapr/docker-compose-config.yaml" ]
+    network_mode: "service:shipping"
+    volumes:
+      - ./dapr:/dapr
+    depends_on:
+      - shipping
+  ordermonitor:
+    build: ./OrderMonitorClient
+    ports:
+      - "5005:80"
+    networks:
+      - cloud-native
+networks:
+  "cloud-native" : {}
+
+  
