@@ -8,7 +8,7 @@ using OpenTelemetry.Trace;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
-
+const string CorsPolicyName = "GatewayPolicy";
 var cfg = new GatewayConfiguration();
 var cfgSection = builder.Configuration.GetSection(GatewayConfiguration.SectionName);
 if (cfgSection == null || !cfgSection.Exists())
@@ -30,6 +30,13 @@ builder.Services.AddResponseCompression(options =>
         Level = CompressionLevel.Fastest
     }));
 });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(CorsPolicyName, b =>
+    {
+        b.AllowAnyHeader().AllowAnyMethod().WithOrigins(cfg.CorsOrigins);
+    });
+});
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection(cfg.ConfigSection)) 
     .AddTransforms<DaprTransformProvider>();
@@ -46,6 +53,7 @@ builder.Services.AddOpenTelemetryTracing(b =>
 });
 var app = builder.Build();
 app.UseResponseCompression();
+app.UseCors(CorsPolicyName);
 app.MapReverseProxy();
 app.MapMetrics();
 app.UseHttpMetrics();
