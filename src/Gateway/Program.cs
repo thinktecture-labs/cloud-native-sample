@@ -5,6 +5,7 @@ using Gateway.TransformProviders;
 using Microsoft.AspNetCore.ResponseCompression;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +47,8 @@ builder.Services.AddOpenTelemetryTracing(b =>
 var app = builder.Build();
 app.UseResponseCompression();
 app.MapReverseProxy();
+app.MapMetrics();
+app.UseHttpMetrics();
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");
 app.Run();

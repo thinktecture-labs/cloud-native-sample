@@ -1,6 +1,7 @@
 using Microsoft.OpenApi.Models;
 using ProductsService.Configuration;
 using ProductsService.Repositories;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +58,8 @@ if (app.Environment.IsDevelopment())
 }
 app.UseAuthorization();
 app.MapControllers();
+app.MapMetrics();
+app.UseHttpMetrics();
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");
 app.Run();

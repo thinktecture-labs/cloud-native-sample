@@ -1,6 +1,7 @@
 using Dapr.Client;
 using Microsoft.OpenApi.Models;
 using OrdersService.Configuration;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 var cfg = new OrdersServiceConfiguration();
@@ -44,6 +45,8 @@ if (app.Environment.IsDevelopment())
 }
 app.UseAuthorization();
 app.MapControllers();
+app.MapMetrics();
+app.UseHttpMetrics();
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");
 app.Run();
