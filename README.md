@@ -1,5 +1,7 @@
 # Cloud-native sample application
 
+Some general introduction....TBD
+
 ## Docker Compose
 
 ### Urls and Credentials
