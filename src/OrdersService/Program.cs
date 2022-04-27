@@ -1,5 +1,7 @@
 using Dapr.Client;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using OrdersService.Configuration;
 using Prometheus;
 
@@ -15,7 +17,6 @@ else
 {
     cfgSection.Bind(cfg);
 }
-
 builder.Services.AddSingleton(cfg);
 builder.Services.AddScoped<DaprClient>(_ => new DaprClientBuilder().Build()!);
 builder.Services.AddControllers();
@@ -38,11 +39,8 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseAuthorization();
 app.MapControllers();
 app.MapMetrics();

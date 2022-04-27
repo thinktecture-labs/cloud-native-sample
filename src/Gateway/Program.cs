@@ -41,16 +41,6 @@ builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection(cfg.ConfigSection)) 
     .AddTransforms<DaprTransformProvider>();
 builder.Services.AddHealthChecks();
-builder.Services.AddOpenTelemetryTracing(b =>
-{ 
-    b.AddAspNetCoreInstrumentation()
-        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(typeof(Program).Assembly.GetName().Name!.ToLowerInvariant()))
-        .AddHttpClientInstrumentation()
-        .AddConsoleExporter()
-        .AddZipkinExporter(options =>{
-            options.Endpoint = new Uri(cfg.ZipkinEndpoint);
-        });
-});
 var app = builder.Build();
 app.UseResponseCompression();
 app.UseCors(CorsPolicyName);

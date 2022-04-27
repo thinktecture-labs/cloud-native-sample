@@ -7,19 +7,20 @@ namespace Gateway.TransformProviders {
     {
         private readonly GatewayConfiguration _config;
         private readonly ILogger<DaprTransformProvider> _logger;
-        private readonly string[] _daprRoutes = { Constants.OrdersRouteName, Constants.ProductsRouteName }; 
-        public DaprTransformProvider(GatewayConfiguration config, ILogger<DaprTransformProvider> logger)
+        private readonly int _daprHttpPort;
+        public DaprTransformProvider(GatewayConfiguration config, IConfiguration configuration, ILogger<DaprTransformProvider> logger)
         {
             _config = config;
+            _daprHttpPort = configuration.GetValue<int>("DAPR_HTTP_PORT");
             _logger = logger;
         }
         public void Apply(TransformBuilderContext context)
         {
-            if(_daprRoutes.Contains(context.Route.RouteId))
+            if(_config.DaprServiceNames.Contains(context.Route.RouteId))
             {
                 _logger.LogTrace("Daprizing route with id {RouteId}", context.Route.RouteId);
                 context.AddRequestTransform(t => {
-                    t.ProxyRequest.RequestUri = new Uri($"{_config.DaprEndpoint}/v1.0/invoke/products/method{t.Path.Value}");
+                    t.ProxyRequest.RequestUri = new Uri($"http://localhost:{_daprHttpPort}/v1.0/invoke/{context.Route.RouteId}/method{t.Path.Value}");
                     return ValueTask.CompletedTask;
                 });
             }

@@ -7,13 +7,17 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/penglongli/gin-metrics/ginmetrics"
 	"github.com/sirupsen/logrus"
 	"github.com/thinktecture-labs/cloud-native-sample/shipping-service/pkg/shipping"
 	ginlogrus "github.com/toorop/gin-logrus"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/zipkin"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 type cloudEvent struct {
-	id   string
+	Id   string
 	Data shipping.Order
 }
 
@@ -34,15 +38,28 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	r := gin.New()
+	//todo: extract to dedicated func
+	m := ginmetrics.GetMonitor()
+	m.SetMetricPath("/metrics")
+	m.Use(r)
 
+	/*tp := getTraceProvider()
+	defer func() {
+		if err := tp.Shutdown(context.Background()); err != nil {
+			log.Printf("Error shutting down tracer provider: %v", err)
+		}
+	}()
+	r.Use(otelgin.Middleware("notification"))
+	*/
 	r.Use(ginlogrus.Logger(log), gin.Recovery())
+	//todo: rename route to ship or process
 	r.POST("/orders", func(ctx *gin.Context) {
 		var orderEnvelope cloudEvent
 		if err := ctx.BindJSON(&orderEnvelope); err != nil {
 			ctx.AbortWithStatus(400)
 			return
 		}
-		log.Infof("Processing CloudEvent with id %s", orderEnvelope.id)
+		log.Infof("Processing CloudEvent with id %s", orderEnvelope.Id)
 		s := shipping.NewShipping(cfg, log)
 		if err = s.ProcessOrder(&orderEnvelope.Data); err != nil {
 			ctx.AbortWithStatus(500)
@@ -55,8 +72,28 @@ func main() {
 		ctx.JSON(200, daprResponse{})
 
 	})
+	r.GET("/healthz/readiness", func(ctx *gin.Context) {
+		ctx.Status(200)
+	})
+	r.GET("/healthz/liveness", func(ctx *gin.Context) {
+		ctx.Status(200)
+	})
 	p := getPort()
 	r.Run(fmt.Sprintf(":%d", p))
+}
+
+func getTraceProvider() *sdktrace.TracerProvider {
+	exporter, err := zipkin.New(os.Getenv("ZIPKIN_ENDPOINT"))
+	if err != nil {
+		fmt.Errorf("Could not create zipkin exporter %s", err)
+		os.Exit(1)
+	}
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithSampler(sdktrace.AlwaysSample()),
+		sdktrace.WithBatcher(exporter),
+	)
+	otel.SetTracerProvider(tp)
+	return tp
 }
 
 type daprResponse struct {

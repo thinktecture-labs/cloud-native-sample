@@ -1,12 +1,22 @@
 version: "3.9"
 services:
+  loki:
+    image: grafana/loki:2.5.0
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      cloud-native:
+        ipv4_address: 10.5.0.99
   grafana:
     image: grafana/grafana-oss:latest
     container_name: grafana
     ports:
       - "3000:3000"
     volumes:
-      - ./config/grafana/:/etc/grafana/provisioning/datasources
+      - ./config/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./config/grafana/dashboards:/var/lib/grafana/dashboards
     networks:
       - cloud-native
   prometheus:
@@ -43,6 +53,13 @@ services:
       - "6379:6379"
     networks:
       - cloud-native
+  zipkin:
+    image: "openzipkin/zipkin"
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - cloud-native
   jaeger:
     image: jaegertracing/all-in-one:1.22
     container_name: jaeger    
@@ -62,14 +79,21 @@ services:
   gateway:
     build: ./Gateway
     container_name: gateway
+    logging:
+      driver: loki
+      options:
+        loki-url: http://10.5.0.99:3100/loki/api/v1/push
+        loki-retries: 5
     environment:
       ASPNETCORE_ENVIRONMENT: DockerCompose
+      DAPR_HTTP_PORT: 9000
     networks:
       - cloud-native
     ports: 
       - "5000:5000"
   gateway-dapr:
     image: "daprio/daprd:edge"
+    container_name: gateway-dapr
     command: [ "./daprd",
                "-app-id", "gateway",
                "-app-port", "5000",
@@ -84,13 +108,23 @@ services:
       - gateway
   orders:
     build: ./OrdersService
+    container_name: orders
     networks:
       - cloud-native
     depends_on:
       - jaeger
       - rabbit
+    environment:
+      DAPR_GRPC_PORT: 10002
+      ZIPKIN_ENDPOINT: http://jaeger:9412/api/v2/spans
+    logging:
+      driver: loki
+      options:
+        loki-url: http://10.5.0.99:3100/loki/api/v1/push
+        loki-retries: 5
   orders-dapr:
     image: "daprio/daprd:edge"
+    container_name: orders-dapr
     command: [ "./daprd",
                "-app-id", "orders",
                "-app-port", "5002",
@@ -105,10 +139,18 @@ services:
       - orders
   products:
     build: ./ProductsService
+    container_name: products
+    environment:
+      DAPR_GRPC_PORT: 10001
     networks:
       - cloud-native
     depends_on:
       - jaeger
+    logging:
+      driver: loki
+      options:
+        loki-url: http://10.5.0.99:3100/loki/api/v1/push
+        loki-retries: 5
   products-dapr:
     image: "daprio/daprd:edge"
     container_name: products-dapr
@@ -126,16 +168,24 @@ services:
       - products
   notification:
     build: ./NotificationService
+    container_name: notification
+    environment:
+      DAPR_GRPC_PORT: 10004
     networks:
       - cloud-native
     depends_on:
       - jaeger
       - rabbit
+    logging:
+      driver: loki
+      options:
+        loki-url: http://10.5.0.99:3100/loki/api/v1/push
+        loki-retries: 5
   notification-dapr:
     image: "daprio/daprd:edge"
     container_name: notification-dapr
     command: [ "./daprd",
-               "-app-id", "products",
+               "-app-id", "notification",
                "-app-port", "5004",
                "-dapr-http-port", "9004",
                "-dapr-grpc-port", "10004",
@@ -148,11 +198,20 @@ services:
       - notification
   shipping:
     build: ./ShippingService
+    container_name: shipping
+    environment:
+      DAPR_GRPC_PORT: 10003
+      ZIPKIN_ENDPOINT: http://jaeger:9412/api/v2/spans
     networks:
       - cloud-native
     depends_on:
       - jaeger
       - rabbit
+    logging:
+      driver: loki
+      options:
+        loki-url: http://10.5.0.99:3100/loki/api/v1/push
+        loki-retries: 5
   shipping-dapr:
     image: "daprio/daprd:edge"
     container_name: shipping-dapr
@@ -170,11 +229,19 @@ services:
       - shipping
   ordermonitor:
     build: ./OrderMonitorClient
+    container_name: order-monitor-client
     ports:
       - "5005:80"
     networks:
       - cloud-native
 networks:
-  "cloud-native" : {}
+  cloud-native :
+    driver: bridge
+    name: cloud-native
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+          gateway: 10.5.0.1
+          
 
   

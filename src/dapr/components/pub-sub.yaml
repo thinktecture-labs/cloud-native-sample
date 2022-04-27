@@ -8,5 +8,5 @@ spec:
   version: v1
   metadata:
   - name: host
-    value: "amqp://localhost:5672"
+    value: "amqp://rabbitmq:5672"
 ---
