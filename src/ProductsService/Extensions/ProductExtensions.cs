@@ -13,6 +13,7 @@ public static class ProductExtensions
         {
             Id = p.Id,
             Name = p.Name,
+            Description = p.Description,
             Price = p.Price
         };
     }

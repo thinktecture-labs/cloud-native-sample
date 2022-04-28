@@ -8,7 +8,7 @@ image:
   repository: thinktecturedev.azurecr.io/cloud-native/productsservice
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "local-x64-0.0.1"
+  tag: "local-x64-0.0.2"
 containerPort: 5001
 
 imagePullSecrets: []
@@ -28,6 +28,8 @@ podAnnotations:
   dapr.io/enabled: "true"
   dapr.io/app-id: "products"
   dapr.io/app-port: "5001"
+  prometheus.io/scrape: 'true'
+  prometheus.io/port: '5001'
 
 podSecurityContext: {}
   # fsGroup: 2000

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "order-monitor-client.fullname" . }}-test-connection"
+  labels:
+    {{- include "order-monitor-client.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "order-monitor-client.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

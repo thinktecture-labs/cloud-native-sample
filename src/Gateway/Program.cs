@@ -40,6 +40,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection(cfg.ConfigSection)) 
     .AddTransforms<DaprTransformProvider>();
+builder.Services.AddControllers();
 builder.Services.AddHealthChecks();
 var app = builder.Build();
 app.UseResponseCompression();
@@ -47,6 +48,7 @@ app.UseCors(CorsPolicyName);
 app.MapReverseProxy();
 app.MapMetrics();
 app.UseHttpMetrics();
+app.MapControllers();
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");
 app.Run();

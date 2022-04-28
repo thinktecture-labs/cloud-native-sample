@@ -3,6 +3,7 @@ using Microsoft.OpenApi.Models;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using OrdersService.Configuration;
+using OrdersService.Repositories;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,7 @@ else
     cfgSection.Bind(cfg);
 }
 builder.Services.AddSingleton(cfg);
+builder.Services.AddScoped<IOrdersRepository, FakeOrdersRepository>();
 builder.Services.AddScoped<DaprClient>(_ => new DaprClientBuilder().Build()!);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

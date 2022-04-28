@@ -5,22 +5,35 @@ namespace OrdersService.Models
     [SwaggerSchema()]
     public class CreateOrderModel
     {
-        [SwaggerSchema("Name of the customer")]
-        public string? CustomerName {get;set;}
         [SwaggerSchema("User's unique identifier")]
         public string? UserId { get; set; }
         [SwaggerSchema("List of order positions")]
         public IEnumerable<OrderPositionModel>? Positions { get; set; }
     }
 
-    public readonly record struct OrderDetailsModel(Guid Id, string? CustomerName,
-        IEnumerable<OrderPositionModel> Positions, DateTime SubmittedAt);
-    
-    
+
+    public class OrderListModel
+    {
+        public Guid Id { get; init; }
+        public string UserId { get; set; }
+        public IEnumerable<OrderPositionModel> Positions { get; init; }
+    }
+
+    public class OrderDetailsModel
+    {
+
+        public Guid Id { get; init; }
+        public string UserId { get; set; }
+        public string? UserName { get; init; }
+        public IEnumerable<OrderPositionModel> Positions { get; init; }
+        public DateTime SubmittedAt { get; init; }
+        
+    }
+
+
     public class OrderPositionModel
     {
         public Guid ProductId {get;set;}
-        public string? ProductName {get;set;}
         public int Quantity {get;set;}
     }
 }

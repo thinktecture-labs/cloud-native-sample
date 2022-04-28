@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   repository: thinktecturedev.azurecr.io/cloud-native/ordersservice
   pullPolicy: IfNotPresent
-  tag: "local-x64-0.0.1"
+  tag: "local-x64-0.0.2"
 containerPort: 5002
 
 imagePullSecrets: []
@@ -27,6 +27,9 @@ podAnnotations:
   dapr.io/enabled: "true"
   dapr.io/app-id: "orders"
   dapr.io/app-port: "5002"
+  dapr.io/config: "cloud-native-sample"
+  prometheus.io/scrape: 'true'
+  prometheus.io/port: '5002'
 
 podSecurityContext: {}
   # fsGroup: 2000
