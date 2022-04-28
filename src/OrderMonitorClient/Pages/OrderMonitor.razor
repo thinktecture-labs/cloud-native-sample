@@ -1,0 +1,45 @@
+﻿@page "/monitor"
+
+@inject HttpClient Http
+
+@using Gateway.Models
+
+<PageTitle>Order Monitor</PageTitle>
+
+@if (_orders == null)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <MudTable Items="_orders" Hover="true" SortLabel="Sort By" Elevation="0">
+        <HeaderContent>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<OrderMonitorListModel, object>(x=>x.Id)">Order ID</MudTableSortLabel></MudTh>
+            <MudTh>Positions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="ID">@context.Id</MudTd>
+            @foreach (var pos in context.Positions)
+            {
+                <MudTd DataLabel="Position">
+                    @pos.ProductName
+                    <br />
+                    @pos.ProductDescription
+                </MudTd>
+            }
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new int[]{50, 100}" />
+        </PagerContent>
+    </MudTable>
+}
+
+
+@code {
+    private OrderMonitorListModel[]? _orders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _orders = await Http.GetFromJsonAsync<OrderMonitorListModel[]>("/orders/monitor");
+    }
+}
