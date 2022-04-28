@@ -15,8 +15,8 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./docker-compose-config/grafana/datasources:/etc/grafana/provisioning/datasources
-      - ./docker-compose-config/grafana/dashboards:/var/lib/grafana/dashboards
+      - ./docker-compose-configs/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./docker-compose-configs/grafana/dashboards:/var/lib/grafana/dashboards
     networks:
       - cloud-native
   prometheus:
@@ -27,7 +27,7 @@ services:
     command:
       - --config.file=/etc/prometheus/prometheus.yml
     volumes:
-      - ./docker-compose-config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./docker-compose-configs/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     depends_on:
       - cadvisor
     networks:
