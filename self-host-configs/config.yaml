@@ -7,4 +7,5 @@ spec:
   tracing:
     samplingRate: "1"
     zipkin:
+      # todo!: here we've to verify networking capabilities with docker-compose so that containers are able access ports on the host
       endpointAddress: "http://localhost:9412/api/v2/spans"

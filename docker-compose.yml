@@ -15,8 +15,8 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./config/grafana/datasources:/etc/grafana/provisioning/datasources
-      - ./config/grafana/dashboards:/var/lib/grafana/dashboards
+      - ./docker-compose-config/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./docker-compose-config/grafana/dashboards:/var/lib/grafana/dashboards
     networks:
       - cloud-native
   prometheus:
@@ -27,7 +27,7 @@ services:
     command:
       - --config.file=/etc/prometheus/prometheus.yml
     volumes:
-      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./docker-compose-config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     depends_on:
       - cadvisor
     networks:
@@ -100,10 +100,11 @@ services:
                "-dapr-http-port", "9000",
                "-dapr-grpc-port", "10000",
                "-components-path", "/dapr/components",
-               "-config", "/dapr/docker-compose-config.yaml" ]
+               "-config", "/dapr/config/config.yml" ]
     network_mode: "service:gateway"
     volumes:
-      - ./dapr:/dapr
+      - ./docker-compose-configs/dapr:/dapr/config
+      - ./src/dapr:/dapr/components
     depends_on:
       - gateway
   orders:
@@ -131,10 +132,11 @@ services:
                "-dapr-http-port", "9002",
                "-dapr-grpc-port", "10002",
                "-components-path", "/dapr/components",
-               "-config", "/dapr/docker-compose-config.yaml"]
+               "-config", "/dapr/config/config.yml" ]
     network_mode: "service:orders"
     volumes:
-      - ./dapr:/dapr
+      - ./docker-compose-configs/dapr:/dapr/config
+      - ./src/dapr:/dapr/components
     depends_on:
       - orders
   products:
@@ -160,10 +162,11 @@ services:
                "-dapr-http-port", "9001",
                "-dapr-grpc-port", "10001",
                "-components-path", "/dapr/components",
-               "-config", "/dapr/docker-compose-config.yaml" ]
+               "-config", "/dapr/config/config.yml" ]
     network_mode: "service:products"
     volumes:
-      - ./dapr:/dapr
+      - ./docker-compose-configs/dapr:/dapr/config
+      - ./src/dapr:/dapr/components
     depends_on:
       - products
   notification:
@@ -190,10 +193,11 @@ services:
                "-dapr-http-port", "9004",
                "-dapr-grpc-port", "10004",
                "-components-path", "/dapr/components",
-               "-config", "/dapr/docker-compose-config.yaml" ]
+               "-config", "/dapr/config/config.yml" ]
     network_mode: "service:notification"
     volumes:
-      - ./dapr:/dapr
+      - ./docker-compose-configs/dapr:/dapr/config
+      - ./src/dapr:/dapr/components
     depends_on:
       - notification
   shipping:
@@ -221,10 +225,11 @@ services:
                "-dapr-http-port", "9003",
                "-dapr-grpc-port", "10003",
                "-components-path", "/dapr/components",
-               "-config", "/dapr/docker-compose-config.yaml" ]
+               "-config", "/dapr/config/config.yml" ]
     network_mode: "service:shipping"
     volumes:
-      - ./dapr:/dapr
+      - ./docker-compose-configs/dapr:/dapr/config
+      - ./src/dapr:/dapr/components
     depends_on:
       - shipping
   ordermonitor:
