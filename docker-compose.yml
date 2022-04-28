@@ -77,7 +77,7 @@ services:
     networks:
       - cloud-native
   gateway:
-    build: ./Gateway
+    build: ./src/Gateway
     container_name: gateway
     logging:
       driver: loki
@@ -108,7 +108,7 @@ services:
     depends_on:
       - gateway
   orders:
-    build: ./OrdersService
+    build: ./src/OrdersService
     container_name: orders
     networks:
       - cloud-native
@@ -140,7 +140,7 @@ services:
     depends_on:
       - orders
   products:
-    build: ./ProductsService
+    build: ./src/ProductsService
     container_name: products
     environment:
       DAPR_GRPC_PORT: 10001
@@ -170,7 +170,7 @@ services:
     depends_on:
       - products
   notification:
-    build: ./NotificationService
+    build: ./src/NotificationService
     container_name: notification
     environment:
       DAPR_GRPC_PORT: 10004
@@ -201,7 +201,7 @@ services:
     depends_on:
       - notification
   shipping:
-    build: ./ShippingService
+    build: ./src/ShippingService
     container_name: shipping
     environment:
       DAPR_GRPC_PORT: 10003
@@ -233,7 +233,7 @@ services:
     depends_on:
       - shipping
   ordermonitor:
-    build: ./OrderMonitorClient
+    build: ./src/OrderMonitorClient
     container_name: order-monitor-client
     ports:
       - "5005:80"
