@@ -1,6 +1,8 @@
-# Cloud-native sample application
+# Cloud-native Sample Application - (Work-in-Progress)
 
-Some general introduction....TBD
+*Note*: This is heavy work in progress - do not rely on the things you see here, yet ;-)
+
+[TBD: Some general introduction...]
 
 ## Docker Compose
 
@@ -69,7 +71,7 @@ brew install hey
 hey -c 1 -n 1000 http://localhost:5000/products
 ```
 
-## (archived) Self-Hosted
+## [Archived] Pure Self-Hosted
 
 ### Start Services
 
