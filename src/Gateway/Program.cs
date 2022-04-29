@@ -1,14 +1,14 @@
 using System.IO.Compression;
-using Gateway;
 using Gateway.Configuration;
 using Gateway.TransformProviders;
 using Microsoft.AspNetCore.ResponseCompression;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
+using Microsoft.OpenApi.Models;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
+
 const string CorsPolicyName = "GatewayPolicy";
+
 var cfg = new GatewayConfiguration();
 var cfgSection = builder.Configuration.GetSection(GatewayConfiguration.SectionName);
 if (cfgSection == null || !cfgSection.Exists())
@@ -41,8 +41,29 @@ builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection(cfg.ConfigSection)) 
     .AddTransforms<DaprTransformProvider>();
 builder.Services.AddControllers();
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.EnableAnnotations();
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Order Monitor Service",
+        Description = "Fairly simple .NET API to interact with orders for monitoring",
+        Contact = new OpenApiContact
+        {
+            Name = "Thinktecture AG",
+            Email = "info@thinktecture.com",
+            Url = new Uri("https://thinktecture.com")
+        }
+    });
+});
+
 builder.Services.AddHealthChecks();
+
 var app = builder.Build();
+
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseResponseCompression();
 app.UseCors(CorsPolicyName);
 app.MapReverseProxy();
@@ -51,4 +72,5 @@ app.UseHttpMetrics();
 app.MapControllers();
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");
+
 app.Run();

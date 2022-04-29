@@ -31,6 +31,7 @@ builder.Services.AddScoped<IProductsRepository>(serviceProvider =>
 builder.Services.AddHealthChecks();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.EnableAnnotations();
@@ -58,4 +59,5 @@ app.MapMetrics();
 app.UseHttpMetrics();
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");
+
 app.Run();
