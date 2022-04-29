@@ -104,7 +104,7 @@ services:
     network_mode: "service:gateway"
     volumes:
       - ./docker-compose-configs/dapr:/dapr/config
-      - ./src/dapr:/dapr/components
+      - ./src/dapr/components:/dapr/components
     depends_on:
       - gateway
   orders:
@@ -136,7 +136,7 @@ services:
     network_mode: "service:orders"
     volumes:
       - ./docker-compose-configs/dapr:/dapr/config
-      - ./src/dapr:/dapr/components
+      - ./src/dapr/components:/dapr/components
     depends_on:
       - orders
   products:
@@ -166,7 +166,7 @@ services:
     network_mode: "service:products"
     volumes:
       - ./docker-compose-configs/dapr:/dapr/config
-      - ./src/dapr:/dapr/components
+      - ./src/dapr/components:/dapr/components
     depends_on:
       - products
   notification:
@@ -197,7 +197,7 @@ services:
     network_mode: "service:notification"
     volumes:
       - ./docker-compose-configs/dapr:/dapr/config
-      - ./src/dapr:/dapr/components
+      - ./src/dapr/components:/dapr/components
     depends_on:
       - notification
   shipping:
@@ -229,7 +229,7 @@ services:
     network_mode: "service:shipping"
     volumes:
       - ./docker-compose-configs/dapr:/dapr/config
-      - ./src/dapr:/dapr/components
+      - ./src/dapr/components:/dapr/components
     depends_on:
       - shipping
   ordermonitor:
