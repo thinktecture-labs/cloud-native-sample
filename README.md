@@ -9,28 +9,32 @@
 ### Urls and Credentials
 
 * Frontend
-  * [http://localhost:5005](http://localhost:5005)
+  * [http://localhost:5000](http://localhost:5000)
 * Gateway
   * Root: [http://localhost:5000](http://localhost:5000)
   * Swagger (Products Service): [http://localhost:5000/products/swagger/](http://localhost:5000/products/swagger/)
-  * Swagger (Orders Service): [http://localhost:5000/products/swagger/](http://localhost:5000/orders/swagger/)
+  * Swagger (Orders Service): [http://localhost:5000/orders/swagger/](http://localhost:5000/orders/swagger/)
 * Grafana
   * [http://localhost:3000](http://localhost:3000)
   * Username: `admin`
   * Password: `admin`
 * Zipkin
   * [http://localhost:9411](http://localhost:9411)
-* RabbitMQ
+* Jaeger
   * [http://localhost:16686](http://localhost:16686)
+* RabbitMQ
+  * [http://localhost:115672](http://localhost:15672)
   * Username: `guest`
   * Password: `guest`
 
-### Common Compose commands
-
+### Necessary installation for Docker Compose-based setup
 ```bash
 # Install Docker Plugin for Loki
 docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+```
 
+### Common Docker Compose commands
+```bash
 # Build Container images
 docker-compose build
 
@@ -71,7 +75,7 @@ brew install hey
 hey -c 1 -n 1000 http://localhost:5000/products
 ```
 
-## [Archived] Pure Self-Hosted
+## [Archived] Self-hosted application services
 
 ### Start Services
 

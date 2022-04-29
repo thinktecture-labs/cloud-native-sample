@@ -19,14 +19,16 @@ else
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="ID">@context.Id</MudTd>
+            
+            <MudTd DataLabel="Position">
             @foreach (var pos in context.Positions)
             {
-                <MudTd DataLabel="Position">
+                
                     @pos.ProductName
-                    <br />
+                    <br><br>
                     @pos.ProductDescription
-                </MudTd>
             }
+            </MudTd>
         </RowTemplate>
         <PagerContent>
             <MudTablePager PageSizeOptions="new int[]{50, 100}" />
