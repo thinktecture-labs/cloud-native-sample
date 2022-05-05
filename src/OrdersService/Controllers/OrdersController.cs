@@ -29,21 +29,29 @@ public class OrdersController : ControllerBase
 
     [HttpPost]
     [Route("", Name = "CreateOrder")]
-    [SwaggerOperation(OperationId = "CreateOrder", Tags=new []{"Orders"}, Summary = "Create a new order", Description = "Invoke this endpoint to place a new order")]
+    [SwaggerOperation(OperationId = "CreateOrder", Tags = new[] { "Orders" }, Summary = "Create a new order", Description = "Invoke this endpoint to place a new order")]
     [SwaggerResponse(202, Description = "Order has been accepted")]
     [SwaggerResponse(400)]
     [SwaggerResponse(500)]
-    public async Task<IActionResult> CreateOrderAsync([FromBody]CreateOrderModel model)
+    public async Task<IActionResult> CreateOrderAsync([FromBody] CreateOrderModel model)
     {
+        if (HttpContext.Request.Headers.TryGetValue("traceid", out var traceid))
+        {
+            _logger.LogInformation($"CreateOrderAsync: traceid={traceid}");
+        }
 
         var id = Guid.NewGuid();
         var now = DateTime.Now;
-        
+
         var userName = HttpContext.GetUserName();
         _logger.LogTrace("Order ({Id}) submitted at {Now} by {CustomerName}", id, now.ToShortTimeString(), userName);
 
-        
         var newOrder = model.ToEntity(id, now, HttpContext.GetUserId(), userName);
+
+        // curl -X POST http://localhost:3601/v1.0/publish/order-pub-sub/orders -H "Content-Type: application/json" -d '{"orderId": "100"}'
+        // curl -X POST http://localhost:3601/v1.0/publish/order-pub-sub/orders -H "Content-Type: application/cloudevents+json" -d '{"specversion" : "1.0", "type" : "com.dapr.cloudevent.sent", "source" : "testcloudeventspubsub", "subject" : "Cloud Events Test", "id" : "someCloudEventId", "time" : "2021-08-02T09:00:00Z", "datacontenttype" : "application/cloudevents+json", "data" : {"orderId": "100"}}'
+        //var httpClient = new HttpClient();
+        //httpClient.PostAsJsonAsync<
 
         await _dapr.PublishEventAsync(_config.CreateOrderPubSubName, _config.CreateOrderTopicName, newOrder, CancellationToken.None)!;
 
@@ -57,16 +65,16 @@ public class OrdersController : ControllerBase
     [SwaggerResponse(200, Description = "The order", Type = typeof(IEnumerable<OrderListModel>))]
     [SwaggerResponse(400)]
     [SwaggerResponse(500)]
-    public async Task<IActionResult> GetOrdersAsync([FromServices]IOrdersRepository repository)
+    public async Task<IActionResult> GetOrdersAsync([FromServices] IOrdersRepository repository)
     {
         var found = await repository.GetAllOrdersAsync();
-        
-        return Ok(found.Select(f=>f.ToListModel()));
+
+        return Ok(found.Select(f => f.ToListModel()));
     }
-    
+
     [HttpGet]
     [Route("{id:guid}", Name = "GetOrderById")]
-    [SwaggerOperation(OperationId = "GetOrderById", Tags=new []{"Orders"}, Summary = "Load an order", Description = "This endpoint tries to load an order by its id")]
+    [SwaggerOperation(OperationId = "GetOrderById", Tags = new[] { "Orders" }, Summary = "Load an order", Description = "This endpoint tries to load an order by its id")]
     [SwaggerResponse(200, Description = "The order", Type = typeof(OrderDetailsModel))]
     [SwaggerResponse(400)]
     [SwaggerResponse(404, Description = "No order with given id was found")]
@@ -75,7 +83,7 @@ public class OrdersController : ControllerBase
     {
         //todo!: load order from store
         Order found = null;
-        
+
         if (found == null)
         {
             _logger.LogTrace("Order with id {Id} not found. Will result in 404", id);
