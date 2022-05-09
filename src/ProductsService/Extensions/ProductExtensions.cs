@@ -1,9 +1,7 @@
-// ReSharper disable once CheckNamespace
-
-using ProductsService.Entities;
+﻿using ProductsService.Data.Entities;
 using ProductsService.Models;
 
-namespace ProductsService;
+namespace ProductsService.Extensions;
 
 public static class ProductExtensions
 {

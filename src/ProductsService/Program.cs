@@ -1,6 +1,6 @@
 ﻿using Microsoft.OpenApi.Models;
 using ProductsService.Configuration;
-using ProductsService.Repositories;
+using ProductsService.Data.Repositories;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);

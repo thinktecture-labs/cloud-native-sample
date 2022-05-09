@@ -1,7 +1,6 @@
-﻿using ProductsService.Entities;
-using ProductsService.Models;
+﻿using ProductsService.Data.Entities;
 
-namespace ProductsService.Repositories
+namespace ProductsService.Data.Repositories
 {
     public class FakeProductsRepository : IProductsRepository
     {
@@ -21,13 +20,14 @@ namespace ProductsService.Repositories
             _logger = logger;
         }
 
-        public async Task<IEnumerable<ProductListModel>> GetAllAsync()
+        public async Task<IEnumerable<Product>> GetAllAsync()
         {
             _logger.LogTrace("List of all products has been requested");
-            return await Task.Run(() => { return _products.Select(p => p.ToListModel()); });
+
+            return await Task.Run(() => { return _products; });
         }
 
-        public async Task<ProductDetailsModel?> GetByIdAsync(Guid id)
+        public async Task<Product?> GetByIdAsync(Guid id)
         {
             _logger.LogTrace("Product with id {Id} has been requested", id);
 
@@ -35,7 +35,7 @@ namespace ProductsService.Repositories
             {
                 var found = _products.FirstOrDefault(p => p.Id.Equals(id));
 
-                return found?.ToDetailsModel();
+                return found;
             });
         }
     }

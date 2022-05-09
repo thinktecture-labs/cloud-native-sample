@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ProductsService.Data.Repositories;
+using ProductsService.Extensions;
 using ProductsService.Models;
-using ProductsService.Repositories;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ProductsService.Controllers;
@@ -28,7 +29,7 @@ public class ProductsController : ControllerBase
     {
         var res = await _repository.GetAllAsync();
 
-        return Ok(res);
+        return Ok(res.Select(p => p.ToListModel()));
     }
 
     [HttpGet]
@@ -48,6 +49,6 @@ public class ProductsController : ControllerBase
             return NotFound();
         }
 
-        return Ok(res);
+        return Ok(res.ToDetailsModel());
     }
 }

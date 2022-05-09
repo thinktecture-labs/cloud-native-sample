@@ -1,6 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
-
-namespace ProductsService.Entities
+﻿namespace ProductsService.Data.Entities
 {
     public class Product
     {
@@ -17,6 +15,6 @@ namespace ProductsService.Entities
         public string Name { get; set; }
         public string Description { get; set; }
         public IEnumerable<string> Categories { get; set; }
-        public double Price {get;set;}
+        public double Price { get; set; }
     }
 }
