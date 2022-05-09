@@ -7,6 +7,10 @@
 
 <PageTitle>Order Monitor</PageTitle>
 
+<MudText Typo="Typo.h3">
+    Your processed orders will appear here.
+</MudText>
+
 @if (_orders == null)
 {
     <MudProgressCircular Color="Color.Default" Indeterminate="true" />
@@ -24,8 +28,7 @@ else
             <MudTd DataLabel="Position">
                 @foreach (var pos in context.Positions)
                     {
-
-                    @pos.ProductName
+                    @(pos.Quantity + "x " + pos.ProductName)
                     <br>
                     @pos.ProductDescription
                     <br><br>
@@ -52,7 +55,7 @@ else
 
     private async void HandleOrderUpdates(object sender, OrderEventArgs args)
     {
-        Console.WriteLine("###SignalR - order status changed: {0}", args.Id);
+        Console.WriteLine("###SignalR - order update: {0}", args.Id);
 
         _orders = await ListOrders();
 
