@@ -1,4 +1,4 @@
-using Swashbuckle.AspNetCore.Annotations;
+﻿using Swashbuckle.AspNetCore.Annotations;
 
 namespace OrdersService.Models
 {
@@ -10,7 +10,6 @@ namespace OrdersService.Models
         [SwaggerSchema("List of order positions")]
         public IEnumerable<OrderPositionModel>? Positions { get; set; }
     }
-
 
     public class OrderListModel
     {
@@ -26,10 +25,8 @@ namespace OrdersService.Models
         public string UserId { get; set; }
         public string? UserName { get; init; }
         public IEnumerable<OrderPositionModel> Positions { get; init; }
-        public DateTime SubmittedAt { get; init; }
-        
+        public DateTime SubmittedAt { get; init; } 
     }
-
 
     public class OrderPositionModel
     {

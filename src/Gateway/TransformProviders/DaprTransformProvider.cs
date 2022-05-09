@@ -19,25 +19,28 @@ namespace Gateway.TransformProviders
 
         public void Apply(TransformBuilderContext context)
         {
-            if(_config.DaprServiceNames.Contains(context.Route.RouteId))
+            if (_daprHttpPort != 0)
             {
-                _logger.LogTrace("Daprizing route with id {RouteId}", context.Route.RouteId);
+                if(_config.DaprServiceNames.Contains(context.Route.RouteId))
+                {
+                    _logger.LogTrace("Daprizing route with id {RouteId}", context.Route.RouteId);
 
-                context.AddRequestTransform(t => {
-                    t.ProxyRequest.RequestUri = new Uri($"http://localhost:{_daprHttpPort}/v1.0/invoke/{context.Route.RouteId}/method{t.Path.Value}");
-                    return ValueTask.CompletedTask;
-                });
+                    context.AddRequestTransform(t =>
+                    {
+                        t.ProxyRequest.RequestUri = new Uri($"http://localhost:{_daprHttpPort}/v1.0/invoke/{context.Route.RouteId}/method{t.Path.Value}");
+
+                        return ValueTask.CompletedTask;
+                    });
+                }
             }
         }
 
         public void ValidateCluster(TransformClusterValidationContext context)
         {
-          
         }
 
         public void ValidateRoute(TransformRouteValidationContext context)
         {
-            
         }
     }
 }

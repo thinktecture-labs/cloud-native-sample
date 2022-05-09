@@ -1,7 +1,4 @@
-using Microsoft.Extensions.Options;
-using OrdersService.Models;
-
-namespace OrdersService.Entities;
+﻿namespace OrdersService.Entities;
 
 public class Order
 {
@@ -16,5 +13,4 @@ public class OrderPosition
 {
     public Guid ProductId {get;set;}
     public int Quantity {get;set;}
-
 }

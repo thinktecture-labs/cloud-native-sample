@@ -1,11 +1,9 @@
-using Dapr.Client;
+﻿using Dapr.Client;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using OrdersService.Configuration;
 using OrdersService.Entities;
 using OrdersService.Models;
 using Swashbuckle.AspNetCore.Annotations;
-using OrdersService;
 using OrdersService.Repositories;
 
 namespace OrdersService.Controllers;
@@ -15,7 +13,6 @@ namespace OrdersService.Controllers;
 [Route("orders")]
 public class OrdersController : ControllerBase
 {
-
     private readonly DaprClient _dapr;
     private readonly OrdersServiceConfiguration _config;
     private readonly ILogger<OrdersController> _logger;
@@ -48,6 +45,7 @@ public class OrdersController : ControllerBase
 
         var newOrder = model.ToEntity(id, now, HttpContext.GetUserId(), userName);
 
+        // TODO: manually craft message to get real end-to-end tracing
         // curl -X POST http://localhost:3601/v1.0/publish/order-pub-sub/orders -H "Content-Type: application/json" -d '{"orderId": "100"}'
         // curl -X POST http://localhost:3601/v1.0/publish/order-pub-sub/orders -H "Content-Type: application/cloudevents+json" -d '{"specversion" : "1.0", "type" : "com.dapr.cloudevent.sent", "source" : "testcloudeventspubsub", "subject" : "Cloud Events Test", "id" : "someCloudEventId", "time" : "2021-08-02T09:00:00Z", "datacontenttype" : "application/cloudevents+json", "data" : {"orderId": "100"}}'
         //var httpClient = new HttpClient();
@@ -81,7 +79,7 @@ public class OrdersController : ControllerBase
     [SwaggerResponse(500)]
     public async Task<IActionResult> GetOrderByIdAsync([FromRoute] Guid id)
     {
-        //todo!: load order from store
+        //TODO!: load order from store
         Order found = null;
 
         if (found == null)
@@ -91,6 +89,7 @@ public class OrdersController : ControllerBase
         }
 
         var detailsModel = found.ToDetailsModel();
+
         return Ok(detailsModel);
     }
 }

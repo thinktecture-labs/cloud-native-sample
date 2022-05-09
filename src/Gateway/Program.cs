@@ -68,12 +68,16 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
 app.UseResponseCompression();
 app.UseCors(CorsPolicyName);
 app.MapReverseProxy();
+
 app.MapMetrics();
 app.UseHttpMetrics();
+
 app.MapControllers();
+
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");
 

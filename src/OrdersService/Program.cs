@@ -1,4 +1,4 @@
-using Dapr.Client;
+﻿using Dapr.Client;
 using Microsoft.OpenApi.Models;
 using OrdersService.Configuration;
 using OrdersService.Repositories;
@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var cfg = new OrdersServiceConfiguration();
 var cfgSection = builder.Configuration.GetSection(OrdersServiceConfiguration.SectionName);
+
 if (cfgSection == null || !cfgSection.Exists())
 {
     throw new ApplicationException(
@@ -21,6 +22,7 @@ else
 builder.Services.AddSingleton(cfg);
 builder.Services.AddScoped<IOrdersRepository, FakeOrdersRepository>();
 builder.Services.AddScoped<DaprClient>(_ => new DaprClientBuilder().Build()!);
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -42,12 +44,16 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
+
 app.UseSwagger();
 app.UseSwaggerUI();
+
 app.UseAuthorization();
+
 app.MapControllers();
 app.MapMetrics();
 app.UseHttpMetrics();
+
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");
 

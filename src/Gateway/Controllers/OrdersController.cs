@@ -21,8 +21,8 @@ public class OrdersController : ControllerBase
     public async Task<IActionResult> GetOrderMonitorDataAsync()
     {
         var client = new HttpClient();
-        var getOrders = client.GetFromJsonAsync<List<JsonElement>>(BuildDaprUrlFor("orders", "orders"));
-        var getProducts = client.GetFromJsonAsync<List<JsonElement>>(BuildDaprUrlFor("products", "products"));
+        var getOrders = client.GetFromJsonAsync<List<JsonElement>>(BuildUrl("orders", "orders"));
+        var getProducts = client.GetFromJsonAsync<List<JsonElement>>(BuildUrl("products", "products"));
 
         var res = await Task.WhenAll(getOrders, getProducts);
         var orders = res[0];
@@ -60,8 +60,15 @@ public class OrdersController : ControllerBase
         };
     }
     
-    private string BuildDaprUrlFor(string service, string path)
-    {
-        return $"http://localhost:{_daprHttpPort}/v1.0/invoke/{service}/method/{path}";
+    private string BuildUrl(string service, string path)
+    { 
+        if(_daprHttpPort != 0)
+        {
+            return $"http://localhost:{_daprHttpPort}/v1.0/invoke/{service}/method/{path}";
+        }
+
+        var port = Request.Host.Port;
+
+        return $"http://localhost:{port}/{service}";
     }
 }

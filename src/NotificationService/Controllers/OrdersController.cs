@@ -31,6 +31,7 @@ public class OrdersController : Controller
         if (group == null)
         {
             _logger.LogWarning("SignalR group with name {Name} not found, request will fail with 404", e.Data.UserId);
+
             return NotFound();
         }
 

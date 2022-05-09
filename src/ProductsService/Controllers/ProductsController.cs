@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ProductsService.Models;
 using ProductsService.Repositories;
 using Swashbuckle.AspNetCore.Annotations;
@@ -10,7 +10,6 @@ namespace ProductsService.Controllers;
 [Produces("application/json")]
 public class ProductsController : ControllerBase
 { 
-
     private readonly ILogger<ProductsController> _logger;
     private readonly IProductsRepository _repository;
     
@@ -28,6 +27,7 @@ public class ProductsController : ControllerBase
     public async Task<IActionResult> GetAllProductsAsync()
     {
         var res = await _repository.GetAllAsync();
+
         return Ok(res);
     }
 
@@ -40,11 +40,14 @@ public class ProductsController : ControllerBase
     [SwaggerResponse(500)]
     public async Task<IActionResult> GetProductByIdAsync([FromRoute]Guid id){
         var res = await _repository.GetByIdAsync(id);
+
         if (res == null) 
         {
             _logger.LogTrace("Product with id {Id} not found. Will result in 404", id);
+
             return NotFound();
         }
+
         return Ok(res);
     }
 }

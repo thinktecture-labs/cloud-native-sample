@@ -1,4 +1,4 @@
-using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi.Models;
 using ProductsService.Configuration;
 using ProductsService.Repositories;
 using Prometheus;
@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var cfg = new ProductsServiceConfiguration();
 var cfgSection = builder.Configuration.GetSection(ProductsServiceConfiguration.SectionName);
+
 if (cfgSection == null || !cfgSection.Exists())
 {
     throw new ApplicationException(
@@ -21,6 +22,7 @@ builder.Services.AddSingleton(cfg);
 builder.Services.AddScoped<IProductsRepository>(serviceProvider =>
 {
     var c = serviceProvider.GetRequiredService<ProductsServiceConfiguration>();
+
     if (c.UseFakeImplementation)
     {
         var l = serviceProvider.GetRequiredService<ILogger<FakeProductsRepository>>();
@@ -28,6 +30,7 @@ builder.Services.AddScoped<IProductsRepository>(serviceProvider =>
     }
     throw new NotFiniteNumberException("No live implementation here yet...");
 });
+
 builder.Services.AddHealthChecks();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -53,10 +56,14 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
 app.UseAuthorization();
+
 app.MapControllers();
+
 app.MapMetrics();
 app.UseHttpMetrics();
+
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");
 
