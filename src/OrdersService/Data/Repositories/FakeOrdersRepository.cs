@@ -1,13 +1,11 @@
-﻿using System.Collections.Concurrent;
-using OrdersService.Entities;
+﻿using OrdersService.Data.Entities;
 
-namespace OrdersService.Repositories;
+namespace OrdersService.Data.Repositories;
 
 public class FakeOrdersRepository : IOrdersRepository
 {
-    private readonly ConcurrentDictionary<Guid, Order> _orders = new ConcurrentDictionary<Guid, Order>
+    private readonly List<Order> _orders = new()
     {
-        [Guid.NewGuid()] =
         new Order
         {
             Id = Guid.NewGuid(),
@@ -27,7 +25,6 @@ public class FakeOrdersRepository : IOrdersRepository
                 },
             }
         },
-        [Guid.NewGuid()] =
         new Order
         {
             Id = Guid.NewGuid(),
@@ -52,13 +49,15 @@ public class FakeOrdersRepository : IOrdersRepository
         }
     };
 
-    public Task AddNewOrderAsync()
+    public Task AddNewOrderAsync(Order newOrder)
     {
-        throw new NotImplementedException();
+        _orders.Add(newOrder);
+        
+        return Task.CompletedTask;
     }
 
     public async Task<IEnumerable<Order>> GetAllOrdersAsync()
     {
-        return await Task.Run(() => _orders.Values);
+        return await Task.FromResult(_orders);
     }
 }

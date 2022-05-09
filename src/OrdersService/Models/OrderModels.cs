@@ -8,23 +8,22 @@ namespace OrdersService.Models
         [SwaggerSchema("User's unique identifier")]
         public string? UserId { get; set; }
         [SwaggerSchema("List of order positions")]
-        public IEnumerable<OrderPositionModel>? Positions { get; set; }
+        public List<OrderPositionModel> Positions { get; set; }
     }
 
     public class OrderListModel
     {
         public Guid Id { get; init; }
         public string UserId { get; set; }
-        public IEnumerable<OrderPositionModel> Positions { get; init; }
+        public List<OrderPositionModel> Positions { get; init; }
     }
 
     public class OrderDetailsModel
     {
-
         public Guid Id { get; init; }
         public string UserId { get; set; }
         public string? UserName { get; init; }
-        public IEnumerable<OrderPositionModel> Positions { get; init; }
+        public List<OrderPositionModel> Positions { get; init; }
         public DateTime SubmittedAt { get; init; } 
     }
 

@@ -1,4 +1,4 @@
-using ProductsService.Entities;
+﻿using ProductsService.Entities;
 using ProductsService.Models;
 
 namespace ProductsService.Repositories
@@ -30,9 +30,11 @@ namespace ProductsService.Repositories
         public async Task<ProductDetailsModel?> GetByIdAsync(Guid id)
         {
             _logger.LogTrace("Product with id {Id} has been requested", id);
+
             return await Task.Run(() =>
             {
                 var found = _products.FirstOrDefault(p => p.Id.Equals(id));
+
                 return found?.ToDetailsModel();
             });
         }

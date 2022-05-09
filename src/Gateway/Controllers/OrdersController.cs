@@ -50,14 +50,21 @@ public class OrdersController : ControllerBase
     {
         var found = products.FirstOrDefault(pr => pr.GetProperty("id").GetString() == pos.GetProperty("productId").GetString());
 
-        return new OrderMonitorPositionModel
+        if(found.ValueKind == JsonValueKind.Undefined)
         {
-            ProductId = pos.GetProperty("productId").GetGuid(),
-            ProductName = found.GetProperty("name").GetString() ?? string.Empty,
-            ProductDescription = found.GetProperty("description").GetString() ?? string.Empty,
-            ProductPrice = found.GetProperty("price").GetDouble(),
-            Quantity = pos.GetProperty("quantity").GetInt32()
-        };
+            return new OrderMonitorPositionModel();
+        }
+        else
+        {
+            return new OrderMonitorPositionModel
+            {
+                ProductId = pos.GetProperty("productId").GetGuid(),
+                ProductName = found.GetProperty("name").GetString() ?? string.Empty,
+                ProductDescription = found.GetProperty("description").GetString() ?? string.Empty,
+                ProductPrice = found.GetProperty("price").GetDouble(),
+                Quantity = pos.GetProperty("quantity").GetInt32()
+            };
+        }
     }
     
     private string BuildUrl(string service, string path)

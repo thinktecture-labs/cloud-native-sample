@@ -1,24 +1,20 @@
-// ReSharper disable once CheckNamespace
-
-using OrdersService.Controllers;
-using OrdersService.Entities;
+﻿using OrdersService.Data.Entities;
 using OrdersService.Models;
 
-// ReSharper disable once CheckNamespace
-namespace OrdersService;
+namespace OrdersService.Extensions;
 
 public static class OrderExtensions
 {
-
     public static OrderListModel ToListModel(this Order o)
     {
         return new OrderListModel
         {
             Id = o.Id,
             UserId = o.UserId,
-            Positions = o.Positions.Select(p=>p.ToApiModel())
+            Positions = o.Positions == null ? new List<OrderPositionModel>() : o.Positions.Select(p => p.ToApiModel()).ToList(),
         };
     }
+    
     public static OrderDetailsModel ToDetailsModel(this Order o)
     {
         return new OrderDetailsModel
@@ -26,7 +22,7 @@ public static class OrderExtensions
             Id = o.Id,
             UserName = o.UserName,
             UserId = o.UserId,
-            Positions = o.Positions == null ? Enumerable.Empty<OrderPositionModel>() : o.Positions.Select(p => p.ToApiModel()),
+            Positions = o.Positions == null ? new List<OrderPositionModel>() : o.Positions.Select(p => p.ToApiModel()).ToList(),
             SubmittedAt = o.SubmittedAt
         };
     }
@@ -38,7 +34,7 @@ public static class OrderExtensions
             Id = id,
             UserId = userId,
             UserName = userName,
-            Positions = m.Positions == null? Enumerable.Empty<OrderPosition>() : m.Positions.Select(p=> p.FromApiModel()),
+            Positions = m.Positions == null? new List<OrderPosition>() : m.Positions.Select(p=> p.FromApiModel()).ToList(),
             SubmittedAt = n
         };
     }

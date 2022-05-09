@@ -1,8 +1,10 @@
 ﻿using Dapr.Client;
 using Microsoft.OpenApi.Models;
 using OrdersService.Configuration;
-using OrdersService.Repositories;
 using Prometheus;
+using Microsoft.EntityFrameworkCore;
+using OrdersService.Data;
+using OrdersService.Data.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +22,10 @@ else
 }
 
 builder.Services.AddSingleton(cfg);
-builder.Services.AddScoped<IOrdersRepository, FakeOrdersRepository>();
+
+builder.Services.AddDbContext<OrdersServiceContext>(options => options.UseInMemoryDatabase(databaseName: "OrdersService"));
+
+builder.Services.AddScoped<IOrdersRepository, OrdersRepository>();
 builder.Services.AddScoped<DaprClient>(_ => new DaprClientBuilder().Build()!);
 
 builder.Services.AddControllers();

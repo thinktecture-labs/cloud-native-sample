@@ -1,4 +1,4 @@
-﻿namespace OrdersService;
+﻿namespace OrdersService.Extensions;
 
 public static class HttpContextExtensions
 {
