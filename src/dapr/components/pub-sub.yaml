@@ -9,4 +9,8 @@ spec:
   metadata:
   - name: host
     value: "amqp://rabbitmq:5672"
+  - name: enableDeadLetter
+    value: true
+  - name: exchangeKind
+    value: topic
 ---

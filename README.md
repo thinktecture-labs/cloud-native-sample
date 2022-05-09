@@ -23,7 +23,7 @@
 * Jaeger
   * [http://localhost:16686](http://localhost:16686)
 * RabbitMQ
-  * [http://localhost:115672](http://localhost:15672)
+  * [http://localhost:15672](http://localhost:15672)
   * Username: `guest`
   * Password: `guest`
 
