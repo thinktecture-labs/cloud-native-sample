@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using Gateway.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +8,6 @@ namespace Gateway.Controllers;
 [Route("orders")]
 public class OrdersController : ControllerBase
 {
-    
     private readonly int _daprHttpPort;
 
     public OrdersController(IConfiguration configuration)
@@ -37,10 +36,12 @@ public class OrdersController : ControllerBase
                 UserId = o.GetProperty("userId").GetString() ?? string.Empty,
                 Positions = new List<OrderMonitorPositionModel>()
             };
+
             foreach (dynamic pos in o.GetProperty("positions").EnumerateArray())
             {
                 res.Positions.Add(TransformPosition(products, pos));
             }
+
             return res;
         }));
     }
@@ -48,6 +49,7 @@ public class OrdersController : ControllerBase
     private OrderMonitorPositionModel TransformPosition(List<JsonElement> products, JsonElement pos)
     {
         var found = products.FirstOrDefault(pr => pr.GetProperty("id").GetString() == pos.GetProperty("productId").GetString());
+
         return new OrderMonitorPositionModel
         {
             ProductId = pos.GetProperty("productId").GetGuid(),
@@ -58,7 +60,6 @@ public class OrdersController : ControllerBase
         };
     }
     
-
     private string BuildDaprUrlFor(string service, string path)
     {
         return $"http://localhost:{_daprHttpPort}/v1.0/invoke/{service}/method/{path}";

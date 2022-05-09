@@ -1,4 +1,4 @@
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using Gateway.Configuration;
 using Gateway.TransformProviders;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -11,6 +11,7 @@ const string CorsPolicyName = "GatewayPolicy";
 
 var cfg = new GatewayConfiguration();
 var cfgSection = builder.Configuration.GetSection(GatewayConfiguration.SectionName);
+
 if (cfgSection == null || !cfgSection.Exists())
 {
     throw new ApplicationException($"Could not find Gateway configuration. Please ensure a '{GatewayConfiguration.SectionName}' exists");
@@ -30,6 +31,7 @@ builder.Services.AddResponseCompression(options =>
         Level = CompressionLevel.Fastest
     }));
 });
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(CorsPolicyName, b =>
@@ -37,9 +39,11 @@ builder.Services.AddCors(options =>
         b.AllowAnyHeader().AllowAnyMethod().WithOrigins(cfg.CorsOrigins);
     });
 });
+
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection(cfg.ConfigSection)) 
     .AddTransforms<DaprTransformProvider>();
+
 builder.Services.AddControllers();
 
 builder.Services.AddSwaggerGen(c =>

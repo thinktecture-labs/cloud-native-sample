@@ -1,8 +1,9 @@
 ﻿@page "/monitor"
 
-@inject HttpClient Http
-
+@using OrderMonitorClient.Services
 @using Gateway.Models
+
+@inject OrderMonitorService _orderMonitorService
 
 <PageTitle>Order Monitor</PageTitle>
 
@@ -14,35 +15,53 @@ else
 {
     <MudTable Items="_orders" Hover="true" SortLabel="Sort By" Elevation="0">
         <HeaderContent>
-            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<OrderMonitorListModel, object>(x=>x.Id)">Order ID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<OrderMonitorListModel, object>(x => x.Id)">Order ID</MudTableSortLabel></MudTh>
             <MudTh>Positions</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="ID">@context.Id</MudTd>
-            
+
             <MudTd DataLabel="Position">
-            @foreach (var pos in context.Positions)
-            {
-                
+                @foreach (var pos in context.Positions)
+                    {
+
                     @pos.ProductName
                     <br>
                     @pos.ProductDescription
                     <br><br>
-            }
+                    }
             </MudTd>
         </RowTemplate>
         <PagerContent>
-            <MudTablePager PageSizeOptions="new int[]{50, 100}" />
+            <MudTablePager PageSizeOptions="new int[] { 50, 100 }" />
         </PagerContent>
     </MudTable>
 }
 
 
 @code {
-    private OrderMonitorListModel[]? _orders;
+    private List<OrderMonitorListModel>? _orders;
 
     protected override async Task OnInitializedAsync()
     {
-        _orders = await Http.GetFromJsonAsync<OrderMonitorListModel[]>("/orders/monitor");
+        _orderMonitorService.OrderListChanged += HandleOrderUpdates;
+
+        await _orderMonitorService.InitAsync();
+
+        _orders = await ListOrders();
+    }
+
+    private async void HandleOrderUpdates(object sender, OrderEventArgs args)
+    {
+        Console.WriteLine("###SignalR - order status changed: {0}", args.Id);
+
+        _orders = await ListOrders();
+
+        StateHasChanged();
+    }
+
+    private async Task<List<OrderMonitorListModel>> ListOrders()
+    {
+        return await _orderMonitorService.ListOrdersAsync();
     }
 }
