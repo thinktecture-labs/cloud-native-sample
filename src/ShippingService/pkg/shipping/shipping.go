@@ -3,6 +3,7 @@ package shipping
 import (
 	"context"
 	"fmt"
+	"math/rand"
 
 	"time"
 
@@ -54,9 +55,18 @@ func (s *Shipping) ProcessOrder(o *Order) error {
 		return fmt.Errorf("Error while creating dapr client %s", err)
 	}
 
-	// invoke business logic
+	// invoke business logic ;-)
 	s.log.Infof("Applying shipping business logic on message %s", o.Id)
-	time.Sleep(time.Second * 2)
+
+	rand.Seed(time.Now().UnixNano())
+	min := 4
+	max := 10
+	randomNumber := rand.Intn(max-min+1) + min
+
+	s.log.Infof("Shipping business logic takes %d seconds", randomNumber)
+
+	time.Sleep(time.Second * time.Duration(randomNumber))
+
 	m := &ShippingProcessed{
 		CustomerName: o.CustomerName,
 		OrderId:      o.Id,
