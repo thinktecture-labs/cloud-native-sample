@@ -13,4 +13,3 @@ spec:
     value: true
   - name: exchangeKind
     value: topic
----
