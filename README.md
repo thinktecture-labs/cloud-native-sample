@@ -6,7 +6,7 @@
 
 ## Docker Compose
 
-### Urls and Credentials
+### URLs and demo credentials
 
 * Frontend
   * [http://localhost:5000](http://localhost:5000)
@@ -26,6 +26,7 @@
   * [http://localhost:15672](http://localhost:15672)
   * Username: `guest`
   * Password: `guest`
+* Note: Dapr dashboard does currently not work in Docker compose mode
 
 ### Necessary installation for Docker Compose-based setup
 ```bash
@@ -63,6 +64,12 @@ docker network rm cloud-native -f
 docker plugin rm loki -f
 ```
 
+## Azure environment
+### Azure Service Bus
+When using Azure SB as a message broker, make sure to have at least a Standard tier in place for topics support (Basic will not work).
+
+Please add your own SAS connection string in the .yaml file for SB.
+
 ## Tools
 
 ### Load-Testing with Hey
@@ -75,7 +82,7 @@ brew install hey
 hey -c 1 -n 1000 http://localhost:5000/products
 ```
 
-## [Archived] Self-hosted application services
+## [Archived] Self-hosting application services with Dapr
 
 ### Start Services
 
@@ -114,4 +121,10 @@ cd src/Gateway
 dotnet run
 ```
 
+### Dapr Dashboard
 
+```bash
+dapr dashboard
+```
+
+Navigate to http://localhost:8080.
