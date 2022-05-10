@@ -28,6 +28,7 @@ namespace OrderMonitorClient.Services
         {
             _hubConnection = new HubConnectionBuilder()
                 .WithUrl(_navigationManager.ToAbsoluteUri("/notifications/notificationHub"))
+                .WithAutomaticReconnect()
                 .Build();
 
             _hubConnection.On<string>("onOrderProcessed", (orderId) =>
