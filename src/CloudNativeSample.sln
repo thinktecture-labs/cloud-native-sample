@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService", "Noti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderMonitorClient", "OrderMonitorClient\OrderMonitorClient.csproj", "{D7BBED6B-9622-4ED8-BF34-73AD52BED7DA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthenticationService", "AuthenticationService\AuthenticationService.csproj", "{94224E64-0B3C-46DF-88C6-FF712BA5D3EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,5 +39,9 @@ Global
 		{D7BBED6B-9622-4ED8-BF34-73AD52BED7DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7BBED6B-9622-4ED8-BF34-73AD52BED7DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7BBED6B-9622-4ED8-BF34-73AD52BED7DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94224E64-0B3C-46DF-88C6-FF712BA5D3EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94224E64-0B3C-46DF-88C6-FF712BA5D3EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94224E64-0B3C-46DF-88C6-FF712BA5D3EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94224E64-0B3C-46DF-88C6-FF712BA5D3EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
