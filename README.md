@@ -23,10 +23,10 @@ flowchart TD
 flowchart TD
 A[Create Order] -- with token --> B[Call API Gateway];
     B -- http --> C[Order Service];
-    C -- pub --> D[RabbitMQ];
-    E[Shipping Service] <-- sub -- D;
-    F[Notification Service] <-- sub -- D;
-    F -- ws --> G[Order Management Client]
+    C -- mqtt --> D[RabbitMQ];
+    D -- mqtt --> E[Shipping Service];
+    D -- mqtt --> F[Notification Service];
+    F -- ws --> G[Order Management Client];
 ```
 
 ## Docker Compose
