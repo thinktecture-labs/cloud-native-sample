@@ -6,6 +6,8 @@
 
 ## Application Diagram
 
+### Order Monitor Client
+
 ```mermaid
 flowchart TD
 
@@ -18,6 +20,8 @@ flowchart TD
     F -- http --> G[Order Service]
     F -- http --> H[Products Service]
 ```
+
+### Create an order with Postman
 
 ```mermaid
 flowchart TD
