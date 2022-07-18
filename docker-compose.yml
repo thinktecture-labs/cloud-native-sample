@@ -235,10 +235,29 @@ services:
   ordermonitor:
     build: ./src/OrderMonitorClient
     container_name: order-monitor-client
+    environment:
+      - IdentityServer__Uri=http://localhost:5009/
     ports:
       - "5005:80"
     networks:
       - cloud-native
+  authentication:
+    build: ./src/AuthenticationService
+    container_name: authn
+    environment:
+      IdentityServer__InteractiveClient__RedirectUris__0: http://localhost:5005/callback.html
+      IdentityServer__InteractiveClient__FrontChannelLogoutUri: http://localhost:5005/signout-oidc
+      IdentityServer__InteractiveClient__PostLogoutRedirectUris__0: http://localhost:5005/signout-callback-oidc
+      IdentityServer__InteractiveClient__AllowedCorsOrigins__0: http://localhost:5005
+    ports:
+      - "5009:5000"
+    networks:
+      - cloud-native
+    logging:
+      driver: loki
+      options:
+        loki-url: http://10.5.0.99:3100/loki/api/v1/push
+        loki-retries: 5
 networks:
   cloud-native :
     driver: bridge

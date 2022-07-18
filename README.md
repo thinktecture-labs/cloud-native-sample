@@ -4,12 +4,26 @@
 
 [TBD: Some general introduction...]
 
+## Application Diagram
+
+```mermaid
+flowchart TD
+
+    A[Browse Order Monitor Client] --> B{Is Authenticated?};
+    B -- No --> D[Authentication Service];
+    D --> E[Authenticate with Azure AD];
+    A -- Yes --> F[Call API Gateway];
+    F ----> G[Order Service]
+```
+
 ## Docker Compose
 
 ### URLs and demo credentials
 
 * Frontend
-  * [http://localhost:5000](http://localhost:5000)
+  * [http://localhost:5005](http://localhost:5005)
+* Authentication
+  * [http://localhost:5009](http://localhost:5009)
 * Gateway
   * Root: [http://localhost:5000](http://localhost:5000)
   * Swagger (Products Service): [http://localhost:5000/products/swagger/](http://localhost:5000/products/swagger/)
@@ -29,12 +43,14 @@
 * Note: Dapr dashboard does currently not work in Docker compose mode
 
 ### Necessary installation for Docker Compose-based setup
+
 ```bash
 # Install Docker Plugin for Loki
 docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
 ```
 
 ### Common Docker Compose commands
+
 ```bash
 # Build Container images
 docker-compose build
@@ -118,6 +134,13 @@ dapr run --app-id products --app-port 5001 --dapr-http-port 9001 --dapr-grpc-por
 
 ```bash
 cd src/Gateway
+dotnet run
+```
+
+### Authentication
+
+```bash
+cd src/AuthenticationService
 dotnet run
 ```
 
