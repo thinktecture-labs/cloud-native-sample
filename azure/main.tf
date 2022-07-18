@@ -14,7 +14,7 @@ terraform {
     storage_account_name = "sattcnsample2022"
     container_name       = "iac"
     key                  = "cnsample.terraform.tfstate"
-    use_azuread_auth     = true 
+    use_azuread_auth     = true
   }
 }
 provider "azurerm" {
@@ -23,7 +23,7 @@ provider "azurerm" {
   }
 }
 
-provider "azuread" { 
+provider "azuread" {
 }
 
 resource "azurerm_resource_group" "main" {

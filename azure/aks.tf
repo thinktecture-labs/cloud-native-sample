@@ -15,7 +15,7 @@ resource "azurerm_kubernetes_cluster" "main" {
     max_count           = 3
     vm_size             = "Standard_DS4_v2"
   }
-  
+
   azure_active_directory_role_based_access_control {
     managed                = true
     azure_rbac_enabled     = true
@@ -28,7 +28,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   }
 
   kubernetes_version = "1.23.8"
-  sku_tier = "Free"
+  sku_tier           = "Free"
 
   tags = local.tags
 }
