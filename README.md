@@ -10,9 +10,11 @@
 flowchart TD
 
     A[Browse Order Monitor Client] --> B{Is Authenticated?};
+    B -- Yes --> F[Call API Gateway];
     B -- No --> D[Authentication Service];
     D --> E[Authenticate with Azure AD];
-    A -- Yes --> F[Call API Gateway];
+    E -- Token --> D;
+    D -- Token --> A;
     F ----> G[Order Service]
 ```
 
