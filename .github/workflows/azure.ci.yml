@@ -31,9 +31,19 @@ jobs:
         working-directory: ./azure
       - name: Select Terraform Workspace
         run: terraform workspace select develop
+        env:
+          ARM_CLIENT_ID: ${{ secrets.TERRAFORM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.TERRAFORM_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}
         working-directory: ./azure
       - name: Validate Terraform Project
         run: terraform validate -no-color
+        env:
+          ARM_CLIENT_ID: ${{ secrets.TERRAFORM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.TERRAFORM_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}
         working-directory: ./azure
   reconcile:
     name: "Azure Infrastructure reconciliation"
@@ -56,6 +66,12 @@ jobs:
         working-directory: ./azure
       - name: Select Terraform Workspace
         run: terraform workspace select develop
+        env:
+          ARM_CLIENT_ID: ${{ secrets.TERRAFORM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.TERRAFORM_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}
+        working-directory: ./azure
       - name: Terraform Apply
         run: terraform apply -no-color -auto-approve
         env:
