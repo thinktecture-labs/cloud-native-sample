@@ -10,12 +10,23 @@
 flowchart TD
 
     A[Browse Order Monitor Client] --> B{Is Authenticated?};
-    B -- Yes --> F[Call API Gateway];
-    B -- No --> D[Authentication Service];
+    B -- yes --> F[Call API Gateway];
+    B -- no --> D[Authentication Service];
     D --> E[Authenticate with Azure AD];
-    E -- Token --> D;
-    D -- Token --> A;
-    F ----> G[Order Service]
+    E -- token --> D;
+    D -- token --> A;
+    F -- http --> G[Order Service]
+    F -- http --> H[Products Service]
+```
+
+```mermaid
+flowchart TD
+A[Create Order] -- with token --> B[Call API Gateway];
+    B -- http --> C[Order Service];
+    C -- pub --> D[RabbitMQ];
+    E[Shipping Service] <-- sub -- D;
+    F[Notification Service] <-- sub -- D;
+    F -- ws --> G[Order Management Client]
 ```
 
 ## Docker Compose
