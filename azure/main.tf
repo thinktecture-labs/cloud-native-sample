@@ -58,7 +58,7 @@ data "azuread_client_config" "current" {}
 
 resource "azuread_group" "k8s_admins" {
   display_name     = "Kubernetes Administrators (Cloud-Native Sample)"
-  mail_enabled     = false
+  mail_enabled     = true
   mail_nickname    = "Kubernetes-Administrators"
   security_enabled = true
   types            = ["Unified"]
@@ -70,8 +70,7 @@ resource "azuread_group" "k8s_admins" {
   ]
 
   behaviors = ["HideGroupInOutlook"]
-
-  theme = "Teal"
+  theme     = "Teal"
 }
 
 data "azuread_user" "cw" {
