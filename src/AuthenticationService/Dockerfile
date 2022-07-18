@@ -1,22 +1,22 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-focal AS base
 WORKDIR /app
-EXPOSE 80
+EXPOSE 5000
+RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
+USER appuser
 
-FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0-focal AS build
 WORKDIR /src
-COPY ["nuget.config", "."]
-COPY ["IdentityServer4Demo/IdentityServer4Demo.csproj", "IdentityServer4Demo/"]
-RUN dotnet restore "IdentityServer4Demo/IdentityServer4Demo.csproj"
+
+COPY ["AuthenticationService.csproj", "./"]
+RUN dotnet restore "AuthenticationService.csproj"
+
 COPY . .
-WORKDIR "/src/IdentityServer4Demo"
-RUN dotnet build "IdentityServer4Demo.csproj" -c Release -o /app/build
+RUN dotnet build "AuthenticationService.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "IdentityServer4Demo.csproj" -c Release -o /app/publish
+RUN dotnet publish "AuthenticationService.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "IdentityServer4Demo.dll"]
+ENTRYPOINT ["dotnet", "AuthenticationService.dll"]
