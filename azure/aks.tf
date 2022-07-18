@@ -24,7 +24,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   }
 
   oms_agent {
-    log_analytics_workspace_id = azurerm_log_analytics_workspace.main.workspace_id
+    log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
   }
 
   kubernetes_version = "1.23.8"
