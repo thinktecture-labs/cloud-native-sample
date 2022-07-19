@@ -28,6 +28,10 @@ resource "azurerm_monitor_diagnostic_setting" "diag_acr" {
   metric {
     category = "AllMetrics"
     enabled  = true
+    retention_policy {
+      days    = 90
+      enabled = true
+    }
   }
 }
 
