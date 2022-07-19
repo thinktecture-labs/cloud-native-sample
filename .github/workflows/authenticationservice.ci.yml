@@ -34,9 +34,9 @@ jobs:
           tar zxvf dockle.tar.gz
       - name: Scan Docker Image
         run: |
-          docker save ${{ secrets.ACR_NAME }}.azurecr.io/authentication-service:${{ github.sha }} -o authentication-service.tar
-          ./dockle -o results.json --exit-code 1 --exit-level WARN --input authentication-service.tar
-          result=$(cat result.json)
+          docker save ${{ secrets.ACR_NAME }}.azurecr.io/authentication-service:${{ github.sha }} -o authentication-service.tar \
+          ./dockle -o results.json --exit-code 1 --exit-level WARN --input authentication-service.tar \
+          result=$(cat result.json) \
           echo "::set-output name=value::$result"
       - name: Report Vulnerabilities
         if: ${{ failure() }}
