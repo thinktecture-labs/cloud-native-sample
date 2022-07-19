@@ -12,7 +12,7 @@ internal static class HostingExtensions
     public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddRazorPages();
-
+        builder.Services.AddHealthChecks();
         var isBuilder = builder.Services.AddIdentityServer(options =>
             {
                 options.Events.RaiseErrorEvents = true;
@@ -74,6 +74,8 @@ internal static class HostingExtensions
         app.MapRazorPages()
             .RequireAuthorization();
 
+        app.MapHealthChecks("/healthz/readiness");
+        app.MapHealthChecks("/healthz/liveness");
         return app;
     }
 }
