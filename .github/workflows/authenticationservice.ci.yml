@@ -24,7 +24,38 @@ jobs:
         run: |
           docker build . -t ${{ secrets.ACR_NAME }}.azurecr.io/authentication-service:${{ github.sha }} -t ${{ secrets.ACR_NAME }}.azurecr.io/authentication-service:${{ github.ref_name }}-latest
         working-directory: ./src/AuthenticationService
+      - name: Install Dockle
+        run: |
+          VERSION=$(
+          curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | \
+          grep '"tag_name":' | \
+          sed -E 's/.*"v([^"]+)".*/\1/' \
+          ) && curl -L -o dockle.tar.gz https://github.com/goodwithtech/dockle/releases/download/v${VERSION}/dockle_${VERSION}_Linux-64bit.tar.gz &&  \
+          tar zxvf dockle.tar.gz
+      - name: Scan Docker Image
+        run: |
+          ./dockle -o results.json --exit-code 1 --exit-level WARN ${{ secrets.ACR_NAME }}.azurecr.io/authentication-service:${{ github.sha }}
+          result=$(cat result.json)
+          echo "::set-output name=value::$result"
+      - name: Report Vulnerabilities
+        if: ${{ failure() }}
+        uses: actions-ecosystem/action-create-issue@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          title: Dockle Report for authentication-service:${{ github.sha }}
+          body: |
+            ## Dockle Report for authentication-service:${{ github.sha }}
+
+            ```json
+              ${{ steps.dockle.outputs.result }}
+            ```
+            Container image has not been pushed to Azure Container Registry.
+
+          labels: |
+            meeting
+            weekly
       - name: Push Docker Image
+        if: ${{ success() }}
         run: |
           docker push ${{ secrets.ACR_NAME }}.azurecr.io/authentication-service:${{ github.sha }}
           docker push ${{ secrets.ACR_NAME }}.azurecr.io/authentication-service:${{ github.ref_name }}-latest
