@@ -32,12 +32,15 @@ jobs:
           sed -E 's/.*"v([^"]+)".*/\1/' \
           ) && curl -L -o dockle.tar.gz https://github.com/goodwithtech/dockle/releases/download/v${VERSION}/dockle_${VERSION}_Linux-64bit.tar.gz &&  \
           tar zxvf dockle.tar.gz
+      - name: Save Docker Image
+        run: docker save ${{ secrets.ACR_NAME }}.azurecr.io/authentication-service:${{ github.sha }} -o authentication-service.tar
+        working-directory: /tmp
       - name: Scan Docker Image
         run: |
-          docker save ${{ secrets.ACR_NAME }}.azurecr.io/authentication-service:${{ github.sha }} -o authentication-service.tar \
-          ./dockle -o results.json --exit-code 1 --exit-level WARN --input authentication-service.tar \
-          result=$(cat result.json) \
+          ./dockle -o results.json --exit-code 1 --exit-level WARN --input authentication-service.tar && \
+          result=$(cat result.json) && \
           echo "::set-output name=value::$result"
+        working-directory: /tmp
       - name: Report Vulnerabilities
         if: ${{ failure() }}
         uses: actions-ecosystem/action-create-issue@v1
@@ -53,8 +56,8 @@ jobs:
             Container image has not been pushed to Azure Container Registry.
 
           labels: |
-            meeting
-            weekly
+            containers
+            security
       - name: Push Docker Image
         if: ${{ success() }}
         run: |
