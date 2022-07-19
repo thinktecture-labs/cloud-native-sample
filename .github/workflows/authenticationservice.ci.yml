@@ -47,14 +47,16 @@ jobs:
         uses: actions-ecosystem/action-create-issue@v1
         with:
           github_token: ${{ secrets.github_token }}
-          title: Dockle Report for authentication-service:${{ github.sha }}
+          title: Dockle report for authentication-service
           body: |
-            ## Dockle Report for authentication-service:${{ github.sha }}
+            The container image for Authentication Service (`authentication-service:${{ github.sha }}`) was scanned during CI for ${{ github.sha }} using dockle. Please see the findings mentioned below:
+
+            ## Dockle results
 
             ```json
               ${{ steps.dockle.outputs.result }}
             ```
-            Container image has not been pushed to Azure Container Registry.
+            Container image has **not been pushed** to Azure Container Registry.
 
           labels: |
             containers
