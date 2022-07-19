@@ -20,9 +20,9 @@ jobs:
       - name: Build Docker Image
         run: |
           docker build . -t ${{ secrets.ACR_NAME }}.azurecr.io/authentication-service:${{ github.sha }} -t ${{ secrets.ACR_NAME }}.azurecr.io/authentication-service:${{ github.ref_name }}-latest
-        working-directory: ./src/AuthenticationService
+        working-directory: src/AuthenticationService
       - name: Push Docker Image
         run: |
           docker push ${{ secrets.ACR_NAME }}.azurecr.io/authentication-service:${{ github.sha }}
           docker push ${{ secrets.ACR_NAME }}.azurecr.io/authentication-service:${{ github.ref_name }}-latest
-        working-directory: ./src/AuthenticationService
+        working-directory: src/AuthenticationService
