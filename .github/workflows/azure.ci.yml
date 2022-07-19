@@ -3,7 +3,7 @@ on:
   push:
     branches: ['main']
     paths:
-      - 'azure/**'
+      - 'iac/aks/**'
   workflow_dispatch:
 concurrency:
   group: azure-terraform
@@ -11,7 +11,7 @@ env:
   TERRAFORM_VERSION: 1.2.5
 jobs:
   infra:
-    name: "Automate Azure Infrastructure"
+    name: "Automate Azure (AKS) Infrastructure"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -22,7 +22,7 @@ jobs:
           terraform_version: $TERRAFORM_VERSION
       - name: Check Format
         run: terraform fmt -no-color -check
-        working-directory: ./azure
+        working-directory: ./iac/aks
       - name: Initialize Terraform Project
         run: terraform init
         env:
@@ -30,7 +30,7 @@ jobs:
           ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_CLIENT_SECRET }}
           ARM_TENANT_ID: ${{ secrets.TERRAFORM_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}
-        working-directory: ./azure
+        working-directory: ./iac/aks
       - name: Select Terraform Workspace
         run: terraform workspace select develop
         env:
@@ -38,7 +38,7 @@ jobs:
           ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_CLIENT_SECRET }}
           ARM_TENANT_ID: ${{ secrets.TERRAFORM_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}
-        working-directory: ./azure
+        working-directory: ./iac/aks
       - name: Validate Terraform Project
         run: terraform validate -no-color
         env:
@@ -46,7 +46,7 @@ jobs:
           ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_CLIENT_SECRET }}
           ARM_TENANT_ID: ${{ secrets.TERRAFORM_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}
-        working-directory: ./azure
+        working-directory: ./iac/aks
       - name: Terraform Apply
         run: terraform apply -no-color -auto-approve
         env:
@@ -54,4 +54,4 @@ jobs:
           ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_CLIENT_SECRET }}
           ARM_TENANT_ID: ${{ secrets.TERRAFORM_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}
-        working-directory: ./azure
+        working-directory: ./iac/aks
