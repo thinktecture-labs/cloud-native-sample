@@ -101,7 +101,7 @@ jobs:
           kubelogin convert-kubeconfig -l azurecli
       - name: Deploy Authentication Service
         run: |
-          helm upgrade --install "authentication-service" ./charts/authentication-service \
+          helm upgrade --install "authentication-service" ./charts/authentication \
           -n cloud-native-sample --create-namespace \
           --set image.repository=${{ secrets.ACR_NAME}}.azurecr.io/authentication-service \
           --set image.tag=${{ github.sha }}
