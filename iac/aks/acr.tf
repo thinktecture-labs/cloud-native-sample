@@ -21,7 +21,7 @@ resource "azurerm_container_registry_token" "gh" {
   container_registry_name = azurerm_container_registry.main.name
   resource_group_name     = azurerm_resource_group.main.name
   scope_map_id            = data.azurerm_container_registry_scope_map.map_push.id
-  name                    = "GitHub Actions"
+  name                    = "GitHub-Actions"
   enabled                 = true
   depends_on = [
     data.azurerm_container_registry_scope_map.map_push
