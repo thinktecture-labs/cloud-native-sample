@@ -32,6 +32,7 @@ jobs:
           sed -E 's/.*"v([^"]+)".*/\1/' \
           ) && curl -L -o dockle.tar.gz https://github.com/goodwithtech/dockle/releases/download/v${VERSION}/dockle_${VERSION}_Linux-64bit.tar.gz &&  \
           tar zxvf dockle.tar.gz
+        working-directory: /tmp
       - name: Save Docker Image
         run: docker save ${{ secrets.ACR_NAME }}.azurecr.io/authentication-service:${{ github.sha }} -o authentication-service.tar
         working-directory: /tmp
