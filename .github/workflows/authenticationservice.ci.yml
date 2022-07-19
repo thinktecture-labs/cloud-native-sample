@@ -39,7 +39,7 @@ jobs:
       - name: Scan Docker Image
         run: |
           ./dockle -o results.json --exit-code 1 --exit-level WARN --input authentication-service.tar && \
-          result=$(cat result.json) && \
+          result=$(cat results.json) && \
           echo "::set-output name=value::$result"
         working-directory: /tmp
       - name: Report Vulnerabilities
