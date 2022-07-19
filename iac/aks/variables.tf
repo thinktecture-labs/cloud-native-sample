@@ -9,3 +9,13 @@ variable "custom_tags" {
   default     = {}
   description = "Custom Azure Tags assigned to Azure resources"
 }
+
+variable "acr_name" {
+  type        = string
+  description = "Desired ACR instance name"
+}
+
+variable "acr_token_name" {
+  type        = string
+  description = "Desired ACR token name"
+}

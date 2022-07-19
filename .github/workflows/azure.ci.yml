@@ -13,6 +13,9 @@ jobs:
   infra:
     name: "Automate Azure (AKS) Infrastructure"
     runs-on: ubuntu-latest
+    env:
+      TF_VAR_acr_name: ${{ secrets.ACR_NAME }}
+      TF_VAR_acr_token_name: ${{ secrets.ACR_TOKEN_NAME }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
