@@ -30,10 +30,9 @@ resource "azurerm_container_registry_token" "gh" {
 
 resource "azurerm_monitor_diagnostic_setting" "diag_acr" {
 
-  name                           = "diag-acr-${azurerm_container_registry.main.name}-${terraform.workspace}"
-  log_analytics_workspace_id     = azurerm_log_analytics_workspace.main.id
-  log_analytics_destination_type = "Dedicated"
-  target_resource_id             = azurerm_container_registry.main.id
+  name                       = "diag-acr-${azurerm_container_registry.main.name}-${terraform.workspace}"
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
+  target_resource_id         = azurerm_container_registry.main.id
 
   log {
     category = "ContainerRegistryLoginEvents"

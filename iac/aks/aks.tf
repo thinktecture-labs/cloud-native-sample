@@ -39,3 +39,10 @@ resource "azurerm_role_assignment" "aks_cluster_admin" {
   role_definition_name = "Azure Kubernetes Service RBAC Cluster Admin"
   principal_id         = data.azurerm_client_config.current.object_id
 }
+
+resource "azurerm_role_assignment" "aks_reader" {
+  scope                = azurerm_kubernetes_cluster.main.id
+  role_definition_name = "Azure Kubernetes Service RBAC Reader"
+  principal_id         = azuread_group.k8s_admins.object_id
+}
+
