@@ -5,6 +5,8 @@ on:
     paths:
       - 'azure/**'
   workflow_dispatch:
+concurrency:
+  group: azure-terraform
 env:
   TERRAFORM_VERSION: 1.2.5
 jobs:
