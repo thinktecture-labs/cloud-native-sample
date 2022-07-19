@@ -8,6 +8,26 @@ resource "azurerm_container_registry" "main" {
   tags                   = local.tags
 }
 
+data "azurerm_container_registry_scope_map" "map_push" {
+  container_registry_name = azurerm_container_registry.main.name
+  resource_group_name     = azurerm_resource_group.main.name
+  name                    = "_repositories_push"
+  depends_on = [
+    azurerm_container_registry.main
+  ]
+}
+
+resource "azurerm_container_registry_token" "gh" {
+  container_registry_name = azurerm_container_registry.main.name
+  resource_group_name     = azurerm_resource_group.main.name
+  scope_map_id            = data.azurerm_container_registry_scope_map.map_push.id
+  name                    = "GitHub Actions"
+  enabled                 = true
+  depends_on = [
+    data.azurerm_container_registry_scope_map.map_push
+  ]
+}
+
 resource "azurerm_monitor_diagnostic_setting" "diag_acr" {
 
   name                           = "diag-acr-${azurerm_container_registry.main.name}-${terraform.workspace}"
