@@ -4,7 +4,7 @@ on:
     branches:
       - "main"
     paths:
-      - "src/AuthenticationService"
+      - "src/AuthenticationService/**"
       - "charts/authenticationservice/**"
       - ".github/workflows/authenticationservice.*.yml"
   workflow_dispatch:
