@@ -22,7 +22,7 @@ jobs:
           password: ${{ secrets.ACR_TOKEN_PASSWORD }}
       - name: Build Docker Image
         run: |
-          docker build . -t ${{ secrets.ACR_NAME }}.azurecr.io/authentication-service:${{ github.sha }} -t ${{ secrets.ACR_NAME }}.azurecr.io/authentication-service:${{ github.ref_name }}-latest
+          docker build . -t authentication-service:${{ github.sha }} -t ${{ secrets.ACR_NAME }}.azurecr.io/authentication-service:${{ github.sha }} -t ${{ secrets.ACR_NAME }}.azurecr.io/authentication-service:${{ github.ref_name }}-latest
         working-directory: ./src/AuthenticationService
       - name: Install Dockle
         run: |
@@ -34,7 +34,7 @@ jobs:
           tar zxvf dockle.tar.gz
       - name: Scan Docker Image
         run: |
-          ./dockle -o results.json --exit-code 1 --exit-level WARN ${{ secrets.ACR_NAME }}.azurecr.io/authentication-service:${{ github.sha }}
+          ./dockle -o results.json --exit-code 1 --exit-level WARN authentication-service:${{ github.sha }}
           result=$(cat result.json)
           echo "::set-output name=value::$result"
       - name: Report Vulnerabilities
