@@ -18,11 +18,19 @@ resource "azurerm_monitor_diagnostic_setting" "diag_acr" {
   log {
     category = "ContainerRegistryLoginEvents"
     enabled  = true
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
   }
 
   log {
     category = "ContainerRegistryRepositoryEvents"
     enabled  = true
+    retention_policy {
+      days    = 90
+      enabled = true
+    }
   }
 
   metric {
