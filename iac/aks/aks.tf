@@ -40,9 +40,14 @@ resource "azurerm_role_assignment" "aks_cluster_admin" {
   principal_id         = data.azurerm_client_config.current.object_id
 }
 
+
+locals {
+  namespaces = ["default", "kube-system", "cloud-native-sample", "ingress"]
+}
+
 resource "azurerm_role_assignment" "aks_reader" {
-  scope                = azurerm_kubernetes_cluster.main.id
+  for_each             = toset(local.namespaces)
+  scope                = "${azurerm_kubernetes_cluster.main.id}/namespaces/${each.key}"
   role_definition_name = "Azure Kubernetes Service RBAC Reader"
   principal_id         = azuread_group.k8s_admins.object_id
 }
-
