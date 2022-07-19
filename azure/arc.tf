@@ -26,12 +26,7 @@ resource "azurerm_monitor_diagnostic_setting" "diag_acr" {
   }
 
   metric {
-    category = "TotalPullCount"
-    enabled  = true
-  }
-
-  metric {
-    category = "TotalPushCount"
+    category = "AllMetrics"
     enabled  = true
   }
 }
