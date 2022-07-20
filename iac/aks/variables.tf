@@ -28,7 +28,7 @@ variable "dns_zone" {
   })
 
   default = {
-    name = "thinktecture-demos.com"
+    name                = "thinktecture-demos.com"
     resource_group_name = "rg-research"
   }
 }
