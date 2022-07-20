@@ -5,7 +5,7 @@ on:
       - "main"
     paths:
       - "src/AuthenticationService/**"
-      - "charts/authenticationservice/**"
+      - "charts/authentication/**"
       - ".github/workflows/authenticationservice.*.yml"
   workflow_dispatch:
 jobs:
