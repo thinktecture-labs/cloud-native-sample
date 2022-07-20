@@ -1,4 +1,4 @@
-name: Azure Infrastructure CI
+name: "CI/CD: Azure Infrastructure"
 on:
   push:
     branches: ['main']
