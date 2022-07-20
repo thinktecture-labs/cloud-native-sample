@@ -1,0 +1,6 @@
+issuerName: letsencrypt-prod
+ingressClassName: nginx
+
+acme:
+  mail: thorsten.hans@thinktecture.com
+  apiEndpoint: https://acme-v02.api.letsencrypt.org/directory
