@@ -51,3 +51,10 @@ resource "azurerm_role_assignment" "aks_reader" {
   role_definition_name = "Azure Kubernetes Service RBAC Reader"
   principal_id         = azuread_group.k8s_admins.object_id
 }
+//kube_admin_config
+
+// todo: deploy ingress-nginx
+module "k8s" {
+  source      = "./modules/k8s"
+  kube_config = azurerm_kubernetes_cluster.main.kube_admin_config.0
+}
