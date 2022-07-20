@@ -50,7 +50,7 @@ ingress:
   tls: 
    - secretName: cn-sample-ingress-cert
      hosts:
-     - cn.thinktecture.com
+     - cn.thinktecture-demos.com
 
 resources: 
   limits:
