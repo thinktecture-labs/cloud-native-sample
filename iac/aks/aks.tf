@@ -58,3 +58,12 @@ module "k8s" {
   source      = "./modules/k8s"
   kube_config = azurerm_kubernetes_cluster.main.kube_admin_config.0
 }
+
+module "dns" {
+  source = "./modules/dns"
+
+  dns_zone_name                = var.dns_zone.name
+  dns_zone_resource_group_name = var.dns_zone.resource_group_name
+  ingress_ip                   = module.k8s.ingress_ip
+
+}
