@@ -19,5 +19,5 @@ RUN dotnet publish "AuthenticationService.csproj" -c Release -o /app/publish /p:
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --chown=appuser --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "AuthenticationService.dll"]
