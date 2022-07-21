@@ -28,13 +28,14 @@ internal static class HostingExtensions
  
                 options.EmitStaticAudienceClaim = true;
             })
-            .AddTestUsers(new List<Duende.IdentityServer.Test.TestUser> { });
+            .AddTestUsers(TestUserProvider.GetAll());
 
         var cfg = builder.Configuration.GetSection("IdentityServer").Get<IdentityServerConfig>();
         // in-memory, code config
         isBuilder.AddInMemoryIdentityResources(IdentityResourcesProvider.GetAll);
         isBuilder.AddInMemoryApiScopes(ApiScopesProvider.GetAll);
         isBuilder.AddInMemoryClients(ClientsProvider.GetAll(cfg.InteractiveClient));
+        
 
         builder.Services.AddAuthentication()
             .AddOpenIdConnect("azuread", "Sign-in with Azure AD", options =>
