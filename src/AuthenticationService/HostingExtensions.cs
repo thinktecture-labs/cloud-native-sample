@@ -59,6 +59,12 @@ internal static class HostingExtensions
 
     public static WebApplication ConfigurePipeline(this WebApplication app)
     {
+        var cfg = app.Configuration.GetSection("IdentityServer").Get<IdentityServerConfig>();
+        if (!string.IsNullOrWhiteSpace(cfg.VirtualPath)){
+            app.UsePathBase(cfg.VirtualPath);
+        }
+        app.UseForwardedHeaders();
+        
         app.UseSerilogRequestLogging();
 
         if (app.Environment.IsDevelopment())

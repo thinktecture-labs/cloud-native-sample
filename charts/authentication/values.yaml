@@ -3,7 +3,6 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 2
-
 image:
   repository: nginx
   pullPolicy: IfNotPresent
@@ -45,7 +44,8 @@ ingress:
   hosts:
     - host: cn.thinktecture-demos.com
       paths:
-        - path: /login(/|$)(.*)
+        - path: /login
+          pathExt: (/|$)(.*)
           pathType: Prefix
   tls: 
    - secretName: cn-sample-ingress-cert
