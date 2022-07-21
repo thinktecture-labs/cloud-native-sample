@@ -10,9 +10,14 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddHttpClient("OrderMonitor", c =>
-    c.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
-    .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
+builder.Services.AddHttpClient("OrderMonitor")
+    .AddHttpMessageHandler(sp =>
+    {
+        var handler = sp.GetService<AuthorizationMessageHandler>()
+            .ConfigureHandler(
+                authorizedUrls: new[] { "http://localhost:5009" });
+        return handler;
+    });
 
 builder.Services.AddScoped(services => services.GetRequiredService<IHttpClientFactory>()
     .CreateClient("OrderMonitor"));

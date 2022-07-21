@@ -22,9 +22,9 @@ internal static class HostingExtensions
         var isBuilder = builder.Services.AddIdentityServer(options =>
             {
                 options.Events.RaiseErrorEvents = true;
-                options.Events.RaiseInformationEvents = true;
+                //options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
-                options.Events.RaiseSuccessEvents = true;
+                //options.Events.RaiseSuccessEvents = true;
  
                 options.EmitStaticAudienceClaim = true;
             })
