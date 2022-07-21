@@ -40,12 +40,10 @@ ingress:
   className: "nginx"
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
   hosts:
     - host: cn.thinktecture-demos.com
       paths:
         - path: /login
-          pathExt: (/|$)(.*)
           pathType: Prefix
   tls: 
    - secretName: cn-sample-ingress-cert
