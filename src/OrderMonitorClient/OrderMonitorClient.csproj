@@ -14,14 +14,22 @@
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.4" PrivateAssets="all" />
 		<PackageReference Include="MudBlazor" Version="6.0.10" />
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.4" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.7" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="6.0.7" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
 	</ItemGroup>
 	
 	
 	<ItemGroup>
 	  <None Remove="Microsoft.AspNetCore.SignalR.Client" />
 	  <None Remove="Models\" />
+	  <None Remove="Microsoft.AspNetCore.Components.Authorization" />
+	  <None Remove="Microsoft.AspNetCore.Components.WebAssembly.Authentication" />
+	  <None Remove="Authentication\" />
+	  <None Remove="Microsoft.Extensions.Http" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Models\" />
+	  <Folder Include="Authentication\" />
 	</ItemGroup>
 </Project>
