@@ -128,7 +128,7 @@ services:
     container_name: orders-dapr
     command: [ "./daprd",
                "-app-id", "orders",
-               "-app-port", "5002",
+               "-app-port", "5000",
                "-dapr-http-port", "9002",
                "-dapr-grpc-port", "10002",
                "-components-path", "/dapr/components",
@@ -158,7 +158,7 @@ services:
     container_name: products-dapr
     command: [ "./daprd",
                "-app-id", "products",
-               "-app-port", "5001",
+               "-app-port", "5000",
                "-dapr-http-port", "9001",
                "-dapr-grpc-port", "10001",
                "-components-path", "/dapr/components",
@@ -189,7 +189,7 @@ services:
     container_name: notification-dapr
     command: [ "./daprd",
                "-app-id", "notification",
-               "-app-port", "5004",
+               "-app-port", "5000",
                "-dapr-http-port", "9004",
                "-dapr-grpc-port", "10004",
                "-components-path", "/dapr/components",
@@ -221,7 +221,7 @@ services:
     container_name: shipping-dapr
     command: [ "./daprd",
                "-app-id", "shipping",
-               "-app-port", "5003",
+               "-app-port", "5000",
                "-dapr-http-port", "9003",
                "-dapr-grpc-port", "10003",
                "-components-path", "/dapr/components",
