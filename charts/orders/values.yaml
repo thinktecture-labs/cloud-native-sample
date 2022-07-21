@@ -8,7 +8,7 @@ image:
   repository: thinktecturedev.azurecr.io/cloud-native/ordersservice
   pullPolicy: IfNotPresent
   tag: "local-x64-0.0.2"
-containerPort: 5002
+containerPort: 5000
 
 imagePullSecrets: []
 nameOverride: ""

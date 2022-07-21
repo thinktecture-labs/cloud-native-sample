@@ -22,7 +22,7 @@ type cloudEvent struct {
 }
 
 const (
-	defaultPort = 5003
+	defaultPort = 5000
 )
 
 func main() {

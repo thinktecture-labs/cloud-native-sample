@@ -5,11 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: thinktecturedev.azurecr.io/cloud-native/notificationservice
+  repository: nginx
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "local-x64-0.0.1"
-containerPort: 5004
+  tag: "alpine"
+containerPort: 5000
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
