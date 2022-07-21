@@ -9,7 +9,7 @@ image:
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "local-x64-0.0.2"
-containerPort: 5001
+containerPort: 5000
 
 imagePullSecrets: []
 nameOverride: ""
