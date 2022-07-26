@@ -6,7 +6,7 @@ EXPOSE 5000
 ENV ASPNETCORE_URLS=http://+:5000
 
 FROM base AS base-release
-RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app /remote_debugger
+RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
 FROM base AS base-debug
