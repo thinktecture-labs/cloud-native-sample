@@ -15,6 +15,12 @@ terraform {
       version = ">= 2.12.1"
     }
   }
+    backend "azurerm" {
+        storage_account_name = "sattcnsample2022"
+        container_name       = "iac"
+        key                  = "k8s.terraform.tfstate"
+        use_azuread_auth     = true
+  }
 }
 
 provider "azurerm" {

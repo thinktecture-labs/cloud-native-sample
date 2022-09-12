@@ -1,0 +1,67 @@
+name: "CI/CD: Kubernetes cluster-wide services"
+on:
+  push:
+    branches: ['main']
+    paths:
+      - 'iac/kubernetes/**'
+      - '.github/workflows/k8s.cluster-wide.cd.yml'
+  workflow_dispatch:
+env:
+  TERRAFORM_VERSION: 1.2.8
+jobs:
+  infra:
+    name: "Deploy cluster-wide services to k8s"
+    runs-on: ubuntu-latest
+    env:
+      TF_VAR_acr_name: ${{ secrets.ACR_NAME }}
+      TF_VAR_acr_token_name: ${{ secrets.ACR_TOKEN_NAME }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2.0.0
+        with:
+          terraform_version: $TERRAFORM_VERSION
+      - name: Setup kubelogin
+        run: |
+          curl -LO https://github.com/Azure/kubelogin/releases/download/v0.0.20/kubelogin-linux-amd64.zip
+          sudo unzip -j kubelogin-linux-amd64.zip -d /usr/local/bin
+          rm -f kubelogin-linux-amd64.zip
+          kubelogin --version
+      - name: 'az CLI login'
+        uses: azure/login@v1
+        with:
+          creds: '{"clientId":"${{ secrets.TERRAFORM_CLIENT_ID }}","clientSecret":"${{ secrets.TERRAFORM_CLIENT_SECRET }}","subscriptionId":"${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.TERRAFORM_TENANT_ID }}"}'
+      - uses: azure/aks-set-context@v3
+        with:
+          resource-group: 'rg-cloud-native-sample-develop'
+          cluster-name: 'aks-cloud-native-sample'
+          admin: 'false'
+          use-kubelogin: 'true'
+      - name: Check Format
+        run: terraform fmt -no-color -check
+        working-directory: ./iac/kubernetes
+      - name: Initialize Terraform Project
+        run: terraform init --upgrade
+        env:
+          ARM_CLIENT_ID: ${{ secrets.TERRAFORM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.TERRAFORM_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}
+        working-directory: ./iac/kubernetes
+      - name: Validate Terraform Project
+        run: terraform validate -no-color
+        env:
+          ARM_CLIENT_ID: ${{ secrets.TERRAFORM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.TERRAFORM_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}
+        working-directory: ./iac/kubernetes
+      - name: Terraform Apply
+        run: terraform apply -no-color -auto-approve
+        env:
+          ARM_CLIENT_ID: ${{ secrets.TERRAFORM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.TERRAFORM_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}
+        working-directory: ./iac/kubernetes

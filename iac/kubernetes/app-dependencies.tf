@@ -1,4 +1,3 @@
-// helm release for rabbitmq
 resource "helm_release" "rabbitmq" {
   name       = "rabbit"
   repository = "https://charts.bitnami.com/bitnami"
@@ -9,7 +8,6 @@ resource "helm_release" "rabbitmq" {
   create_namespace = true
 }
 
-//helm release for dapr
 resource "helm_release" "dapr" {
   name             = "dapr"
   repository       = "https://dapr.github.io/helm-charts/"
@@ -17,7 +15,3 @@ resource "helm_release" "dapr" {
   namespace        = "dapr-system"
   create_namespace = true
 }
-
-
-// dapr components must have explicit dependency on dapr helm release
-// dapr helm release installs CRDs in the cluster
