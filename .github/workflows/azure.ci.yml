@@ -27,7 +27,7 @@ jobs:
         run: terraform fmt -no-color -check
         working-directory: ./iac/azure
       - name: Initialize Terraform Project
-        run: terraform init
+        run: terraform init --upgrade
         env:
           ARM_CLIENT_ID: ${{ secrets.TERRAFORM_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_CLIENT_SECRET }}
