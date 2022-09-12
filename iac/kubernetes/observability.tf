@@ -2,7 +2,7 @@
 resource "helm_release" "zipkin" {
   name             = "cn-zipkin"
   repository       = "https://financial-times.github.io/zipkin-helm/docs"
-  chart            = "zipkin"
+  chart            = "zipkin-helm"
   timeout          = 600
   namespace        = "zipkin"
   create_namespace = true
