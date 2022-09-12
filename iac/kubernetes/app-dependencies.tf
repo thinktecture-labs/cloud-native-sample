@@ -17,3 +17,42 @@ resource "helm_release" "dapr" {
   namespace        = "dapr-system"
   create_namespace = true
 }
+
+resource "kubernetes_ingress_v1" "dapr_dashboard" {
+  depends_on = [
+    helm_release.dapr
+  ]
+
+  metadata {
+    name      = "dapr-dashboard"
+    namespace = "dapr-system"
+    annotations = {
+      "kubernetes.io/ingress.class" = "nginx"
+    }
+  }
+  spec {
+    ingress_class_name = "nginx"
+    tls {
+      secret_name = "dapr-dashboard-tls"
+      hosts       = ["cn-dapr.thinktecture-demos.com"]
+    }
+    rule {
+      host = "cn-dapr.thinktecture-demos.com"
+      http {
+        path {
+          path      = "/"
+          path_type = "Prefix"
+          backend {
+            service {
+              name = "dapr-dashboard"
+              port {
+                number = 8080
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+}

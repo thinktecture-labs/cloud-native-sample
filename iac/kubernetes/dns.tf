@@ -24,3 +24,12 @@ resource "azurerm_dns_a_record" "zipkin" {
   ttl                 = 300
   records             = [data.kubernetes_service.ing.status.0.load_balancer.0.ingress.0.ip]
 }
+
+resource "azurerm_dns_a_record" "dapr_dashboard" {
+  count               = var.dns_zone.deploy_dns ? 1 : 0
+  name                = "cn-dapr"
+  zone_name           = var.dns_zone.name
+  resource_group_name = var.dns_zone.resource_group_name
+  ttl                 = 300
+  records             = [data.kubernetes_service.ing.status.0.load_balancer.0.ingress.0.ip]
+}
