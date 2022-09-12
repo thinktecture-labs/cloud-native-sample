@@ -12,7 +12,7 @@ resource "helm_release" "grafana" {
   }
 
   set {
-    name  = "ingress.hosts[0].host"
+    name  = "ingress.hosts[0]"
     value = "cn-grafana.thinktecture-demos.com"
   }
 
