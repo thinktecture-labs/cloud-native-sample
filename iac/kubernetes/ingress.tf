@@ -5,6 +5,11 @@ resource "helm_release" "ingress" {
   timeout          = 600
   namespace        = "ingress"
   create_namespace = true
+
+  set {
+    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-health-probe-request-path"
+    value = "/healthz"
+  }
 }
 
 data "kubernetes_service" "ing" {
