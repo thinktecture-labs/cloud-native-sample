@@ -6,6 +6,8 @@ on:
       - 'iac/kubernetes/**'
       - '.github/workflows/k8s.cluster-wide.cd.yml'
   workflow_dispatch:
+concurrency:
+  group: k8s-terraform
 env:
   TERRAFORM_VERSION: 1.2.8
 jobs:
@@ -38,6 +40,8 @@ jobs:
           cluster-name: 'aks-cloud-native-sample'
           admin: 'false'
           use-kubelogin: 'true'
+      - name: Set KUBE_CONFIG_PATH tp KUBECONFIG
+        run: KUBE_CONFIG_PATH=$KUBECONFIG
       - name: Check Format
         run: terraform fmt -no-color -check
         working-directory: ./iac/kubernetes
