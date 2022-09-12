@@ -22,12 +22,12 @@ resource "helm_release" "grafana" {
   }
 
   set {
-    name  = "ingres.tls[0].secretName"
+    name  = "ingress.tls[0].secretName"
     value = "grafanatls"
   }
 
   set {
-    name  = "ingress.annotations.kubernetes\\.io/ingress\\.class"
+    name  = "ingress.ingressClassName"
     value = "nginx"
   }
 

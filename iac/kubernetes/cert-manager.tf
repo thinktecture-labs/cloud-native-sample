@@ -12,7 +12,6 @@ resource "helm_release" "certmanager" {
   }
 }
 
-
 resource "kubernetes_manifest" "clusterissuer" {
   manifest = {
     "apiVersion" = "cert-manager.io/v1"
