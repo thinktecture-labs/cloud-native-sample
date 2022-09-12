@@ -41,7 +41,7 @@ jobs:
           admin: 'false'
           use-kubelogin: 'true'
       - name: Set KUBE_CONFIG_PATH tp KUBECONFIG
-        run: KUBE_CONFIG_PATH=$KUBECONFIG
+        run: echo "KUBE_CONFIG_PATH=${KUBECONFIG}" >> $GITHUB_ENV
       - name: Check Format
         run: terraform fmt -no-color -check
         working-directory: ./iac/kubernetes
