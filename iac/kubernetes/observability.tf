@@ -64,7 +64,7 @@ resource "helm_release" "grafana" {
   create_namespace = true
 
   set {
-    name  = "ingrss.enabled"
+    name  = "ingress.enabled"
     value = "true"
   }
 
