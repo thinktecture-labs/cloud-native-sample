@@ -8,7 +8,7 @@ on:
 concurrency:
   group: azure-terraform
 env:
-  TERRAFORM_VERSION: 1.2.5
+  TERRAFORM_VERSION: 1.2.8
 jobs:
   infra:
     name: "Automate Azure (AKS) Infrastructure"
