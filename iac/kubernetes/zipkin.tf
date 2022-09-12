@@ -52,3 +52,33 @@ resource "kubernetes_service" "zipkin" {
   }
 }
 
+resource "kubernetes_ingress_v1" "zipkin" {
+  metadata {
+    name      = "zipkin"
+    namespace = kubernetes_namespace.zipkin.metadata[0].name
+  }
+  spec {
+    ingress_class_name = "nginx"
+    tls {
+      hosts       = ["cn-zipkin.thinktecture-demos.com"]
+      secret_name = "zipkin-tls"
+    }
+    rule {
+      host = "cn-zipkin.thinktecture-demos.com"
+      http {
+        path {
+          path      = "/"
+          path_type = "Prefix"
+          backend {
+            service {
+              name = kubernetes_service.zipkin.metadata[0].name
+              port {
+                number = kubernetes_service.zipkin.spec[0].port[0].port
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
