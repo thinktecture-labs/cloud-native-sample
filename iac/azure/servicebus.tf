@@ -7,6 +7,6 @@ resource "azurerm_servicebus_namespace" "main" {
 }
 
 resource "azurerm_servicebus_queue" "main" {
-  name                = "queue-orders"
+  name         = "queue-orders"
   namespace_id = azurerm_servicebus_namespace.main.id
 }

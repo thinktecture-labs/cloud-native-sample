@@ -11,6 +11,6 @@ data "azuread_user" "thh" {
 }
 
 data "azurerm_kubernetes_service_versions" "latest" {
-  location = var.location
+  location        = var.location
   include_preview = false
 }

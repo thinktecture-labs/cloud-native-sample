@@ -3,8 +3,8 @@ resource "azurerm_kubernetes_cluster" "main" {
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   dns_prefix          = "cnsample"
-  kubernetes_version = data.azurerm_kubernetes_service_versions.latest.latest_version
-  sku_tier           = "Free"
+  kubernetes_version  = data.azurerm_kubernetes_service_versions.latest.latest_version
+  sku_tier            = "Free"
 
   identity {
     type = "SystemAssigned"
