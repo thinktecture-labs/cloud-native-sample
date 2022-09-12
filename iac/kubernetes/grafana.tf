@@ -27,12 +27,12 @@ resource "helm_release" "grafana" {
   }
 
   set {
-    name  = "ingress.annotations.kubernetes.io/ingress.class"
+    name  = "ingress.annotations.kubernetes\\.io/ingress\\.class"
     value = "nginx"
   }
 
   set {
-    name  = "ingress.annotations.cert-manager.io/cluster-issuer"
+    name  = "ingress.annotations.cert-manager\\.io/cluster-issuer"
     value = "letsencrypt-prod"
   }
 }
