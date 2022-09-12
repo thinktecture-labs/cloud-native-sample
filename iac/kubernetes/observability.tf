@@ -3,6 +3,7 @@ resource "helm_release" "zipkin" {
   name             = "cn-zipkin"
   repository       = "https://financial-times.github.io/zipkin-helm/docs"
   chart            = "zipkin"
+  timeout          = 600
   namespace        = "zipkin"
   create_namespace = true
 }
@@ -12,6 +13,7 @@ resource "helm_release" "grafana" {
   name             = "cn-grafana"
   repository       = "https://grafana.github.io/helm-charts"
   chart            = "grafana"
+  timeout          = 600
   namespace        = "grafana"
   create_namespace = true
 

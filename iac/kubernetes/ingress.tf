@@ -2,6 +2,7 @@ resource "helm_release" "ingress" {
   name             = "cn-ingress"
   repository       = "https://kubernetes.github.io/ingress-nginx"
   chart            = "ingress-nginx"
+  timeout          = 600
   namespace        = "ingress"
   create_namespace = true
 }
