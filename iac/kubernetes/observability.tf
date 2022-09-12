@@ -128,6 +128,6 @@ resource "helm_release" "grafana_promtail" {
 
   set {
     name  = "config.lokiAddress"
-    value = "xxx"
+    value = "http://${helm_release.grafana_loki.name}.${helm_release.grafana_loki.namespace}.svc.cluster.local:3100/loki/api/v1/push"
   }
 }
