@@ -40,6 +40,11 @@ resource "helm_release" "grafana_loki" {
   chart            = "loki"
   namespace        = "loki"
   create_namespace = true
+
+  set {
+    name  = "loki.storage.type"
+    value = "filesystem"
+  }
 }
 
 // helm release grafana promtail
