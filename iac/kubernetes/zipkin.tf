@@ -56,6 +56,9 @@ resource "kubernetes_ingress_v1" "zipkin" {
   metadata {
     name      = "zipkin"
     namespace = kubernetes_namespace.zipkin.metadata[0].name
+    annotations = {
+      "cert-manager.io/cluster-issuer" = "letsencrypt-prod"
+    }
   }
   spec {
     ingress_class_name = "nginx"
