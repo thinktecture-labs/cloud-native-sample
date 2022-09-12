@@ -4,6 +4,7 @@ on:
     branches: ['main']
     paths:
       - 'iac/azure/**'
+      - '.github/workflows/azure.ci.yml'
   workflow_dispatch:
 concurrency:
   group: azure-terraform
