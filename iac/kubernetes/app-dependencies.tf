@@ -27,7 +27,7 @@ resource "kubernetes_ingress_v1" "dapr_dashboard" {
     name      = "dapr-dashboard"
     namespace = "dapr-system"
     annotations = {
-      "kubernetes.io/ingress.class" = "nginx"
+      "cert-manager.io/cluster-issuer" = "letsencrypt-prod"
     }
   }
   spec {
