@@ -12,13 +12,22 @@ internal static class HostingExtensions
 {
     public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
     {
+        // IMPORTANT: change this for non-local dev/test
+        builder.Services.Configure<CookiePolicyOptions>(options =>
+        {
+            options.Secure = CookieSecurePolicy.None;
+            options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
+        });
+
         builder.Services.Configure<ForwardedHeadersOptions>(options =>
         {
             options.ForwardedHeaders =
                 ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
         });
+
         builder.Services.AddRazorPages();
         builder.Services.AddHealthChecks();
+        
         var isBuilder = builder.Services.AddIdentityServer(options =>
             {
                 options.Events.RaiseErrorEvents = true;
@@ -27,6 +36,9 @@ internal static class HostingExtensions
                 //options.Events.RaiseSuccessEvents = true;
  
                 options.EmitStaticAudienceClaim = true;
+
+                // IMPORTANT: change this for non-local dev/test
+                options.Authentication.CookieSameSiteMode = SameSiteMode.Unspecified;
             })
             .AddTestUsers(TestUserProvider.GetAll());
 
@@ -78,6 +90,9 @@ internal static class HostingExtensions
         {
             app.UseDeveloperExceptionPage();
         }
+
+        // IMPORTANT: change this for non-local dev/test
+        app.UseCookiePolicy();
 
         app.UseStaticFiles();
         app.UseRouting();
