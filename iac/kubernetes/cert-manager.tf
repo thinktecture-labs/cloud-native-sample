@@ -11,3 +11,37 @@ resource "helm_release" "certmanager" {
     value = "true"
   }
 }
+
+
+resource "kubernetes_manifest" "clusterissuer" {
+  manifest = {
+    "apiVersion" = "cert-manager.io/v1"
+    "kind"       = "ClusterIssuer"
+    "metadata" = {
+      "name" = "letsencrypt-prod"
+    }
+    "spec" = {
+      "acme" = {
+        "email" = "thorsten.hans@thinktecture.com"
+        "privateKeySecretRef" = {
+          "name" = "letsencrypt-prod"
+        }
+        "server" = "https://acme-v02.api.letsencrypt.org/directory"
+        "solvers" = [
+          {
+            "http01" = {
+              "ingress" = {
+                "class" = "nginx"
+              }
+            }
+          },
+        ]
+      }
+    }
+  }
+
+  depends_on = [
+    helm_release.certmanager
+  ]
+
+}
