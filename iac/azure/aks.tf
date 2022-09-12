@@ -1,6 +1,7 @@
 resource "azurerm_kubernetes_cluster" "main" {
   name                = "aks-cloud-native-sample"
   resource_group_name = azurerm_resource_group.main.name
+  node_resource_group = "${azurerm_resource_group.main.name}-nrg"
   location            = azurerm_resource_group.main.location
   dns_prefix          = "cnsample"
   kubernetes_version  = data.azurerm_kubernetes_service_versions.latest.latest_version
