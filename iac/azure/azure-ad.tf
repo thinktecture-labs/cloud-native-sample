@@ -1,7 +1,7 @@
 resource "azuread_group" "k8s_admins" {
   display_name     = "Kubernetes Administrators (Cloud-Native Sample)"
   mail_enabled     = true
-  mail_nickname    = "Kubernetes-Administrators"
+  mail_nickname    = "Kubernetes-Administrators-CNSample"
   security_enabled = true
   types            = ["Unified"]
 
