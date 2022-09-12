@@ -4,23 +4,18 @@
 echo "Work, Work! 🚧"
 
 echo " - 💄 Formatting top level module"
+cd azure
 terraform fmt
+cd ..
 
 cd state
 echo " - 💄 Formatting state module"
 terraform fmt
 cd ..
-cd modules
 
-cd k8s
+cd kubernetes
 echo " - 💄 Formatting Kubernetes module"
 terraform fmt
-cd ..
-
-cd dns
-echo " - 💄 Formatting DNS module"
-terraform fmt
-cd ..
 cd ..
 
 echo "All done! ✅"

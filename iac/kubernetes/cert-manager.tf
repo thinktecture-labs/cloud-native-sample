@@ -10,10 +10,3 @@ resource "helm_release" "certmanager" {
     value = "true"
   }
 }
-
-resource "helm_release" "cluster_issuer" {
-  name             = "letsencrypt-cluster-issuer"
-  chart            = "${path.root}/../../charts/cluster-issuer"
-  namespace        = "cloud-native-sample"
-  create_namespace = true
-}

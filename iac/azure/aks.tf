@@ -3,6 +3,8 @@ resource "azurerm_kubernetes_cluster" "main" {
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   dns_prefix          = "cnsample"
+  kubernetes_version = data.azurerm_kubernetes_service_versions.latest.latest_version
+  sku_tier           = "Free"
 
   identity {
     type = "SystemAssigned"
@@ -27,12 +29,8 @@ resource "azurerm_kubernetes_cluster" "main" {
     log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
   }
 
-  kubernetes_version = "1.23.8"
-  sku_tier           = "Free"
-
   tags = local.tags
 }
-
 
 resource "azurerm_role_assignment" "aks_cluster_admin" {
   scope                = azurerm_kubernetes_cluster.main.id
@@ -50,20 +48,4 @@ resource "azurerm_role_assignment" "aks_reader" {
   scope                = "${azurerm_kubernetes_cluster.main.id}/namespaces/${each.key}"
   role_definition_name = "Azure Kubernetes Service RBAC Reader"
   principal_id         = azuread_group.k8s_admins.object_id
-}
-//kube_admin_config
-
-// todo: deploy ingress-nginx
-module "k8s" {
-  source      = "./modules/k8s"
-  kube_config = azurerm_kubernetes_cluster.main.kube_admin_config.0
-}
-
-module "dns" {
-  source = "./modules/dns"
-
-  dns_zone_name                = var.dns_zone.name
-  dns_zone_resource_group_name = var.dns_zone.resource_group_name
-  ingress_ip                   = module.k8s.ingress_ip
-
 }
