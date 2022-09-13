@@ -37,18 +37,18 @@ spec:
             - name: "ASPNETCORE_ENVIRONMENT"
               value: "Development"
           ports:
-            - name: http
+            - name: http-gateway
               containerPort: {{ .Values.containerPort }}
               protocol: TCP
           livenessProbe:
             initialDelaySeconds: 10
             httpGet:
               path: /healthz/liveness
-              port: http
+              port: http-gateway
           readinessProbe:
             httpGet:
               path: /healthz/readiness
-              port: http
+              port: http-gateway
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

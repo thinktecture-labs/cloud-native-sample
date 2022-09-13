@@ -41,17 +41,17 @@ spec:
               {{- end }}
               {{- end }}
           ports:
-            - name: http
+            - name: http-authn
               containerPort: {{ .Values.containerPort }}
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /healthz/liveness
-              port: http
+              port: http-authn
           readinessProbe:
             httpGet:
               path: /healthz/readiness
-              port: http
+              port: http-authn
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
