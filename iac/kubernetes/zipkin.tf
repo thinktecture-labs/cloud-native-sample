@@ -35,6 +35,8 @@ resource "kubernetes_deployment" "zipkin" {
   }
 }
 
+
+
 resource "kubernetes_service" "zipkin" {
   metadata {
     name      = "zipkin"

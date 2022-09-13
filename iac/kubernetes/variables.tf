@@ -13,3 +13,19 @@ variable "dns_zone" {
     resource_group_name = "rg-research"
   }
 }
+
+variable "dapr_config_sample_rate" {
+  type    = number
+  default = 1
+}
+
+variable "rabbitmq_user" {
+  type    = string
+  default = "guest"
+}
+
+variable "rabbitmq_password" {
+  type      = string
+  default   = "guest"
+  sensitive = true
+}
