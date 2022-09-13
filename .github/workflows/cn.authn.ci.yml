@@ -6,7 +6,7 @@ on:
     paths:
       - "src/AuthenticationService/**"
       - "charts/authentication/**"
-      - ".github/workflows/authenticationservice.*.yml"
+      - ".github/workflows/cn.authn.*.yml"
   workflow_dispatch:
 jobs:
   ci:
@@ -75,8 +75,8 @@ jobs:
     needs: ci
     env:
       AKS_NAME: aks-cloud-native-sample
-      RG_NAME: rg-cloud-native-sample
-      KUBELOGIN_VERSION: v0.0.13
+      RG_NAME: rg-cloud-native-sample-dev
+      KUBELOGIN_VERSION: v0.0.20
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
