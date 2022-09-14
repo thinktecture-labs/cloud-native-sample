@@ -40,6 +40,10 @@ resource "kubernetes_manifest" "dapr_component_orders_rabbit" {
       "version" = "v1"
       "metadata" = [
         {
+          "name"  = "queueName"
+          "value" = "orders"
+        },
+        {
           "name" = "host"
           "secretKeyRef" = {
             "name" = "rabbitmq"
