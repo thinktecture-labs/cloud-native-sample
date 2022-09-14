@@ -10,12 +10,12 @@ resource "helm_release" "rabbitmq" {
 
   set {
     name  = "auth.username"
-    value = "${var.rabbitmq_user}"
+    value = var.rabbitmq_user
   }
 
   set {
     name  = "auth.password"
-    value = "${var.rabbitmq_password}"
+    value = var.rabbitmq_password
   }
 }
 
