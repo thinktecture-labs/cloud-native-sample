@@ -13,7 +13,7 @@ resource "kubernetes_manifest" "darp_configuration" {
     "apiVersion" = "dapr.io/v1alpha1"
     "kind"       = "Configuration"
     "metadata" = {
-      "name"      = "dapr-config"
+      "name"      = "cloud-native-sample"
       "namespace" = kubernetes_namespace.app.metadata[0].name
     }
     "spec" = {
