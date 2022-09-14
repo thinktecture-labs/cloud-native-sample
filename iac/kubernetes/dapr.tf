@@ -46,6 +46,22 @@ resource "kubernetes_manifest" "dapr_component_orders_rabbit" {
             "key"  = "connectionString"
 
           }
+        },
+        {
+          "name"  = "enableDeadLetter"
+          "value" = "true"
+        },
+        {
+          "name"  = "exchangeKind"
+          "value" = "topic"
+        },
+        {
+          "name"  = "deletedWhenUnused"
+          "value" = "false"
+        },
+        {
+          "name"  = "deliveryMode"
+          "value" = "2"
         }
       ]
     }
