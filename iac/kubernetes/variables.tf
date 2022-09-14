@@ -21,11 +21,11 @@ variable "dapr_config_sample_rate" {
 
 variable "rabbitmq_user" {
   type    = string
-  default = "guest"
+  default = "cn"
 }
 
 variable "rabbitmq_password" {
   type      = string
-  default   = "guest"
+  default   = "SomeSecretPassword"
   sensitive = true
 }
