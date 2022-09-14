@@ -39,6 +39,7 @@ internal static class HostingExtensions
 
                 // IMPORTANT: change this for non-local dev/test
                 options.Authentication.CookieSameSiteMode = SameSiteMode.Unspecified;
+                options.Authentication.CheckSessionCookieSameSiteMode = SameSiteMode.Unspecified;
             })
             .AddTestUsers(TestUserProvider.GetAll());
 
