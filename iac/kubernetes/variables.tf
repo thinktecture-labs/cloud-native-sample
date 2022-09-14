@@ -21,11 +21,12 @@ variable "dapr_config_sample_rate" {
 
 variable "rabbitmq_user" {
   type    = string
-  default = "cn"
+  default = "cloudnativesample"
 }
 
 variable "rabbitmq_password" {
-  type      = string
-  default   = "SomeSecretPassword"
-  sensitive = true
+  type        = string
+  default     = "Some_Secret_Password"
+  description = "Overwrite this default value using a GitHub Secret"
+  sensitive   = true
 }
