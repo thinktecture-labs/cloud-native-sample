@@ -41,10 +41,14 @@ jobs:
       - name: Scan Docker Image
         id: dockle
         run: |
-          ./dockle --accept-key KEY_SHA512 -o /tmp/dockle-results.txt --input order-monitor-client.tar > /dev/null
-          result=$(cat /tmp/dockle-results.txt)
-          echo "::set-output name=response::$result"
-          echo "Dockle generated the following results:\n$result"
+          ./dockle --accept-key KEY_SHA512 -f json -o /tmp/dockle-results.json --input order-monitor-client.tar > /dev/null
+          r=$(cat /tmp/dockle-results.json)
+          r="${r//'%'/'%25'}"
+          r="${r//$'\n'/'%0A'}"
+          r="${r//$'\r'/'%0D'}"
+          echo "::set-output name=response::$r"
+          echo "Dockle generated the following results:"
+          echo $r
         working-directory: /tmp
       - name: Report Vulnerabilities
         if: contains(steps.dockle.outputs.response, 'WARN') || contains(steps.dockle.outputs.response, 'FATAL')
@@ -59,7 +63,7 @@ jobs:
 
             ## Dockle results
 
-            ```bash
+            ```json
             ${{ steps.dockle.outputs.response }}
             ```
             Container image has **not been pushed** to Azure Container Registry.
