@@ -34,7 +34,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http-notification
+            - name: http-noti
               containerPort: {{ .Values.containerPort }}
               protocol: TCP
           livenessProbe:
@@ -43,13 +43,13 @@ spec:
             periodSeconds: 20
             httpGet:
               path: /healthz/liveness
-              port: http-notification
+              port: http-noti
           readinessProbe:
             initialDelaySeconds: 20
             timeoutSeconds: 3
             httpGet:
               path: /healthz/readiness
-              port: http-notification
+              port: http-noti
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
