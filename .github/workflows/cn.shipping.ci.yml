@@ -40,12 +40,12 @@ jobs:
         working-directory: /tmp
       - name: Scan Docker Image
         run: |
-          ./dockle -o results.json --exit-code 1 --exit-level WARN --input shipping.tar && \
+          ./dockle -o results.json --input shipping.tar && \
           result=$(cat results.json) && \
           echo "::set-output name=value::$result"
         working-directory: /tmp
       - name: Report Vulnerabilities
-        if: ${{ failure() && steps.dockle.ouputs.result != ''}}
+        if: ${{ contains(steps.dockle.ouputs.result, 'WARN')}}
         uses: actions-ecosystem/action-create-issue@v1
         with:
           github_token: ${{ secrets.github_token }}
