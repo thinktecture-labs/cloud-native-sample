@@ -17,6 +17,7 @@ jobs:
     env:
       TF_VAR_acr_name: ${{ secrets.ACR_NAME }}
       TF_VAR_acr_token_name: ${{ secrets.ACR_TOKEN_NAME }}
+      TF_VAR_rabbitmq_password: ${{ secrets.RABBITMQ_PASSWORD }} 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
