@@ -5,7 +5,7 @@ image:
   pullPolicy: IfNotPresent
   tag: alpine
 
-containerPort: 80
+containerPort: 8080
 
 imagePullSecrets: []
 nameOverride: ""
