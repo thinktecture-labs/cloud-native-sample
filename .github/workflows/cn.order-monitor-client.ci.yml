@@ -41,8 +41,8 @@ jobs:
       - name: Scan Docker Image
         id: dockle
         run: |
-          ./dockle -f json -o /tmp/dockle-results.json --input order-monitor-client.tar
-          result=$(cat /tmp/dockle-results.json)
+          ./dockle --accept-key KEY_SHA512 -o /tmp/dockle-results.txt --input order-monitor-client.tar
+          result=$(cat /tmp/dockle-results.txt)
           echo "::set-output name=response::$result"
         working-directory: /tmp
       - name: Report Vulnerabilities
@@ -58,8 +58,8 @@ jobs:
 
             ## Dockle results
 
-            ```json
-              ${{ steps.dockle.outputs.response }}
+            ```bash
+            ${{ steps.dockle.outputs.response }}
             ```
             Container image has **not been pushed** to Azure Container Registry.
 
