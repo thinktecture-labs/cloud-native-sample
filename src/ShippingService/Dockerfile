@@ -9,9 +9,11 @@ RUN go build -o /app/shipping-service ./cmd/api.go
 #final stage
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
 WORKDIR /app
-COPY ./config.json .
-COPY --from=builder /app/shipping-service .
+COPY --chown=appuser ./config.json .
+COPY --chown=appuser --from=builder /app/shipping-service .
 EXPOSE 5000
 ENV PORT=5000
 CMD ["./shipping-service"]
