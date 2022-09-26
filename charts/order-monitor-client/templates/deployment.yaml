@@ -34,7 +34,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http-order-monitor-client
+            - name: http-omc
               containerPort: {{ .Values.containerPort }}
               protocol: TCP
           livenessProbe:
@@ -43,13 +43,13 @@ spec:
             timeoutSeconds: 3
             httpGet:
               path: /index.html
-              port: http-order-monitor-client
+              port: http-omc
           readinessProbe:
             initialDelaySeconds: 20
             timeoutSeconds: 3
             httpGet:
               path: /index.html
-              port: http-order-monitor-client
+              port: http-omc
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
