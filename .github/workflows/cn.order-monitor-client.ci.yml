@@ -58,7 +58,7 @@ jobs:
           echo $DOCKLE_RESULT_JSON
         working-directory: /tmp
       - name: Report Vulnerabilities
-        if: contains(env.DOCKLE_RESULT, "WARN"') || contains(env.DOCKLE_RESULT, 'FATAL')
+        if: contains(env.DOCKLE_RESULT, 'WARN') || contains(env.DOCKLE_RESULT, 'FATAL')
         uses: actions-ecosystem/action-create-issue@v1
         with:
           github_token: ${{ secrets.github_token }}
