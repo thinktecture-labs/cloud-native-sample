@@ -41,7 +41,7 @@ jobs:
       - name: Scan Docker Image
         id: dockle
         run: |
-          ./dockle -o /tmp/dockle-results.json --input order-monitor-client.tar
+          ./dockle -f json -o /tmp/dockle-results.json --input order-monitor-client.tar
           result=$(cat /tmp/dockle-results.json)
           echo "::set-output name=response::$result"
         working-directory: /tmp
@@ -52,12 +52,14 @@ jobs:
           github_token: ${{ secrets.github_token }}
           title: Dockle report for Order Monitor Client
           body: |
-            The container image for Order Monitor Client (`order-monitor-client:${{ github.sha }}`) was scanned during CI for ${{ github.sha }} using dockle. Please see the findings mentioned below:
+            The container image for Order Monitor Client (`order-monitor-client:${{ github.sha }}`) was scanned during CI for ${{ github.sha }} using dockle.
+            
+            Please see the findings mentioned below:
 
             ## Dockle results
 
             ```json
-              ${{ steps.dockle.outputs.result }}
+              ${{ steps.dockle.outputs.response }}
             ```
             Container image has **not been pushed** to Azure Container Registry.
 
