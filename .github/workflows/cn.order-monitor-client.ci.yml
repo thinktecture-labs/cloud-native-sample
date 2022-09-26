@@ -42,7 +42,7 @@ jobs:
         run: |
           ./dockle -o results.json --input order-monitor-client.tar && \
           result=$(cat results.json) && \
-          echo "::set-output name=value::$result"
+          echo "::set-output name=result::$result"
         working-directory: /tmp
       - name: Report Vulnerabilities
         if: ${{ contains(steps.dockle.ouputs.result, 'WARN')}}
