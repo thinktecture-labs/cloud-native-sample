@@ -41,9 +41,10 @@ jobs:
       - name: Scan Docker Image
         id: dockle
         run: |
-          ./dockle --accept-key KEY_SHA512 -o /tmp/dockle-results.txt --input order-monitor-client.tar
+          ./dockle --accept-key KEY_SHA512 -o /tmp/dockle-results.txt --input order-monitor-client.tar > /dev/null
           result=$(cat /tmp/dockle-results.txt)
           echo "::set-output name=response::$result"
+          echo "Dockle generated the following results:\n$result"
         working-directory: /tmp
       - name: Report Vulnerabilities
         if: contains(steps.dockle.outputs.response, 'WARN') || contains(steps.dockle.outputs.response, 'FATAL')
