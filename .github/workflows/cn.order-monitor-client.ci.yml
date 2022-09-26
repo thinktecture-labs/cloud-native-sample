@@ -41,12 +41,12 @@ jobs:
       - name: Scan Docker Image
         id: dockle
         run: |
-          ./dockle -o results.json --input order-monitor-client.tar && \
-          result=$(cat results.json) && \
-          echo "::set-output name=result::$result"
+          ./dockle -o /tmp/dockle-results.json --input order-monitor-client.tar
+          result=$(cat /tmp/dockle-results.json)
+          echo "::set-output name=response::$result"
         working-directory: /tmp
       - name: Report Vulnerabilities
-        if: contains(steps.dockle.ouputs.result, 'WARN')
+        if: contains(steps.dockle.outputs.response, 'WARN') || contains(steps.dockle.outputs.response, 'FATAL')
         uses: actions-ecosystem/action-create-issue@v1
         with:
           github_token: ${{ secrets.github_token }}
@@ -65,8 +65,10 @@ jobs:
             containers
             security
       - name: Fail if Vulnerable
-        if: ${{ contains(steps.dockle.ouputs.result, 'WARN')}}
-        run: exit 1
+        if: contains(steps.dockle.outputs.response, 'WARN') || contains(steps.dockle.outputs.response, 'FATAL')
+        run: |
+          echo "::error ::Please check scan results (see corresponding issue)"
+          exit 1
       - name: Push Docker Image
         if: ${{ success() }}
         run: |
