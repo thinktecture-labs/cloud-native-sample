@@ -1,0 +1,107 @@
+name: "CI/CD: Orders Service"
+on:
+  push:
+    branches:
+      - "main"
+    paths:
+      - "src/OrdersService/**"
+      - "charts/orders/**"
+      - ".github/workflows/cn.orders.*.yml"
+  workflow_dispatch:
+jobs:
+  ci:
+    name: "CI: OrdersService"
+    
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Docker Login
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_NAME}}.azurecr.io
+          username: ${{ secrets.ACR_TOKEN_NAME }}
+          password: ${{ secrets.ACR_TOKEN_PASSWORD }}
+      - name: Build Docker Image
+        run: |
+          docker build --build-arg mode=release . -t ${{ secrets.ACR_NAME }}.azurecr.io/orders:${{ github.sha }} -t ${{ secrets.ACR_NAME }}.azurecr.io/orders:${{ github.ref_name }}-latest
+        working-directory: ./src/OrdersService
+      - name: Install Dockle
+        run: |
+          VERSION=$(
+          curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | \
+          grep '"tag_name":' | \
+          sed -E 's/.*"v([^"]+)".*/\1/' \
+          ) && curl -L -o dockle.tar.gz https://github.com/goodwithtech/dockle/releases/download/v${VERSION}/dockle_${VERSION}_Linux-64bit.tar.gz &&  \
+          tar zxvf dockle.tar.gz
+        working-directory: /tmp
+      - name: Save Docker Image
+        run: docker save ${{ secrets.ACR_NAME }}.azurecr.io/orders:${{ github.sha }} -o orders.tar
+        working-directory: /tmp
+      - name: Scan Docker Image
+        run: |
+          ./dockle -o results.json --exit-code 1 --exit-level WARN --input orders.tar && \
+          result=$(cat results.json) && \
+          echo "::set-output name=value::$result"
+        working-directory: /tmp
+      - name: Report Vulnerabilities
+        if: ${{ failure() && steps.dockle.ouputs.result != ''}}
+        uses: actions-ecosystem/action-create-issue@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          title: Dockle report for OrdersService
+          body: |
+            The container image for OrdersService (`orders:${{ github.sha }}`) was scanned during CI for ${{ github.sha }} using dockle. Please see the findings mentioned below:
+
+            ## Dockle results
+
+            ```json
+              ${{ steps.dockle.outputs.result }}
+            ```
+            Container image has **not been pushed** to Azure Container Registry.
+
+          labels: |
+            containers
+            security
+      - name: Push Docker Image
+        if: ${{ success() }}
+        run: |
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/orders:${{ github.sha }}
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/orders:${{ github.ref_name }}-latest
+        working-directory: ./src/OrdersService
+  cd:
+    name: "CD: OrdersService"
+    runs-on: ubuntu-latest
+    needs: ci
+    env:
+      AKS_NAME: aks-cloud-native-sample
+      RG_NAME: rg-cloud-native-sample-develop
+      KUBELOGIN_VERSION: v0.0.20
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Install Kubelogin
+        run: |
+          curl -LO "https://github.com/Azure/kubelogin/releases/download/$KUBELOGIN_VERSION/kubelogin-linux-amd64.zip" && \
+          sudo unzip -j "kubelogin-linux-amd64.zip" -d /usr/local/bin && \
+          rm -f "kubelogin-linux-amd64.zip" && \
+          kubelogin --version
+      - name: Install Helm3
+        uses: azure/setup-helm@v3
+      - name: Verify Helm3 installation
+        run: helm version
+      - name: Azure CLI Login
+        uses: Azure/login@v1
+        with:
+          creds: '{"clientId":"${{ secrets.TERRAFORM_CLIENT_ID }}","clientSecret":"${{ secrets.TERRAFORM_CLIENT_SECRET }}","subscriptionId":"${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.TERRAFORM_TENANT_ID }}"}'
+      - name: AKS Login (non-interactive)
+        run: |
+          az account set --subscription ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }} -onone && \
+          az aks get-credentials -g $RG_NAME -n $AKS_NAME && \
+          kubelogin convert-kubeconfig -l azurecli
+      - name: Deploy OrdersService
+        run: |
+          helm upgrade --install "orders" ./charts/orders \
+          -n cloud-native-sample --create-namespace \
+          --set image.repository=${{ secrets.ACR_NAME}}.azurecr.io/orders \
+          --set image.tag=${{ github.sha }}
