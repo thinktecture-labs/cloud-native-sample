@@ -34,18 +34,22 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
+            - name: http-products
               containerPort: {{ .Values.containerPort }}
               protocol: TCP
           livenessProbe:
-            initialDelaySeconds: 10
+            initialDelaySeconds: 30
+            timeoutSeconds: 3
+            periodSeconds: 20
             httpGet:
               path: /healthz/liveness
-              port: http
+              port: http-products
           readinessProbe:
+            initialDelaySeconds: 20
+            timeoutSeconds: 3
             httpGet:
               path: /healthz/readiness
-              port: http
+              port: http-products
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
