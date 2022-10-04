@@ -97,6 +97,19 @@ internal static class HostingExtensions
 
         app.UseStaticFiles();
         app.UseRouting();
+        app.Use((context, next) =>
+        {
+            Console.WriteLine("Received following headers:");
+            // log all Http Headers
+            foreach (var header in context.Request.Headers)
+            {
+                Console.WriteLine($"{header.Key}: {header.Value}");
+            }
+            Console.WriteLine($"Current scheme is {context.Request.Scheme}");
+            // end log :D 
+            context.Request.Scheme = "https";
+            return next();
+        });
         app.UseIdentityServer();
         app.UseAuthorization();
 
