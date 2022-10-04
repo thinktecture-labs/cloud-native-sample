@@ -55,8 +55,6 @@ jobs:
 
           echo "Dockle generated the following results:"
           echo $DOCKLE_RESULT_JSON
-          result=$(cat results.json) && \
-          echo "::set-output name=value::$result"
         working-directory: /tmp
       - name: Report Vulnerabilities
         if: contains(env.DOCKLE_RESULT, 'WARN') || contains(env.DOCKLE_RESULT, 'FATAL')
