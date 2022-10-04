@@ -18,7 +18,7 @@ builder.Services.AddHttpClient("OrderMonitor")
     {
         var handler = sp.GetService<AuthorizationMessageHandler>()
             .ConfigureHandler(
-                authorizedUrls: new[] { builder.Configuration.Get("ApiRoot") });
+                authorizedUrls: new[] { builder.Configuration.GetValue<string>("ApiRoot") });
         return handler;
     });
 
