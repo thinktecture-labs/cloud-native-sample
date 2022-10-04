@@ -1,0 +1,58 @@
+name: "CD: Destroy Azure Infrastructure"
+on:
+  workflow_dispatch:
+    inputs:
+      workspaceName:
+        description: "Desired Terraform workspace you want to destroy"
+        required: true
+        default: "develop"
+concurrency:
+  group: azure-terraform
+env:
+  TERRAFORM_VERSION: 1.2.8
+jobs:
+  infra:
+    name: "Destroy Azure (AKS) Infrastructure (${{ github.event.inputs.vmSku }})"
+    runs-on: ubuntu-latest
+    env:
+      TF_VAR_acr_name: ${{ secrets.ACR_NAME }}
+      TF_VAR_acr_token_name: ${{ secrets.ACR_TOKEN_NAME }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2.0.0
+        with:
+          terraform_version: $TERRAFORM_VERSION
+      - name: Initialize Terraform Project
+        run: terraform init --upgrade
+        env:
+          ARM_CLIENT_ID: ${{ secrets.TERRAFORM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.TERRAFORM_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}
+        working-directory: ./iac/azure
+      - name: Select Terraform Workspace
+        run: terraform workspace select develop
+        env:
+          ARM_CLIENT_ID: ${{ secrets.TERRAFORM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.TERRAFORM_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}
+        working-directory: ./iac/azure
+      - name: Validate Terraform Project
+        run: terraform validate -no-color
+        env:
+          ARM_CLIENT_ID: ${{ secrets.TERRAFORM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.TERRAFORM_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}
+        working-directory: ./iac/azure
+      - name: Terraform Destroy
+        run: terraform destroy -no-color -auto-approve
+        env:
+          ARM_CLIENT_ID: ${{ secrets.TERRAFORM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.TERRAFORM_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}
+        working-directory: ./iac/azure

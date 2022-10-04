@@ -3,8 +3,8 @@ replicaCount: 2
 # image and tag will be set by GitHub Actions
 image:
   repository: nginx
-  pullPolicy: Always
-  tag: "alpine"
+  pullPolicy: IfNotPresent
+  tag: alpine
 
 containerPort: 5000
 

@@ -8,8 +8,7 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
-      protocol: TCP
-      name: http
+      targetPort: http-authn
+      protocol: TCP 
   selector:
     {{- include "authentication.selectorLabels" . | nindent 4 }}

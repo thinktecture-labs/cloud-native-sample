@@ -20,7 +20,8 @@ RUN dotnet build "OrderMonitorClient.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "OrderMonitorClient.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-FROM nginx:alpine
+FROM nginxinc/nginx-unprivileged:alpine
+EXPOSE 8080
 WORKDIR /usr/share/nginx/html
 COPY --from=publish /app/publish/wwwroot .
 COPY nginx.conf /etc/nginx/conf.d/default.conf
