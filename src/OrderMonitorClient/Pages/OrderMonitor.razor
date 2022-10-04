@@ -1,5 +1,7 @@
 ﻿@page "/monitor"
 
+@attribute [Authorize]
+
 @using OrderMonitorClient.Services
 @using Gateway.Models
 
@@ -27,12 +29,12 @@ else
 
             <MudTd DataLabel="Position">
                 @foreach (var pos in context.Positions)
-                    {
+                {
                     @(pos.Quantity + "x " + pos.ProductName)
                     <br>
                     @pos.ProductDescription
                     <br><br>
-                    }
+                }
             </MudTd>
         </RowTemplate>
         <PagerContent>

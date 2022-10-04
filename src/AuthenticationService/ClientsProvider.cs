@@ -10,6 +10,7 @@ public static class ClientsProvider {
         {
             new Client
             {
+                
                 ClientId = "cc",
                 ClientName = "Client Credentials Client",
 
@@ -23,7 +24,9 @@ public static class ClientsProvider {
             {
                 ClientId = "interactive",
                 ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256()) },
-                    
+
+                RequireClientSecret = false,
+
                 AllowedGrantTypes = GrantTypes.Code,
 
                 RedirectUris = interactiveClientConfig.RedirectUris,
