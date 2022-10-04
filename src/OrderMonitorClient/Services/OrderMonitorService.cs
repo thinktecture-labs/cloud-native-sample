@@ -14,13 +14,15 @@ namespace OrderMonitorClient.Services
     {
         private readonly NavigationManager _navigationManager;
         private readonly HttpClient _httpClient;
+
         private HubConnection _hubConnection;
 
         public event EventHandler<OrderEventArgs> OrderListChanged;
 
-        public OrderMonitorService(NavigationManager navigationManager, HttpClient httpClient)
+        public OrderMonitorService(NavigationManager navigationManager, IConfiguration config, HttpClient httpClient)
         {
             _navigationManager = navigationManager;
+            httpClient.BaseAddress = new Uri(config["ApiRoot"]);
             _httpClient = httpClient;
         }
 

@@ -18,7 +18,7 @@ builder.Services.AddHttpClient("OrderMonitor")
     {
         var handler = sp.GetService<AuthorizationMessageHandler>()
             .ConfigureHandler(
-                authorizedUrls: new[] { "http://localhost:5009" }); // TODO: get this from config
+                authorizedUrls: new[] { builder.Configuration.Get("ApiRoot") });
         return handler;
     });
 
