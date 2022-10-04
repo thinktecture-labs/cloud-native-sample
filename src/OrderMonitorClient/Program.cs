@@ -5,7 +5,12 @@ using MudBlazor.Services;
 using OrderMonitorClient.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 
-var builder = WebAssemblyHostBuilder.CreateDefault(args);
+var builder = WebAssemblyHostBuilder
+    .CreateDefault(args);
+
+
+builder.Configuration
+.AddJsonFile(Path.Join("k8s", "appsettings.json"), true, true);
 
 builder.Logging.AddConfiguration(
     builder.Configuration.GetSection("Logging"));

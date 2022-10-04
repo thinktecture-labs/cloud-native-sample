@@ -39,7 +39,7 @@ spec:
               protocol: TCP
           volumeMounts:
             - name: appsettings
-              mountPath: /usr/share/nginx/html
+              mountPath: /usr/share/nginx/html/k8s
           livenessProbe:
             initialDelaySeconds: 30
             periodSeconds: 30
