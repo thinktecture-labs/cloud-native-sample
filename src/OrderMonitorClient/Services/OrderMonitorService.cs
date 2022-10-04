@@ -24,9 +24,6 @@ namespace OrderMonitorClient.Services
         {
             _navigationManager = navigationManager;
             _apiRoot = config["ApiRoot"];
-            if (!string.IsNullOrWhiteSpace(_apiRoot)){
-                httpClient.BaseAddress = new Uri(_apiRoot);
-            }
             _httpClient = httpClient;
         }
 
@@ -47,7 +44,7 @@ namespace OrderMonitorClient.Services
 
         public async Task<List<OrderMonitorListModel>> ListOrdersAsync()
         {
-            var result = await _httpClient.GetFromJsonAsync<List<OrderMonitorListModel>>("/orders/monitor");
+            var result = await _httpClient.GetFromJsonAsync<List<OrderMonitorListModel>>($"{_apiRoot}/orders/monitor");
 
             return result;
         }
