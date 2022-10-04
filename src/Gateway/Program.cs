@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.OpenApi.Models;
 using Prometheus;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 const string CorsPolicyName = "GatewayPolicy";
