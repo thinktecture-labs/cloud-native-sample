@@ -14,6 +14,7 @@ namespace OrderMonitorClient.Services
     {
         private readonly NavigationManager _navigationManager;
         private readonly HttpClient _httpClient;
+        private readonly string _apiRoot;
 
         private HubConnection _hubConnection;
 
@@ -22,14 +23,17 @@ namespace OrderMonitorClient.Services
         public OrderMonitorService(NavigationManager navigationManager, IConfiguration config, HttpClient httpClient)
         {
             _navigationManager = navigationManager;
-            httpClient.BaseAddress = new Uri(config["ApiRoot"]);
+            _apiRoot = config["ApiRoot"];
+            if (!string.IsNullOrWhiteSpace(_apiRoot)){
+                httpClient.BaseAddress = new Uri(_apiRoot);
+            }
             _httpClient = httpClient;
         }
 
         public async Task InitAsync()
         {
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl(_navigationManager.ToAbsoluteUri("/notifications/notificationHub"))
+                .WithUrl(_navigationManager.ToAbsoluteUri($"{_apiRoot}/notifications/notificationHub"))
                 .WithAutomaticReconnect()
                 .Build();
 
