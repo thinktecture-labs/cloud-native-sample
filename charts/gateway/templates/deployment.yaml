@@ -35,7 +35,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: "ASPNETCORE_ENVIRONMENT"
-              value: "Development"
+              value: "{{ .Values.environment }}"
           ports:
             - name: http-gateway
               containerPort: {{ .Values.containerPort }}

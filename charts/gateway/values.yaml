@@ -1,4 +1,6 @@
-replicaCount: 2
+replicaCount: 1
+
+environment: Production
 
 # image and tag will be set by GitHub Actions
 image:
