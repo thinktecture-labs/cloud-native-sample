@@ -40,12 +40,26 @@ jobs:
         working-directory: /tmp
       - name: Scan Docker Image
         run: |
-          ./dockle -o results.json --exit-code 1 --exit-level WARN --input authentication-service.tar && \
+          ./dockle --accept-key KEY_SHA512 -f json -o /tmp/dockle-results.json --input authentication-service.tar  > /dev/null
+          ./dockle --accept-key KEY_SHA512 -o /tmp/dockle-results.txt --input authentication-service.tar > /dev/null
+          DOCKLE_RESULT_JSON=$(cat /tmp/dockle-results.json)
+          DOCKLE_RESULT=$(cat /tmp/dockle-results.txt)
+          
+          echo "DOCKLE_RESULT<<EOF" >> $GITHUB_ENV
+          echo "$DOCKLE_RESULT" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+          echo "DOCKLE_RESULT_JSON<<EOF" >> $GITHUB_ENV
+          echo "$DOCKLE_RESULT_JSON" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+          echo "Dockle generated the following results:"
+          echo $DOCKLE_RESULT_JSON
           result=$(cat results.json) && \
           echo "::set-output name=value::$result"
         working-directory: /tmp
       - name: Report Vulnerabilities
-        if: ${{ failure() && steps.dockle.ouputs.result != ''}}
+        if: contains(env.DOCKLE_RESULT, 'WARN') || contains(env.DOCKLE_RESULT, 'FATAL')
         uses: actions-ecosystem/action-create-issue@v1
         with:
           github_token: ${{ secrets.github_token }}
@@ -56,13 +70,18 @@ jobs:
             ## Dockle results
 
             ```json
-              ${{ steps.dockle.outputs.result }}
+            ${{ env.DOCKLE_RESULT_JSON }}
             ```
             Container image has **not been pushed** to Azure Container Registry.
 
           labels: |
             containers
             security
+      - name: Fail if Vulnerable
+        if: contains(env.DOCKLE_RESULT, 'WARN') || contains(env.DOCKLE_RESULT, 'FATAL')
+        run: |
+          echo "::error ::Please check scan results (see corresponding issue)"
+          exit 1
       - name: Push Docker Image
         if: ${{ success() }}
         run: |
