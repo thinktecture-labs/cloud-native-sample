@@ -4,13 +4,26 @@ using OrderMonitorClient;
 using MudBlazor.Services;
 using OrderMonitorClient.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+using System.Net;
 
 var builder = WebAssemblyHostBuilder
     .CreateDefault(args);
 
 
-builder.Configuration
-.AddJsonFile(Path.Join("k8s", "appsettings.json"), true, true);
+var http = new HttpClient()
+{
+    BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+};
+
+builder.Services.AddScoped(sp => http);
+
+using var response = await http.GetAsync("k8s/appsettings.json");
+Console.WriteLine($"Received response with status code {response.StatusCode}");
+if (response.StatusCode == HttpStatusCode.OK)
+{
+    using var stream = await response.Content.ReadAsStreamAsync();
+    builder.Configuration.AddJsonStream(stream);
+}
 
 builder.Logging.AddConfiguration(
     builder.Configuration.GetSection("Logging"));
