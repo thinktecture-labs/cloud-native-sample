@@ -37,6 +37,9 @@ spec:
             - name: http-omc
               containerPort: {{ .Values.containerPort }}
               protocol: TCP
+          volumeMounts:
+            - name: config-volume
+              mountPath: /usr/share/nginx/html
           livenessProbe:
             initialDelaySeconds: 30
             periodSeconds: 30
@@ -52,6 +55,10 @@ spec:
               port: http-omc
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: appconfig
+          configMap:
+            name: omc-app-settings
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

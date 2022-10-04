@@ -23,5 +23,5 @@ RUN dotnet publish "OrderMonitorClient.csproj" -c Release -o /app/publish /p:Use
 FROM nginxinc/nginx-unprivileged:alpine
 EXPOSE 8080
 WORKDIR /usr/share/nginx/html
-COPY --from=publish /app/publish/wwwroot .
+COPY --chown=nginx:nginx --from=publish /app/publish/wwwroot .
 COPY nginx.conf /etc/nginx/conf.d/default.conf
