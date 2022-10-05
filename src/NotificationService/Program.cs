@@ -1,12 +1,18 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NotificationService;
 using NotificationService.Configuration;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole(options =>
+{
+    options.FormatterName = ConsoleFormatterNames.Json;
+});
 var cfg = new NotificationServiceConfiguration();
 var cfgSection = builder.Configuration.GetSection(NotificationServiceConfiguration.SectionName);
 
