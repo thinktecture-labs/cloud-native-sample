@@ -82,8 +82,6 @@ app.UseHttpMetrics();
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");
 
-app.MapControllers()
-    .RequireAuthorization("ApiScope");
-
+app.MapControllers();
 
 app.Run();
