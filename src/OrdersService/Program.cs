@@ -79,7 +79,9 @@ app.UseSwaggerUI();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapControllers()
+    .RequireAuthorization("ApiScope");
+
 app.MapMetrics();
 app.UseHttpMetrics();
 
