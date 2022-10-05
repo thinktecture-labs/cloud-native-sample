@@ -41,14 +41,14 @@ spec:
             - name: appsettings
               mountPath: /usr/share/nginx/html/k8s
           livenessProbe:
-            initialDelaySeconds: 30
+            initialDelaySeconds: 20
             periodSeconds: 30
             timeoutSeconds: 3
             httpGet:
               path: /index.html
               port: http-omc
           readinessProbe:
-            initialDelaySeconds: 20
+            initialDelaySeconds: 10
             timeoutSeconds: 3
             httpGet:
               path: /index.html
