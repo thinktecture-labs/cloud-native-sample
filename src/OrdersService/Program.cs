@@ -5,6 +5,7 @@ using Prometheus;
 using Microsoft.EntityFrameworkCore;
 using OrdersService.Data;
 using OrdersService.Data.Repositories;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,27 @@ else
 }
 
 builder.Services.AddSingleton(cfg);
+
+// Configure AuthN
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
+    {
+        options.Authority = ""; //todo grab authority
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false,    
+        };
+    });
+
+// Configure AuthZ
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ApiScope", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("scope", "sample");
+    });
+});
 
 builder.Services.AddDbContext<OrdersServiceContext>(options => options.UseInMemoryDatabase(databaseName: "OrdersService"));
 
@@ -52,7 +74,7 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
