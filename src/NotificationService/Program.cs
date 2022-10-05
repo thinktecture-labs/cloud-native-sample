@@ -1,4 +1,7 @@
-﻿using NotificationService;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using NotificationService;
 using NotificationService.Configuration;
 using Prometheus;
 
@@ -13,6 +16,48 @@ if (cfgSection == null || !cfgSection.Exists())
 }
 
 builder.Services.AddSingleton(cfg);
+
+// Configure AuthN
+var notificationHubEndpoint = "/notifications/notificationHub";
+
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
+    {
+        //todo: check if we can put authority in DI
+        options.Authority = builder.Configuration.GetValue<string>("Authority");
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false,
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+
+                // If the request is for our hub...
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    (path.StartsWithSegments(notificationHubEndpoint)))
+                {
+                    // Read the token out of the query string
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
+        };
+    });
+
+// Configure AuthZ
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ApiScope", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("scope", "sample");
+    });
+});
+
 builder.Services.AddSignalR();
 builder.Services.AddHealthChecks();
 builder.Services.AddControllers();
@@ -25,9 +70,11 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapHub<NotificationHub>("/notifications/notificationHub");
+app.MapHub<NotificationHub>(notificationHubEndpoint)
+    .RequireAuthorization("ApiScope");
 
 app.MapMetrics();
 app.UseHttpMetrics();
@@ -35,6 +82,8 @@ app.UseHttpMetrics();
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");
 
-app.MapControllers();
+app.MapControllers()
+    .RequireAuthorization("ApiScope");
+
 
 app.Run();
