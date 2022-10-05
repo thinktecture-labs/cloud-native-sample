@@ -26,7 +26,7 @@ public class OrdersController : Controller
     {
         _logger.LogTrace("OrderProcessed invoked for User {UserId} and order {OrderId}", e.Data.UserId, e.Data.OrderId);
 
-        var group = _hubContext.Clients.Group(e.Data.UserId.ToString());
+        var group = _hubContext.Clients.Group(e.Data.UserId);
 
         if (group == null)
         {
