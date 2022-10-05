@@ -28,7 +28,8 @@ builder.Services.AddSingleton(cfg);
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
-        options.Authority = ""; //todo grab authority
+        //todo: check if we can put authority in DI
+        options.Authority = builder.Configuration.GetValue<string>("Authority");
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = false,    
