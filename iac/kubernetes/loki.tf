@@ -11,7 +11,7 @@ resource "helm_release" "grafana_loki" {
   }
 
   set {
-    name  = "loki.auth.enabled"
+    name  = "loki.auth_enabled"
     value = false
   }
 }
