@@ -9,10 +9,12 @@ namespace Gateway.Controllers;
 public class OrdersController : ControllerBase
 {
     private readonly int _daprHttpPort;
+    private readonly HttpClient _httpClient;
 
-    public OrdersController(IConfiguration configuration)
+    public OrdersController(IConfiguration configuration, IHttpClientFactory httpClientFactory)
     {
         _daprHttpPort = configuration.GetValue<int>("DAPR_HTTP_PORT");
+        _httpClient = httpClientFactory.CreateClient("ordermonitor");
     }
     
     // GET
@@ -20,9 +22,8 @@ public class OrdersController : ControllerBase
     [Route("monitor")]
     public async Task<IActionResult> GetOrderMonitorDataAsync()
     {
-        var client = new HttpClient();
-        var getOrders = client.GetFromJsonAsync<List<JsonElement>>(BuildUrl("orders", "orders"));
-        var getProducts = client.GetFromJsonAsync<List<JsonElement>>(BuildUrl("products", "products"));
+        var getOrders = _httpClient.GetFromJsonAsync<List<JsonElement>>(BuildUrl("orders", "orders"));
+        var getProducts = _httpClient.GetFromJsonAsync<List<JsonElement>>(BuildUrl("products", "products"));
 
         var res = await Task.WhenAll(getOrders, getProducts);
         var orders = res[0];

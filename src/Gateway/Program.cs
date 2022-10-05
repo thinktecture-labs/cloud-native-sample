@@ -47,6 +47,13 @@ builder.Services.AddReverseProxy()
 
 builder.Services.AddControllers();
 
+builder.Services.AddHeaderPropagation(o =>
+{
+    o.Headers.Add("Authorization");
+});
+builder.Services.AddHttpClient("ordermonitor").AddHeaderPropagation();
+
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.EnableAnnotations();
