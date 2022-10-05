@@ -79,6 +79,7 @@ app.UseSwaggerUI();
 
 app.UseResponseCompression();
 app.UseCors(CorsPolicyName);
+app.UseHeaderPropagation();
 app.MapReverseProxy();
 
 app.MapMetrics();
