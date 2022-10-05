@@ -46,7 +46,7 @@ internal static class HostingExtensions
         var cfg = builder.Configuration.GetSection("IdentityServer").Get<IdentityServerConfig>();
         // in-memory, code config
         isBuilder.AddInMemoryIdentityResources(IdentityResourcesProvider.GetAll);
-        isBuilder.AddInMemoryApiScopes(ApiScopesProvider.GetAll);
+        isBuilder.AddInMemoryApiScopes(ApiScopesProvider.GetAll());
         isBuilder.AddInMemoryClients(ClientsProvider.GetAll(cfg.InteractiveClient));
         
 
