@@ -1,4 +1,22 @@
 {{/*
+Authority Name
+*/}}
+{{- define "authority" -}}
+{{- $path := include "ingress.path" . -}}
+{{- with (index .Values.ingress.hosts 0) }}
+{{- printf "https://%s%s"  .host $path -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "ingress.path" -}}
+{{- with (index .Values.ingress.hosts 0) }}
+{{- with (index .paths 0) }}
+{{- printf "%s"  .path -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Expand the name of the chart.
 */}}
 {{- define "authentication.name" -}}
