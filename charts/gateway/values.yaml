@@ -63,12 +63,12 @@ ingress:
      - cn.thinktecture-demos.com
 
 resources:
-  limits:
-    cpu: 50m
-    memory: 96Mi
   requests:
-    cpu: 50m
-    memory: 96Mi
+    cpu: 350m
+    memory: 128Mi
+  limits:
+    cpu: 350m
+    memory: 128Mi
 
 autoscaling:
   enabled: false
