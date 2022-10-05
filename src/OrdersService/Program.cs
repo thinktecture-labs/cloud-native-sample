@@ -3,11 +3,18 @@ using Microsoft.OpenApi.Models;
 using OrdersService.Configuration;
 using Prometheus;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Console;
 using OrdersService.Data;
 using OrdersService.Data.Repositories;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole(options =>
+{
+    options.FormatterName = ConsoleFormatterNames.Json;
+});
 
 var cfg = new OrdersServiceConfiguration();
 var cfgSection = builder.Configuration.GetSection(OrdersServiceConfiguration.SectionName);
