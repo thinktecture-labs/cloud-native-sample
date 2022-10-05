@@ -1,5 +1,6 @@
 ﻿using Gateway.Models;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Net.Http.Json;
 
@@ -13,6 +14,7 @@ namespace OrderMonitorClient.Services
     public class OrderMonitorService
     {
         private readonly NavigationManager _navigationManager;
+        private readonly IAccessTokenProvider _tokenProvider;
         private readonly HttpClient _httpClient;
         private readonly string _apiRoot;
 
@@ -20,9 +22,11 @@ namespace OrderMonitorClient.Services
 
         public event EventHandler<OrderEventArgs> OrderListChanged;
 
-        public OrderMonitorService(NavigationManager navigationManager, IConfiguration config, HttpClient httpClient)
+
+        public OrderMonitorService(NavigationManager navigationManager, IAccessTokenProvider tokenProvider, IConfiguration config, HttpClient httpClient)
         {
             _navigationManager = navigationManager;
+            _tokenProvider = tokenProvider;
             _apiRoot = config["ApiRoot"];
             _httpClient = httpClient;
         }
@@ -30,7 +34,19 @@ namespace OrderMonitorClient.Services
         public async Task InitAsync()
         {
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl(_navigationManager.ToAbsoluteUri($"{_apiRoot}/notifications/notificationHub"))
+                .WithUrl(
+                    _navigationManager.ToAbsoluteUri($"{_apiRoot}/notifications/notificationHub"),
+                    options => {
+                        options.AccessTokenProvider = async () => {
+                            var result = await _tokenProvider.RequestAccessToken();
+                            if (result.TryGetToken(out var token)) {
+                                return token.Value;
+                            }
+                            else {
+                                return string.Empty;
+                            }
+                        };
+                    })
                 .WithAutomaticReconnect()
                 .Build();
 
