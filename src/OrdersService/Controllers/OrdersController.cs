@@ -18,7 +18,8 @@ public class OrdersController : ControllerBase
     private readonly OrdersServiceConfiguration _config;
     private readonly ILogger<OrdersController> _logger;
 
-    public OrdersController(IOrdersRepository repository, DaprClient dapr, OrdersServiceConfiguration config, ILogger<OrdersController> logger)
+    public OrdersController(IOrdersRepository repository, DaprClient dapr, OrdersServiceConfiguration config,
+        ILogger<OrdersController> logger)
     {
         _repository = repository;
         _dapr = dapr;
@@ -28,7 +29,8 @@ public class OrdersController : ControllerBase
 
     [HttpPost]
     [Route("", Name = "CreateOrder")]
-    [SwaggerOperation(OperationId = "CreateOrder", Tags = new[] { "Orders" }, Summary = "Create a new order", Description = "Invoke this endpoint to place a new order")]
+    [SwaggerOperation(OperationId = "CreateOrder", Tags = new[] { "Orders" }, Summary = "Create a new order",
+        Description = "Invoke this endpoint to place a new order")]
     [SwaggerResponse(202, Description = "Order has been accepted")]
     [SwaggerResponse(400)]
     [SwaggerResponse(500)]
@@ -54,14 +56,16 @@ public class OrdersController : ControllerBase
         //var httpClient = new HttpClient();
         //httpClient.PostAsJsonAsync<
 
-        await _dapr.PublishEventAsync(_config.CreateOrderPubSubName, _config.CreateOrderTopicName, newOrder, CancellationToken.None)!;
+        await _dapr.PublishEventAsync(_config.CreateOrderPubSubName, _config.CreateOrderTopicName, newOrder,
+            CancellationToken.None)!;
 
         return Accepted(new { OrderId = newOrder.Id });
     }
 
     [HttpGet]
     [Route("", Name = "GetOrders")]
-    [SwaggerOperation(OperationId = "GetOrders", Tags = new[] { "Orders" }, Summary = "Load all orders", Description = "This endpoint returns all orders")]
+    [SwaggerOperation(OperationId = "GetOrders", Tags = new[] { "Orders" }, Summary = "Load all orders",
+        Description = "This endpoint returns all orders")]
     [SwaggerResponse(200, Description = "The order", Type = typeof(IEnumerable<OrderListModel>))]
     [SwaggerResponse(400)]
     [SwaggerResponse(500)]

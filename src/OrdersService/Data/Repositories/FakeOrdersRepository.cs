@@ -19,7 +19,8 @@ public class FakeOrdersRepository : IOrdersRepository
                     ProductId = Guid.Parse("b3b749d1-fd02-4b47-8e3c-540555439db6"),
                     Quantity = 4
                 },
-                new(){
+                new()
+                {
                     ProductId = Guid.Parse("bbbbbbbb-fd02-4b47-8e3c-540555439db6"),
                     Quantity = 3
                 },
@@ -33,15 +34,18 @@ public class FakeOrdersRepository : IOrdersRepository
             SubmittedAt = DateTime.Now.AddDays(-2),
             Positions = new List<OrderPosition>
             {
-                new(){
+                new()
+                {
                     ProductId = Guid.Parse("aaaaaaaa-fd02-4b47-8e3c-540555439db6"),
                     Quantity = 10
                 },
-                new(){
+                new()
+                {
                     ProductId = Guid.Parse("bbbbbbbb-fd02-4b47-8e3c-540555439db6"),
                     Quantity = 5
                 },
-                new(){
+                new()
+                {
                     ProductId = Guid.Parse("b3b749d1-fd02-4b47-8e3c-540555439db6"),
                     Quantity = 2
                 }
@@ -52,7 +56,7 @@ public class FakeOrdersRepository : IOrdersRepository
     public Task AddNewOrderAsync(Order newOrder)
     {
         _orders.Add(newOrder);
-        
+
         return Task.CompletedTask;
     }
 

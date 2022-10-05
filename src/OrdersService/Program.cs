@@ -32,7 +32,7 @@ builder.Services.AddAuthentication("Bearer")
         options.Authority = builder.Configuration.GetValue<string>("Authority");
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateAudience = false,    
+            ValidateAudience = false,
         };
     });
 
@@ -46,7 +46,8 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
-builder.Services.AddDbContext<OrdersServiceContext>(options => options.UseInMemoryDatabase(databaseName: "OrdersService"));
+builder.Services.AddDbContext<OrdersServiceContext>(options =>
+    options.UseInMemoryDatabase(databaseName: "OrdersService"));
 
 builder.Services.AddScoped<IOrdersRepository, OrdersRepository>();
 builder.Services.AddScoped<DaprClient>(_ => new DaprClientBuilder().Build()!);

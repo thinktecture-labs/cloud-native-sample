@@ -5,7 +5,7 @@ namespace OrdersService.Data;
 
 public class OrdersServiceContext : DbContext
 {
-    public OrdersServiceContext (DbContextOptions<OrdersServiceContext> options)
+    public OrdersServiceContext(DbContextOptions<OrdersServiceContext> options)
         : base(options)
     {
     }

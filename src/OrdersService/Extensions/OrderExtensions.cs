@@ -11,10 +11,12 @@ public static class OrderExtensions
         {
             Id = o.Id,
             UserId = o.UserId,
-            Positions = o.Positions == null ? new List<OrderPositionModel>() : o.Positions.Select(p => p.ToApiModel()).ToList(),
+            Positions = o.Positions == null
+                ? new List<OrderPositionModel>()
+                : o.Positions.Select(p => p.ToApiModel()).ToList(),
         };
     }
-    
+
     public static OrderDetailsModel ToDetailsModel(this Order o)
     {
         return new OrderDetailsModel
@@ -22,7 +24,9 @@ public static class OrderExtensions
             Id = o.Id,
             UserName = o.UserName,
             UserId = o.UserId,
-            Positions = o.Positions == null ? new List<OrderPositionModel>() : o.Positions.Select(p => p.ToApiModel()).ToList(),
+            Positions = o.Positions == null
+                ? new List<OrderPositionModel>()
+                : o.Positions.Select(p => p.ToApiModel()).ToList(),
             SubmittedAt = o.SubmittedAt
         };
     }
@@ -34,7 +38,9 @@ public static class OrderExtensions
             Id = id,
             UserId = userId,
             UserName = userName,
-            Positions = m.Positions == null? new List<OrderPosition>() : m.Positions.Select(p=> p.FromApiModel()).ToList(),
+            Positions = m.Positions == null
+                ? new List<OrderPosition>()
+                : m.Positions.Select(p => p.FromApiModel()).ToList(),
             SubmittedAt = n
         };
     }
@@ -50,7 +56,7 @@ public static class PositionExtensions
             Quantity = op.Quantity
         };
     }
-    
+
     public static OrderPosition FromApiModel(this OrderPositionModel m)
     {
         return new OrderPosition

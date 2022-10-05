@@ -11,7 +11,7 @@ public class OrdersRepository : IOrdersRepository
     {
         _dbContext = dbContext;
     }
-    
+
     public async Task AddNewOrderAsync(Order newOrder)
     {
         _dbContext.Add(newOrder);
