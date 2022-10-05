@@ -9,4 +9,9 @@ resource "helm_release" "grafana_loki" {
     name  = "loki.storage.type"
     value = "filesystem"
   }
+
+  set {
+    name = "loki.auth.enabled"
+    value = false
+  }
 }
