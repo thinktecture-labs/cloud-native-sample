@@ -16,7 +16,7 @@ public class OrdersController : ControllerBase
         _daprHttpPort = configuration.GetValue<int>("DAPR_HTTP_PORT");
         _httpClient = httpClientFactory.CreateClient("ordermonitor");
     }
-    
+
     // GET
     [HttpGet]
     [Route("monitor")]
@@ -28,10 +28,10 @@ public class OrdersController : ControllerBase
         var res = await Task.WhenAll(getOrders, getProducts);
         var orders = res[0];
         var products = res[1];
-        
+
         return Ok(orders.Select(o =>
         {
-            var res =  new OrderMonitorListModel
+            var res = new OrderMonitorListModel
             {
                 Id = o.GetProperty("id").GetGuid(),
                 UserId = o.GetProperty("userId").GetString() ?? string.Empty,
@@ -49,9 +49,10 @@ public class OrdersController : ControllerBase
 
     private OrderMonitorPositionModel TransformPosition(List<JsonElement> products, JsonElement pos)
     {
-        var found = products.FirstOrDefault(pr => pr.GetProperty("id").GetString() == pos.GetProperty("productId").GetString());
+        var found = products.FirstOrDefault(pr =>
+            pr.GetProperty("id").GetString() == pos.GetProperty("productId").GetString());
 
-        if(found.ValueKind == JsonValueKind.Undefined)
+        if (found.ValueKind == JsonValueKind.Undefined)
         {
             return new OrderMonitorPositionModel();
         }
@@ -67,10 +68,10 @@ public class OrdersController : ControllerBase
             };
         }
     }
-    
+
     private string BuildUrl(string service, string path)
-    { 
-        if(_daprHttpPort != 0)
+    {
+        if (_daprHttpPort != 0)
         {
             return $"http://localhost:{_daprHttpPort}/v1.0/invoke/{service}/method/{path}";
         }
