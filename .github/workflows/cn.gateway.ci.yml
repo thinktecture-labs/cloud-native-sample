@@ -36,12 +36,12 @@ jobs:
           tar zxvf dockle.tar.gz
         working-directory: /tmp
       - name: Save Docker Image
-        run: docker save ${{ secrets.ACR_NAME }}.azurecr.io/gateway:${{ github.sha }} -o gateway.tar
+        run: docker save ${{ secrets.ACR_NAME }}.azurecr.io/gateway:${{ github.sha }} -o img.tar
         working-directory: /tmp
       - name: Scan Docker Image
         run: |
-          ./dockle --accept-key KEY_SHA512 -f json -o /tmp/dockle-results.json --input gateway.tar  > /dev/null
-          ./dockle --accept-key KEY_SHA512 -o /tmp/dockle-results.txt --input gateway.tar > /dev/null
+          ./dockle --accept-key KEY_SHA512 -f json -o /tmp/dockle-results.json --input img.tar  > /dev/null
+          ./dockle --accept-key KEY_SHA512 -o /tmp/dockle-results.txt --input img.tar > /dev/null
           DOCKLE_RESULT_JSON=$(cat /tmp/dockle-results.json)
           DOCKLE_RESULT=$(cat /tmp/dockle-results.txt)
           
