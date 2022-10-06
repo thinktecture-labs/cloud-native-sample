@@ -238,7 +238,7 @@ services:
     environment:
       - IdentityServer__Uri=http://localhost:5009/
     ports:
-      - "5005:80"
+      - "5005:8080"
     networks:
       - cloud-native
   authentication:
