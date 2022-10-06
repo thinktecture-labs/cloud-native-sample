@@ -18,12 +18,20 @@ builder.Logging.AddConsole(options =>
     options.FormatterName = ConsoleFormatterNames.Json;
 });
 
+var zipkinEndpoint = builder.Configuration.GetValue<string>("ZipkinEndpoint");
+if (string.IsNullOrWhiteSpace(zipkinEndpoint))
+{
+    throw new ApplicationException("Zipkin Endpoint not provided");
+}
 //traces
 builder.Services.AddOpenTelemetryTracing(options =>
 {
     options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("PriceWatcher"))
         .AddAspNetCoreInstrumentation()
-        .AddZipkinExporter()
+        .AddZipkinExporter(options =>
+        {
+            options.Endpoint = new Uri(zipkinEndpoint);
+        })
         .AddConsoleExporter();
 });
 
