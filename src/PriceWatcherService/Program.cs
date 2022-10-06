@@ -19,13 +19,19 @@ builder.Logging.AddConsole(options =>
 
 // instrumentation
 
+var zipkinEndpoint = builder.Configuration.GetValue<string>("ZipkinEndpoint");
+if (string.IsNullOrWhiteSpace(zipkinEndpoint))
+{
+    throw new ApplicationException("Zipkin Endpoint not provided");
+}
 //traces
 builder.Services.AddOpenTelemetryTracing(options =>
 {
     options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("PriceWatcher"))
         .AddAspNetCoreInstrumentation()
-        .AddZipkinExporter()
-        .AddConsoleExporter();
+        .AddZipkinExporter(config => {
+            config.Endpoint = new Uri(zipkinEndpoint);
+        });
 });
 
 // metrics
