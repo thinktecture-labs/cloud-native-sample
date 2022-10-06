@@ -10,6 +10,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
+const string ServiceName = "OrdersService";
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.ClearProviders();
@@ -26,7 +27,7 @@ if (string.IsNullOrWhiteSpace(zipkinEndpoint))
 //traces
 builder.Services.AddOpenTelemetryTracing(options =>
 {
-    options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("PriceWatcher"))
+    options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(ServiceName))
         .AddAspNetCoreInstrumentation()
         .AddZipkinExporter(options =>
         {
@@ -40,7 +41,7 @@ builder.Services.AddOpenTelemetryMetrics(options =>
 {
     options.ConfigureResource(rb =>
         {
-            rb.AddService("PriceWatcher");
+            rb.AddService(ServiceName);
         })
         .AddRuntimeInstrumentation()
         .AddHttpClientInstrumentation()
