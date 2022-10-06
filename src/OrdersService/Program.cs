@@ -1,12 +1,14 @@
 ﻿using Dapr.Client;
 using Microsoft.OpenApi.Models;
 using OrdersService.Configuration;
-using Prometheus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Console;
 using OrdersService.Data;
 using OrdersService.Data.Repositories;
 using Microsoft.IdentityModel.Tokens;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,28 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole(options =>
 {
     options.FormatterName = ConsoleFormatterNames.Json;
+});
+
+//traces
+builder.Services.AddOpenTelemetryTracing(options =>
+{
+    options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("PriceWatcher"))
+        .AddAspNetCoreInstrumentation()
+        .AddZipkinExporter()
+        .AddConsoleExporter();
+});
+
+// metrics
+builder.Services.AddOpenTelemetryMetrics(options =>
+{
+    options.ConfigureResource(rb =>
+        {
+            rb.AddService("PriceWatcher");
+        })
+        .AddRuntimeInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddAspNetCoreInstrumentation()
+        .AddPrometheusExporter();
 });
 
 var cfg = new OrdersServiceConfiguration();
@@ -89,10 +113,9 @@ app.UseAuthorization();
 app.MapControllers()
     .RequireAuthorization("ApiScope");
 
-app.MapMetrics();
-app.UseHttpMetrics();
-
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");
+
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.Run();
