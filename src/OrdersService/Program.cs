@@ -13,6 +13,7 @@ using OpenTelemetry.Trace;
 const string ServiceName = "OrdersService";
 var builder = WebApplication.CreateBuilder(args);
 
+// logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole(options =>
 {
@@ -32,8 +33,7 @@ builder.Services.AddOpenTelemetryTracing(options =>
         .AddZipkinExporter(options =>
         {
             options.Endpoint = new Uri(zipkinEndpoint);
-        })
-        .AddConsoleExporter();
+        });
 });
 
 // metrics
