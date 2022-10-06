@@ -10,6 +10,17 @@ using OpenTelemetry.Trace;
 const string ServiceName = "NotificationService";
 
 var builder = WebApplication.CreateBuilder(args);
+
+var cfg = new NotificationServiceConfiguration();
+var cfgSection = builder.Configuration.GetSection(NotificationServiceConfiguration.SectionName);
+
+if (cfgSection == null || !cfgSection.Exists())
+{
+    throw new ApplicationException($"Configuration not found. Please specify the {NotificationServiceConfiguration.SectionName} section");
+}
+cfgSection.Bind(cfg);
+builder.Services.AddSingleton(cfg);
+
 // logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole(options =>
@@ -17,10 +28,8 @@ builder.Logging.AddConsole(options =>
     options.FormatterName = ConsoleFormatterNames.Json;
 });
 
-
 //traces
-var zipkinEndpoint = builder.Configuration.GetValue<string>("ZipkinEndpoint");
-if (string.IsNullOrWhiteSpace(zipkinEndpoint))
+if (string.IsNullOrWhiteSpace(cfg.ZipkinEndpoint))
 {
     throw new ApplicationException("Zipkin Endpoint not provided");
 }
@@ -31,7 +40,7 @@ builder.Services.AddOpenTelemetryTracing(options =>
         .AddAspNetCoreInstrumentation()
         .AddZipkinExporter(config =>
         {
-            config.Endpoint = new Uri(zipkinEndpoint);
+            config.Endpoint = new Uri(cfg.ZipkinEndpoint);
         });
 });
 
@@ -48,27 +57,22 @@ builder.Services.AddOpenTelemetryMetrics(options =>
         .AddPrometheusExporter();
 });
 
-var cfg = new NotificationServiceConfiguration();
-var cfgSection = builder.Configuration.GetSection(NotificationServiceConfiguration.SectionName);
-
-if (cfgSection == null || !cfgSection.Exists())
-{
-    throw new ApplicationException($"Configuration not found. Please specify the {NotificationServiceConfiguration.SectionName} section");
-}
-
-builder.Services.AddSingleton(cfg);
-
 // Configure AuthN
 var notificationHubEndpoint = "/notifications/notificationHub";
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
-        //todo: check if we can put authority in DI
-        options.Authority = builder.Configuration.GetValue<string>("Authority");
+        options.Authority = cfg.IdentityServer.Authority;
+        options.RequireHttpsMetadata = cfg.IdentityServer.RequireHttpsMetadata;
+        if(!string.IsNullOrWhiteSpace(cfg.IdentityServer.MetadataAddress))
+        {
+            options.MetadataAddress = cfg.IdentityServer.MetadataAddress;
+        }
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = false,
+            ValidIssuer = cfg.IdentityServer.Authority,
         };
         options.Events = new JwtBearerEvents
         {
@@ -95,7 +99,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("ApiScope", policy =>
     {
         policy.RequireAuthenticatedUser();
-        policy.RequireClaim("scope", "sample");
+        policy.RequireClaim(cfg.Authorization.RequiredClaimName, cfg.Authorization.RequiredClaimValue);
     });
 });
 
@@ -114,7 +118,8 @@ app.UseSwaggerUI();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapHub<NotificationHub>(notificationHubEndpoint);
+app.MapHub<NotificationHub>(notificationHubEndpoint)
+    .RequireAuthorization("ApiScope");
 
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");

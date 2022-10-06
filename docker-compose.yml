@@ -178,7 +178,10 @@ services:
     container_name: notification
     environment:
       DAPR_GRPC_PORT: 10004
-      Authority: http://localhost:5009
+      NotificationService__IdentityServer__Authority: http://localhost:5009
+      NotificationService__IdentityServer__RequireHttpsMetadata: false
+      NotificationService__IdentityServer__MetadataAddress: http://authn:5000/.well-known/openid-configuration
+      NotificationService__ZipkinEndpoint: http://jaeger:9412/api/v2/spans
     networks:
       - cloud-native
     depends_on:
