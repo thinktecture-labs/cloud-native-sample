@@ -1,9 +1,52 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Microsoft.Extensions.Logging.Console;
+using Microsoft.OpenApi.Models;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using ProductsService.Configuration;
 using ProductsService.Data.Repositories;
-using Prometheus;
+
+const string ServiceName = "ProductsService";
 
 var builder = WebApplication.CreateBuilder(args);
+
+// logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole(options =>
+{
+    options.FormatterName = ConsoleFormatterNames.Json;
+});
+
+
+var zipkinEndpoint = builder.Configuration.GetValue<string>("ZipkinEndpoint");
+if (string.IsNullOrWhiteSpace(zipkinEndpoint))
+{
+    throw new ApplicationException("Zipkin Endpoint not provided");
+}
+
+//traces
+builder.Services.AddOpenTelemetryTracing(options =>
+{
+    options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(ServiceName))
+        .AddAspNetCoreInstrumentation()
+        .AddZipkinExporter(config =>
+        {
+            config.Endpoint = new Uri(zipkinEndpoint);
+        });
+});
+
+// metrics
+builder.Services.AddOpenTelemetryMetrics(options =>
+{
+    options.ConfigureResource(rb =>
+        {
+            rb.AddService(ServiceName);
+        })
+        .AddRuntimeInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddAspNetCoreInstrumentation()
+        .AddPrometheusExporter();
+});
 
 var cfg = new ProductsServiceConfiguration();
 var cfgSection = builder.Configuration.GetSection(ProductsServiceConfiguration.SectionName);
@@ -61,8 +104,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapMetrics();
-app.UseHttpMetrics();
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");
