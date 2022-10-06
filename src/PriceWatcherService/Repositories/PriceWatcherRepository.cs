@@ -1,9 +1,11 @@
+using Dapr.Client;
 using PriceWatcher.Entities;
 
 namespace PriceWatcher.Repositories;
 
 public class PriceWatcherRepository : IPriceWatcherRepository
 {
+    private readonly DaprClient _client;
     private readonly ILogger<PriceWatcherRepository> _logger;
 
     private readonly List<Product> _products = new List<Product>()
@@ -14,8 +16,9 @@ public class PriceWatcherRepository : IPriceWatcherRepository
     };
     private readonly List<Watcher> _watchers = new List<Watcher>();
 
-    public PriceWatcherRepository(ILogger<PriceWatcherRepository> logger)
+    public PriceWatcherRepository(DaprClient client, ILogger<PriceWatcherRepository> logger)
     {
+        _client = client;
         _logger = logger;
     }
     
@@ -62,7 +65,11 @@ public class PriceWatcherRepository : IPriceWatcherRepository
             .ForEach(w =>
             {
                 _logger.LogInformation("Issue notification for {Watcher} because price dropped for {ProductName} ({ProductId})", w.Email, found.Name, found.Id);
-                // todo: Notify watcher
+                _client.PublishEventAsync("pricedrops", "notifications", new {
+                    Recipient = w.Email,
+                    ProductName = found.Name,
+                    Price = found.Price
+                });
                 
             });
         return true;

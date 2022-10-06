@@ -48,6 +48,8 @@ builder.Services.AddOpenTelemetryMetrics(options =>
 });
 
 // Add services to the container.
+builder.Services.AddDaprClient();
+
 builder.Services.AddSingleton<IPriceWatcherRepository, PriceWatcherRepository>();
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks();

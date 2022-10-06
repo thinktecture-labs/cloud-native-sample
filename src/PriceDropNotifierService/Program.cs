@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging.Console;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Dapr.Client;
 
 const string ServiceName = "PriceDropNotifier";
 
@@ -41,7 +42,7 @@ builder.Services.AddOpenTelemetryMetrics(options =>
 });
 
 // Add services to the container.
-
+builder.Services.AddDaprClient();
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

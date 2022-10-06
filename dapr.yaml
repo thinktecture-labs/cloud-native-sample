@@ -1,0 +1,47 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pricedrops
+spec:
+  version: v1
+  type: pubsub.rabbitmq
+  metadata:
+  - name: host
+    secretKeyRef:
+      name: rabbitmq
+      key: connectionString
+  - name: deletedWhenUnused
+    value: false
+  - name: enableDeadLetter
+    value: true
+  - name: exchangeKind
+    value: topic
+  - name: deliveryMode
+    value: "2"
+---
+apiVersion: dapr.io/v2alpha1
+kind: Subscription
+metadata:
+  name: sub-price-drop-notifications
+  namespace: cloud-native-sample
+spec:
+  pubsubname: pricedrops
+  topic: notifications
+  routes:
+    default: /pricedropnotifier/notify
+scopes:
+- price-drop-notifier
+---
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: sendgrid
+  namespace: cloud-native-sample
+spec:
+  type: bindings.twilio.sendgrid
+  version: v1
+  metadata:
+  - name: apiKey
+    secretKeyRef:
+      name: twilio
+      key: apiKey
