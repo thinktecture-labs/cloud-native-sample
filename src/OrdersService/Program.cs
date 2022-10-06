@@ -13,6 +13,22 @@ using OpenTelemetry.Trace;
 const string ServiceName = "OrdersService";
 var builder = WebApplication.CreateBuilder(args);
 
+var cfg = new OrdersServiceConfiguration();
+var cfgSection = builder.Configuration.GetSection(OrdersServiceConfiguration.SectionName);
+
+if (cfgSection == null || !cfgSection.Exists())
+{
+    throw new ApplicationException(
+        $"Could not find service config. Please provide a '{OrdersServiceConfiguration.SectionName}' config section");
+}
+else
+{
+    cfgSection.Bind(cfg);
+}
+
+builder.Services.AddSingleton(cfg);
+
+
 // logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole(options =>
@@ -20,8 +36,8 @@ builder.Logging.AddConsole(options =>
     options.FormatterName = ConsoleFormatterNames.Json;
 });
 
-var zipkinEndpoint = builder.Configuration.GetValue<string>("ZipkinEndpoint");
-if (string.IsNullOrWhiteSpace(zipkinEndpoint))
+
+if (string.IsNullOrWhiteSpace(cfg.ZipkinEndpoint))
 {
     throw new ApplicationException("Zipkin Endpoint not provided");
 }
@@ -32,7 +48,7 @@ builder.Services.AddOpenTelemetryTracing(options =>
         .AddAspNetCoreInstrumentation()
         .AddZipkinExporter(options =>
         {
-            options.Endpoint = new Uri(zipkinEndpoint);
+            options.Endpoint = new Uri(cfg.ZipkinEndpoint);
         });
 });
 
@@ -49,30 +65,22 @@ builder.Services.AddOpenTelemetryMetrics(options =>
         .AddPrometheusExporter();
 });
 
-var cfg = new OrdersServiceConfiguration();
-var cfgSection = builder.Configuration.GetSection(OrdersServiceConfiguration.SectionName);
-
-if (cfgSection == null || !cfgSection.Exists())
-{
-    throw new ApplicationException(
-        $"Could not find service config. Please provide a '{OrdersServiceConfiguration.SectionName}' config section");
-}
-else
-{
-    cfgSection.Bind(cfg);
-}
-
-builder.Services.AddSingleton(cfg);
-
 // Configure AuthN
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
-        //todo: check if we can put authority in DI
-        options.Authority = builder.Configuration.GetValue<string>("Authority");
+        
+        options.Authority = cfg.IdentityServer.Authority;
+        options.RequireHttpsMetadata = cfg.IdentityServer.RequireHttpsMetadata;
+        
+        if (!string.IsNullOrWhiteSpace(cfg.IdentityServer.MetadataAddress))
+        {
+            options.MetadataAddress = cfg.IdentityServer.MetadataAddress;
+        }
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = false,
+            ValidIssuer = cfg.IdentityServer.Authority  
         };
     });
 
@@ -82,7 +90,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("ApiScope", policy =>
     {
         policy.RequireAuthenticatedUser();
-        policy.RequireClaim("scope", "sample");
+        policy.RequireClaim(cfg.Authorization.RequiredClaimName, cfg.Authorization.RequiredClaimValue);
     });
 });
 

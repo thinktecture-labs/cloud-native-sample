@@ -117,7 +117,10 @@ services:
       - rabbit
     environment:
       DAPR_GRPC_PORT: 10002
-      ZIPKIN_ENDPOINT: http://jaeger:9412/api/v2/spans
+      OrdersService__IdentityServer__Authority: http://localhost:5009
+      OrdersService__IdentityServer__RequireHttpsMetadata: false
+      OrdersService__IdentityServer__MetadataAddress: http://authn:5000/.well-known/openid-configuration
+      OrdersService__ZipkinEndpoint: http://jaeger:9412/api/v2/spans
     logging:
       driver: loki
       options:
@@ -144,6 +147,7 @@ services:
     container_name: products
     environment:
       DAPR_GRPC_PORT: 10001
+      Authority: http://localhost:5009
     networks:
       - cloud-native
     depends_on:
@@ -174,6 +178,7 @@ services:
     container_name: notification
     environment:
       DAPR_GRPC_PORT: 10004
+      Authority: http://localhost:5009
     networks:
       - cloud-native
     depends_on:
@@ -206,6 +211,7 @@ services:
     environment:
       DAPR_GRPC_PORT: 10003
       ZIPKIN_ENDPOINT: http://jaeger:9412/api/v2/spans
+      Authority: http://localhost:5009
     networks:
       - cloud-native
     depends_on:
