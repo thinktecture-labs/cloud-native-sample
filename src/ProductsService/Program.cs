@@ -10,6 +10,17 @@ const string ServiceName = "ProductsService";
 
 var builder = WebApplication.CreateBuilder(args);
 
+var cfg = new ProductsServiceConfiguration();
+var cfgSection = builder.Configuration.GetSection(ProductsServiceConfiguration.SectionName);
+
+if (cfgSection == null || !cfgSection.Exists())
+{
+    throw new ApplicationException(
+        $"Could not find service config. Please provide a '{ProductsServiceConfiguration.SectionName}' config section");
+}
+cfgSection.Bind(cfg);
+builder.Services.AddSingleton(cfg);
+
 // logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole(options =>
@@ -17,9 +28,7 @@ builder.Logging.AddConsole(options =>
     options.FormatterName = ConsoleFormatterNames.Json;
 });
 
-
-var zipkinEndpoint = builder.Configuration.GetValue<string>("ZipkinEndpoint");
-if (string.IsNullOrWhiteSpace(zipkinEndpoint))
+if (string.IsNullOrWhiteSpace(cfg.ZipkinEndpoint))
 {
     throw new ApplicationException("Zipkin Endpoint not provided");
 }
@@ -31,7 +40,7 @@ builder.Services.AddOpenTelemetryTracing(options =>
         .AddAspNetCoreInstrumentation()
         .AddZipkinExporter(config =>
         {
-            config.Endpoint = new Uri(zipkinEndpoint);
+            config.Endpoint = new Uri(cfg.ZipkinEndpoint);
         });
 });
 
@@ -48,20 +57,6 @@ builder.Services.AddOpenTelemetryMetrics(options =>
         .AddPrometheusExporter();
 });
 
-var cfg = new ProductsServiceConfiguration();
-var cfgSection = builder.Configuration.GetSection(ProductsServiceConfiguration.SectionName);
-
-if (cfgSection == null || !cfgSection.Exists())
-{
-    throw new ApplicationException(
-        $"Could not find service config. Please provide a '{ProductsServiceConfiguration.SectionName}' config section");
-}
-else
-{
-    cfgSection.Bind(cfg);
-}
-
-builder.Services.AddSingleton(cfg);
 builder.Services.AddScoped<IProductsRepository>(serviceProvider =>
 {
     var c = serviceProvider.GetRequiredService<ProductsServiceConfiguration>();

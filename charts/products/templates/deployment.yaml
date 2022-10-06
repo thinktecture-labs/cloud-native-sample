@@ -33,6 +33,9 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: ProductsService__ZipkinEndpoint
+              value: http://zipkin.zipkin.svc.cluster.local:9411/api/v2/spans
           ports:
             - name: http-products
               containerPort: {{ .Values.containerPort }}

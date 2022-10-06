@@ -147,7 +147,7 @@ services:
     container_name: products
     environment:
       DAPR_GRPC_PORT: 10001
-      Authority: http://localhost:5009
+      ProductsService__ZipkinEndpoint: http://jaeger:9412/api/v2/spans
     networks:
       - cloud-native
     depends_on:
