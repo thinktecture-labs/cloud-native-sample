@@ -45,17 +45,6 @@ public class OrdersController : ControllerBase
         var newOrder = model.ToEntity(id, now, HttpContext.GetUserId(), userName);
 
         await _repository.AddNewOrderAsync(newOrder);
-
-        // TODO: manually craft message to get real end-to-end tracing
-        if (HttpContext.Request.Headers.TryGetValue("traceid", out var traceid))
-        {
-            _logger.LogInformation($"CreateOrderAsync: traceid={traceid}");
-        }
-        // curl -X POST http://localhost:3601/v1.0/publish/order-pub-sub/orders -H "Content-Type: application/json" -d '{"orderId": "100"}'
-        // curl -X POST http://localhost:3601/v1.0/publish/order-pub-sub/orders -H "Content-Type: application/cloudevents+json" -d '{"specversion" : "1.0", "type" : "com.dapr.cloudevent.sent", "source" : "testcloudeventspubsub", "subject" : "Cloud Events Test", "id" : "someCloudEventId", "time" : "2021-08-02T09:00:00Z", "datacontenttype" : "application/cloudevents+json", "data" : {"orderId": "100"}}'
-        //var httpClient = new HttpClient();
-        //httpClient.PostAsJsonAsync<
-
         await _dapr.PublishEventAsync(_config.CreateOrderPubSubName, _config.CreateOrderTopicName, newOrder,
             CancellationToken.None)!;
 
