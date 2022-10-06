@@ -44,12 +44,12 @@ service:
   port: 80
 
 resources:
-  limits:
-    cpu: 50m
-    memory: 96Mi
   requests:
-    cpu: 50m
-    memory: 96Mi
+    cpu: 200m
+    memory: 128Mi
+  limits:
+    cpu: 250m
+    memory: 256Mi
 
 autoscaling:
   enabled: false
