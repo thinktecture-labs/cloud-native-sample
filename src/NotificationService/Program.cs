@@ -1,18 +1,53 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NotificationService;
 using NotificationService.Configuration;
-using Prometheus;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+
+const string ServiceName = "NotificationService";
 
 var builder = WebApplication.CreateBuilder(args);
+// logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole(options =>
 {
     options.FormatterName = ConsoleFormatterNames.Json;
 });
+
+
+//traces
+var zipkinEndpoint = builder.Configuration.GetValue<string>("ZipkinEndpoint");
+if (string.IsNullOrWhiteSpace(zipkinEndpoint))
+{
+    throw new ApplicationException("Zipkin Endpoint not provided");
+}
+
+builder.Services.AddOpenTelemetryTracing(options =>
+{
+    options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(ServiceName))
+        .AddAspNetCoreInstrumentation()
+        .AddZipkinExporter(config =>
+        {
+            config.Endpoint = new Uri(zipkinEndpoint);
+        });
+});
+
+// metrics
+builder.Services.AddOpenTelemetryMetrics(options =>
+{
+    options.ConfigureResource(rb =>
+        {
+            rb.AddService(ServiceName);
+        })
+        .AddRuntimeInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddAspNetCoreInstrumentation()
+        .AddPrometheusExporter();
+});
+
 var cfg = new NotificationServiceConfiguration();
 var cfgSection = builder.Configuration.GetSection(NotificationServiceConfiguration.SectionName);
 
@@ -82,12 +117,11 @@ app.UseAuthorization();
 app.MapHub<NotificationHub>(notificationHubEndpoint)
     .RequireAuthorization("ApiScope");
 
-app.MapMetrics();
-app.UseHttpMetrics();
-
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");
 
 app.MapControllers();
+
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.Run();
