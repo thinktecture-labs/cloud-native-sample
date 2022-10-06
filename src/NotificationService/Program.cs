@@ -114,8 +114,7 @@ app.UseSwaggerUI();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapHub<NotificationHub>(notificationHubEndpoint)
-    .RequireAuthorization("ApiScope");
+app.MapHub<NotificationHub>(notificationHubEndpoint);
 
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");
