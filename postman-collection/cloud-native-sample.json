@@ -1,8 +1,9 @@
 {
 	"info": {
-		"_postman_id": "24bfa956-f73e-469f-8832-19b5e58d3161",
+		"_postman_id": "26d997be-770b-48de-80cb-2ee00fc1d71f",
 		"name": "Cloud-Native Sample",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48170"
 	},
 	"item": [
 		{
@@ -12,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"userId\": \"99916ba4-f636-45b7-b5e3-39c74002fda8\",\n    \"positions\": [\n        {\n            \"productId\": \"b3b749d1-fd02-4b47-8e3c-540555439db6\",\n            \"quantity\": 3\n        },\n        {\n            \"productId\": \"aaaaaaaa-fd02-4b47-8e3c-540555439db6\",\n            \"quantity\": 1\n        }\n    ]\n}",
+					"raw": "{\n    \"positions\": [\n        {\n            \"productId\": \"b3b749d1-fd02-4b47-8e3c-540555439db6\",\n            \"quantity\": 3\n        },\n        {\n            \"productId\": \"aaaaaaaa-fd02-4b47-8e3c-540555439db6\",\n            \"quantity\": 1\n        }\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -20,12 +21,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/orders",
-					"protocol": "http",
+					"raw": "{{root}}/orders",
 					"host": [
-						"localhost"
+						"{{root}}"
 					],
-					"port": "5000",
 					"path": [
 						"orders"
 					]
@@ -39,12 +38,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/orders",
-					"protocol": "http",
+					"raw": "{{root}}/orders",
 					"host": [
-						"localhost"
+						"{{root}}"
 					],
-					"port": "5000",
 					"path": [
 						"orders"
 					]
@@ -58,12 +55,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/orders/monitor",
-					"protocol": "http",
+					"raw": "{{root}}/orders/monitor",
 					"host": [
-						"localhost"
+						"{{root}}"
 					],
-					"port": "5000",
 					"path": [
 						"orders",
 						"monitor"
@@ -71,6 +66,139 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Register for PriceDrop",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"thorsten.hans@thinktecture.com\",\n    \"productId\": \"aaaaaaaa-fd02-4b47-8e3c-540555439db6\",\n    \"price\": 1.95\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{root}}/pricewatcher/register",
+					"host": [
+						"{{root}}"
+					],
+					"path": [
+						"pricewatcher",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Issue price drop",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"productId\": \"aaaaaaaa-fd02-4b47-8e3c-540555439db6\",\n    \"dropPriceBy\": 0.1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7045/pricedrops/invoke",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7045",
+					"path": [
+						"pricedrops",
+						"invoke"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "authUrl",
+				"value": "https://cn.thinktecture-demos.com/login/connect/authorize",
+				"type": "string"
+			},
+			{
+				"key": "accessTokenUrl",
+				"value": "https://cn.thinktecture-demos.com/login/connect/token",
+				"type": "string"
+			},
+			{
+				"key": "clientId",
+				"value": "interactive",
+				"type": "string"
+			},
+			{
+				"key": "scope",
+				"value": "sample openid profile",
+				"type": "string"
+			},
+			{
+				"key": "useBrowser",
+				"value": true,
+				"type": "boolean"
+			},
+			{
+				"key": "grant_type",
+				"value": "authorization_code_with_pkce",
+				"type": "string"
+			},
+			{
+				"key": "tokenName",
+				"value": "cn-token",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "root",
+			"value": "https://cn.thinktecture-demos.com/api",
+			"type": "string"
+		},
+		{
+			"key": "authority",
+			"value": "https://cn.thinktecture-demos.com/login",
+			"type": "string"
 		}
 	]
 }
