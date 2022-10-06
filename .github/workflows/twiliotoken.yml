@@ -1,0 +1,33 @@
+name: Store Twilio SendGrid API Key in AKS
+on:
+  workflow_dispatch:
+jobs:
+  infra:
+    name: "Automation"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Azure CLI Login
+        uses: Azure/login@v1
+        with:
+          creds: '{"clientId":"${{ secrets.TERRAFORM_CLIENT_ID }}","clientSecret":"${{ secrets.TERRAFORM_CLIENT_SECRET }}","subscriptionId":"${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.TERRAFORM_TENANT_ID }}"}'
+      - name: Install Kubelogin
+        run: |
+          curl -LO "https://github.com/Azure/kubelogin/releases/download/$KUBELOGIN_VERSION/kubelogin-linux-amd64.zip" && \
+          sudo unzip -j "kubelogin-linux-amd64.zip" -d /usr/local/bin && \
+          rm -f "kubelogin-linux-amd64.zip" && \
+          kubelogin --version
+      - uses: azure/setup-kubectl@v3
+        id: install-kubectl
+      - name: Verify kubectl
+        run: kubectl version
+      - name: Azure CLI Login
+        uses: Azure/login@v1
+        with:
+          creds: '{"clientId":"${{ secrets.TERRAFORM_CLIENT_ID }}","clientSecret":"${{ secrets.TERRAFORM_CLIENT_SECRET }}","subscriptionId":"${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.TERRAFORM_TENANT_ID }}"}'
+      - name: AKS Login (non-interactive)
+        run: |
+          az account set --subscription ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }} -onone && \
+          az aks get-credentials -g $RG_NAME -n $AKS_NAME && \
+          kubelogin convert-kubeconfig -l azurecli
+      - name: Store Twilio SendGrid API Key
+        run: kubectl create secret generic twilio -n cloud-native-sample --from-literal apiKey=${{ secrets.TWILIO_SENDGRID_API_KEY}}
