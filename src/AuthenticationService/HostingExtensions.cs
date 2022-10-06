@@ -99,15 +99,11 @@ internal static class HostingExtensions
         app.UseRouting();
         app.Use((context, next) =>
         {
-            Console.WriteLine("Received following headers:");
-            // log all Http Headers
-            foreach (var header in context.Request.Headers)
+            var forceHttps = app.Configuration.GetValue<bool>("ForceHttps");
+            if (forceHttps)
             {
-                Console.WriteLine($"{header.Key}: {header.Value}");
+                context.Request.Scheme = "https";
             }
-            Console.WriteLine($"Current scheme is {context.Request.Scheme}");
-            // end log :D 
-            context.Request.Scheme = "https";
             return next();
         });
         app.UseIdentityServer();
