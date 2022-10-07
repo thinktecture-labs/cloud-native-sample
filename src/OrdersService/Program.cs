@@ -21,13 +21,8 @@ if (cfgSection == null || !cfgSection.Exists())
     throw new ApplicationException(
         $"Could not find service config. Please provide a '{OrdersServiceConfiguration.SectionName}' config section");
 }
-else
-{
-    cfgSection.Bind(cfg);
-}
-
+cfgSection.Bind(cfg);
 builder.Services.AddSingleton(cfg);
-
 
 // logging
 builder.Logging.ClearProviders();
@@ -36,12 +31,11 @@ builder.Logging.AddConsole(options =>
     options.FormatterName = ConsoleFormatterNames.Json;
 });
 
-
+//traces
 if (string.IsNullOrWhiteSpace(cfg.ZipkinEndpoint))
 {
     throw new ApplicationException("Zipkin Endpoint not provided");
 }
-//traces
 builder.Services.AddOpenTelemetryTracing(options =>
 {
     options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(ServiceName))
@@ -69,7 +63,6 @@ builder.Services.AddOpenTelemetryMetrics(options =>
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
-        
         options.Authority = cfg.IdentityServer.Authority;
         options.RequireHttpsMetadata = cfg.IdentityServer.RequireHttpsMetadata;
         
