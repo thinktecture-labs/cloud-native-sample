@@ -66,7 +66,33 @@ A[Create Order] -- with token --> B[Call API Gateway];
 docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
 ```
 
-### Common Docker Compose commands
+### Local Environment
+
+Find the `Makefile` in the root of the repository. Use it to perform common tasks as shown below:
+
+```bash
+# Start the sample locally (in docker)
+make start 
+
+# Quickstart (no image build) the sample locally (in docker)
+make quickstart
+
+# get logs
+make logs
+
+# stop the sample
+make stop
+
+# clean-up the local docker environment
+## stops everything
+## removes images
+## removes volumes
+## removes orphan containers
+## removes custom docker network
+make cleanup
+```
+
+### Common Docker-Compose commands
 
 ```bash
 # Build Container images
