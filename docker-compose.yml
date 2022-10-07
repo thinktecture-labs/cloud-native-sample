@@ -214,8 +214,8 @@ services:
     container_name: shipping
     environment:
       DAPR_GRPC_PORT: 10003
-      ZIPKIN_ENDPOINT: http://jaeger:9412/api/v2/spans
-      Authority: http://localhost:5009
+      ShippingService__Environment: Development
+      ShippingService__ZipkinEndpoint: http://jaeger:9412/api/v2/spans
     networks:
       - cloud-native
     depends_on:

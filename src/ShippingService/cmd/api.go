@@ -33,24 +33,17 @@ func main() {
 	log := logrus.New()
 	log.SetOutput(os.Stdout)
 	log.SetLevel(logrus.DebugLevel)
-	if cfg.Mode == "Release" {
+
+	if cfg.IsProduction() {
 		log.Infoln("Will run shipping service in release mode.")
 		gin.SetMode(gin.ReleaseMode)
 	}
+
 	r := gin.New()
 	//todo: extract to dedicated func
 	m := ginmetrics.GetMonitor()
 	m.SetMetricPath("/metrics")
 	m.Use(r)
-
-	/*tp := getTraceProvider()
-	defer func() {
-		if err := tp.Shutdown(context.Background()); err != nil {
-			log.Printf("Error shutting down tracer provider: %v", err)
-		}
-	}()
-	r.Use(otelgin.Middleware("notification"))
-	*/
 	r.Use(ginlogrus.Logger(log), gin.Recovery())
 	//todo: rename route to ship or process
 	r.POST("/orders", func(ctx *gin.Context) {
@@ -65,21 +58,27 @@ func main() {
 			ctx.AbortWithStatus(500)
 			return
 		}
-		// ctx.Status(200)
+
 		// we must send at least! an empty JSON object, otherwise dapr component will treat response incorrectly and log
 		// skipping status check due to error parsing result from pub/sub event
 		// https://github.com/dapr/dapr/issues/2235
 		ctx.JSON(200, daprResponse{})
 
 	})
+
 	r.GET("/healthz/readiness", func(ctx *gin.Context) {
 		ctx.Status(200)
 	})
+
 	r.GET("/healthz/liveness", func(ctx *gin.Context) {
 		ctx.Status(200)
 	})
+
 	p := getPort()
-	r.Run(fmt.Sprintf(":%d", p))
+	log.Infof("Starting shipping service on port %d", p)
+	if err := r.Run(fmt.Sprintf(":%d", p)); err != nil {
+		log.Fatalf("Error while running gin: %s", err)
+	}
 }
 
 func getTraceProvider() *sdktrace.TracerProvider {

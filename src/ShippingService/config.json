@@ -1,6 +1,6 @@
 {
   "Port": 5003,
-  "Mode": "Debug",
+  "Environment": "Development",
   "PubSubName": "orders",
   "TopicName": "processed_orders"
 }

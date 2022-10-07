@@ -12,21 +12,30 @@ import (
 )
 
 type Shipping struct {
-	cfg *ShippingServiceConfiguration
+	cfg *Configuration
 	log *logrus.Logger
 }
 
-func NewShipping(cfg *ShippingServiceConfiguration, log *logrus.Logger) *Shipping {
+func NewShipping(cfg *Configuration, log *logrus.Logger) *Shipping {
 	return &Shipping{
 		cfg: cfg,
 		log: log,
 	}
 }
 
-type ShippingServiceConfiguration struct {
-	PubSubName string
-	TopicName  string
-	Mode       string
+const (
+	environmentProduction = "Production"
+)
+
+type Configuration struct {
+	PubSubName     string
+	TopicName      string
+	Environment    string
+	ZipkinEndpoint string
+}
+
+func (c *Configuration) IsProduction() bool {
+	return c.Environment == environmentProduction
 }
 
 type ShippingProcessed struct {

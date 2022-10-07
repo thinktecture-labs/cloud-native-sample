@@ -1,3 +1,4 @@
+environment: Production
 replicaCount: 1
 image:
   repository: nginx
