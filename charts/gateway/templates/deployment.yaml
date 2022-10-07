@@ -34,8 +34,10 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: "ASPNETCORE_ENVIRONMENT"
+            - name: ASPNETCORE_ENVIRONMENT
               value: "{{ .Values.environment }}"
+            - name: Gateway__ZipkinEndpoint
+              value: http://zipkin.zipkin.svc.cluster.local:9411/api/v2/spans
           ports:
             - name: http-gateway
               containerPort: {{ .Values.containerPort }}

@@ -1,4 +1,5 @@
 ﻿using System.IO.Compression;
+using Gateway;
 using Gateway.Configuration;
 using Gateway.TransformProviders;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -22,11 +23,7 @@ if (cfgSection == null || !cfgSection.Exists())
     throw new ApplicationException(
         $"Could not find Gateway configuration. Please ensure a '{GatewayConfiguration.SectionName}' exists");
 }
-else
-{
-    cfgSection.Bind(cfg);
-}
-
+cfgSection.Bind(cfg);
 builder.Services.AddSingleton(cfg);
 
 // logging
@@ -36,6 +33,10 @@ builder.Logging.AddConsole(options =>
     options.FormatterName = ConsoleFormatterNames.Json;
 });
 
+if (string.IsNullOrWhiteSpace(cfg.ZipkinEndpoint))
+{
+    throw new ApplicationException("Zipkin Endpoint not provided");
+}
 //traces
 builder.Services.AddOpenTelemetryTracing(options =>
 {
@@ -69,7 +70,12 @@ builder.Services.AddResponseCompression(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(CorsPolicyName, b => { b.AllowAnyHeader().AllowAnyMethod().WithOrigins(cfg.CorsOrigins); });
+    options.AddPolicy(CorsPolicyName, builder => { 
+        builder
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .WithOrigins(cfg.CorsOrigins); 
+    });
 });
 
 builder.Services.AddReverseProxy()
@@ -78,8 +84,11 @@ builder.Services.AddReverseProxy()
 
 builder.Services.AddControllers();
 
-builder.Services.AddHeaderPropagation(o => { o.Headers.Add("Authorization"); });
-builder.Services.AddHttpClient("ordermonitor").AddHeaderPropagation();
+builder.Services.AddHeaderPropagation(options => { 
+    options.Headers.Add("Authorization"); 
+});
+builder.Services.AddHttpClient(Constants.HttpClientName)
+    .AddHeaderPropagation();
 
 
 builder.Services.AddSwaggerGen(c =>

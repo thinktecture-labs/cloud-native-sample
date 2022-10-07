@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Net;
+using System.Text.Json;
 using Gateway.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,20 +15,29 @@ public class OrdersController : ControllerBase
     public OrdersController(IConfiguration configuration, IHttpClientFactory httpClientFactory)
     {
         _daprHttpPort = configuration.GetValue<int>("DAPR_HTTP_PORT");
-        _httpClient = httpClientFactory.CreateClient("ordermonitor");
+        _httpClient = httpClientFactory.CreateClient(Constants.HttpClientName);
     }
 
-    // GET
     [HttpGet]
     [Route("monitor")]
     public async Task<IActionResult> GetOrderMonitorDataAsync()
     {
-        var getOrders = _httpClient.GetFromJsonAsync<List<JsonElement>>(BuildUrl("orders", "orders"));
-        var getProducts = _httpClient.GetFromJsonAsync<List<JsonElement>>(BuildUrl("products", "products"));
+        var getOrders = _httpClient.GetAsync(BuildUrl("orders", "orders"));
+        var getProducts = _httpClient.GetAsync(BuildUrl("products", "products"));
 
         var res = await Task.WhenAll(getOrders, getProducts);
-        var orders = res[0];
-        var products = res[1];
+        // handle unauthorized
+        if (res[0].StatusCode == System.Net.HttpStatusCode.Unauthorized || res[1].StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        {
+            return Unauthorized();
+        }
+        // treat all other non successfull responses as errors
+        if (!res[0].IsSuccessStatusCode || !res[1].IsSuccessStatusCode)
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError);
+        }
+        var orders = await res[0].Content.ReadFromJsonAsync<List<JsonElement>>();
+        var products = await res[1].Content.ReadFromJsonAsync<List<JsonElement>>();
 
         return Ok(orders.Select(o =>
         {

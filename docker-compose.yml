@@ -86,6 +86,7 @@ services:
         loki-retries: 5
     environment:
       ASPNETCORE_ENVIRONMENT: DockerCompose
+      Gateway__ZipkinEndpoint: http://jaeger:9412/api/v2/spans
       DAPR_HTTP_PORT: 9000
     networks:
       - cloud-native
