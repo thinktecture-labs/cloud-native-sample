@@ -33,6 +33,7 @@ public class OrdersController : ControllerBase
         Description = "Invoke this endpoint to place a new order")]
     [SwaggerResponse(202, Description = "Order has been accepted")]
     [SwaggerResponse(400)]
+    [SwaggerResponse(401)]
     [SwaggerResponse(500)]
     public async Task<IActionResult> CreateOrderAsync([FromBody] CreateOrderModel model)
     {
@@ -57,6 +58,7 @@ public class OrdersController : ControllerBase
         Description = "This endpoint returns all orders")]
     [SwaggerResponse(200, Description = "The order", Type = typeof(IEnumerable<OrderListModel>))]
     [SwaggerResponse(400)]
+    [SwaggerResponse(401)]
     [SwaggerResponse(500)]
     public async Task<IActionResult> GetOrdersAsync()
     {
