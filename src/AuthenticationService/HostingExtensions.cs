@@ -31,11 +31,10 @@ internal static class HostingExtensions
         var isBuilder = builder.Services.AddIdentityServer(options =>
             {
                 options.Events.RaiseErrorEvents = true;
-                //options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
-                //options.Events.RaiseSuccessEvents = true;
- 
                 options.EmitStaticAudienceClaim = true;
+                //options.Events.RaiseInformationEvents = true;
+                //options.Events.RaiseSuccessEvents = true;
 
                 // IMPORTANT: change this for non-local dev/test
                 options.Authentication.CookieSameSiteMode = SameSiteMode.Unspecified;
@@ -53,8 +52,8 @@ internal static class HostingExtensions
         builder.Services.AddAuthentication()
             .AddOpenIdConnect("azuread", "Sign-in with Azure AD", options =>
             {
-                options.Authority = cfg.AzureAd.Authority; // "https://login.microsoftonline.com/common";
-                options.ClientId = cfg.AzureAd.ClientId; // "b33fe330-1cca-4d71-a286-edabfa622a0b";
+                options.Authority = cfg.AzureAd.Authority;
+                options.ClientId = cfg.AzureAd.ClientId;
                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                 options.SignOutScheme = IdentityServerConstants.SignoutScheme;
 
@@ -66,8 +65,7 @@ internal static class HostingExtensions
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = false,
-                    ValidAudience = cfg.AzureAd.ClientId, // "b33fe330-1cca-4d71-a286-edabfa622a0b",
-
+                    ValidAudience = cfg.AzureAd.ClientId,
                     NameClaimType = "name",
                     RoleClaimType = "role"
                 };
@@ -99,8 +97,8 @@ internal static class HostingExtensions
         app.UseRouting();
         app.Use((context, next) =>
         {
-            var forceHttps = app.Configuration.GetValue<bool>("ForceHttps");
-            if (forceHttps)
+            
+            if (!cfg.AllowHttp)
             {
                 context.Request.Scheme = "https";
             }

@@ -254,7 +254,8 @@ services:
   authentication:
     build: ./src/AuthenticationService
     container_name: authn
-    #environment:
+    environment:
+      IdentityServer__AllowHttp: true
       #IdentityServer__InteractiveClient__RedirectUris__0: http://localhost:5005/callback.html
       #IdentityServer__InteractiveClient__FrontChannelLogoutUri: http://localhost:5005/signout-oidc
       #IdentityServer__InteractiveClient__PostLogoutRedirectUris__0: http://localhost:5005/signout-callback-oidc

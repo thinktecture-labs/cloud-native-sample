@@ -6,6 +6,7 @@ public class IdentityServerConfig
     public InteractiveClientConfig InteractiveClient { get; set; }
     public AzureAdConfig AzureAd { get; set; }
     public string VirtualPath { get; set; }
+    public bool AllowHttp { get; set; } = false;
 }
 
 public class AzureAdConfig
