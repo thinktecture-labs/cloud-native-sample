@@ -1,4 +1,0 @@
-# we want to use same creds as if we're running plain rabbit locally...
-auth:
-  username: guest
-  password: guest
