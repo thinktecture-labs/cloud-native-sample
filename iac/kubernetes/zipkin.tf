@@ -56,7 +56,7 @@ resource "kubernetes_service" "zipkin" {
 
 resource "kubernetes_config_map_v1" "name" {
   metadata {
-    name = "zipkin"
+    name      = "zipkin"
     namespace = kubernetes_namespace.app.metadata[0].name
   }
   data = {

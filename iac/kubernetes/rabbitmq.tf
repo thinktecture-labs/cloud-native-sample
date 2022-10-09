@@ -20,7 +20,7 @@ resource "helm_release" "rabbitmq" {
 
   lifecycle {
     ignore_changes = [
-     set 
+      set
     ]
   }
 }
