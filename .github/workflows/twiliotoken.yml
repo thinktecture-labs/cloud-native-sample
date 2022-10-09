@@ -12,7 +12,7 @@ jobs:
           creds: '{"clientId":"${{ secrets.TERRAFORM_CLIENT_ID }}","clientSecret":"${{ secrets.TERRAFORM_CLIENT_SECRET }}","subscriptionId":"${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.TERRAFORM_TENANT_ID }}"}'
       - name: Install Kubelogin
         run: |
-          curl -LO "https://github.com/Azure/kubelogin/releases/download/$KUBELOGIN_VERSION/kubelogin-linux-amd64.zip" && \
+          curl -LO "https://github.com/Azure/kubelogin/releases/download/v0.0.20/kubelogin-linux-amd64.zip" && \
           sudo unzip -j "kubelogin-linux-amd64.zip" -d /usr/local/bin && \
           rm -f "kubelogin-linux-amd64.zip" && \
           kubelogin --version
