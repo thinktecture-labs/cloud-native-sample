@@ -1,4 +1,26 @@
-﻿<MudNavMenu>
+﻿@inject IConfiguration configuration
+
+<MudNavMenu>
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
     <MudNavLink Href="monitor" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Monitor</MudNavLink>
+    <MudNavLink Href="@ZipkinUrl" Target="_blank" Icon="@Icons.Outlined.MonitorHeart">Zipkin</MudNavLink>
+    <MudNavLink Href="@GrafanaUrl" Target="_blank" Icon="@Icons.Outlined.InsertChart">Grafana</MudNavLink>
 </MudNavMenu>
+
+@code {
+    
+    private string ZipkinUrl 
+    {
+        get
+        {
+            return configuration["ZipkinUrl"];
+        }
+    }
+
+    private string GrafanaUrl
+    {
+        get{
+            return configuration["GrafanaUrl"];
+        }
+    }
+}

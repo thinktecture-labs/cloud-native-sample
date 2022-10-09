@@ -51,8 +51,6 @@ A[Create Order] -- with token --> B[Call API Gateway];
   * Password: `admin`
 * Zipkin
   * [http://localhost:9411](http://localhost:9411)
-* Jaeger
-  * [http://localhost:16686](http://localhost:16686)
 * RabbitMQ
   * [http://localhost:15672](http://localhost:15672)
   * Username: `guest`
