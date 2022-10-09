@@ -20,8 +20,6 @@ jobs:
           kubelogin --version
       - uses: azure/setup-kubectl@v3
         id: install-kubectl
-      - name: Verify kubectl
-        run: kubectl version
       - name: AKS Login (non-interactive)
         run: |
           az account set --subscription ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }} -onone && \
