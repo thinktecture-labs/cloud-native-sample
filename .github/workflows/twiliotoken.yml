@@ -3,6 +3,8 @@ on:
   workflow_dispatch:
 env:
   KUBELOGIN_VERSION: v0.0.20
+  AKS_NAME: aks-cloud-native-sample
+  RG_NAME: rg-cloud-native-sample-develop
 jobs:
   infra:
     name: "Automation"

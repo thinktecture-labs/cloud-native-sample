@@ -6,6 +6,8 @@ env:
   SERVICE_BUS_NAME: thinktecturedev
   SERVICE_BUS_AUTHORIZATION_RULE_NAME: DaprCloudNative
   SERVICE_BUS_RESOURCE_GROUP: rg-research
+  AKS_NAME: aks-cloud-native-sample
+  RG_NAME: 'rg-cloud-native-sample-develop'
 jobs:
   infra:
     name: "Automation"
