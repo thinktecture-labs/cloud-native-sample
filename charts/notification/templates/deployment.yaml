@@ -35,7 +35,10 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: NotificationService__ZipkinEndpoint
-              value: http://zipkin.zipkin.svc.cluster.local:9411/api/v2/spans
+              valueFrom:
+                configMapKeyRef:
+                  name: zipkin
+                  key: endpoint
             - name: NotificationService__IdentityServer__Authority
               valueFrom:
                 configMapKeyRef:

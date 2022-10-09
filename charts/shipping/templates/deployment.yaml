@@ -37,7 +37,10 @@ spec:
             - name: ShippingService__Environment
               value: {{ .Values.environment }}
             - name: ShippingService__ZipkinEndpoint
-              value: http://zipkin.zipkin.svc.cluster.local:9411/api/v2/spans
+              valueFrom:
+                configMapKeyRef:
+                  name: zipkin
+                  key: endpoint
           ports:
             - name: http-shipping
               containerPort: {{ .Values.containerPort }}
