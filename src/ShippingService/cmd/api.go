@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -11,8 +12,11 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/thinktecture-labs/cloud-native-sample/shipping-service/pkg/shipping"
 	ginlogrus "github.com/toorop/gin-logrus"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"go.opentelemetry.io/otel"
+	stdout "go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/exporters/zipkin"
+	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
@@ -22,14 +26,45 @@ type cloudEvent struct {
 }
 
 const (
+	serviceName = "ShippingService"
 	defaultPort = 5000
 )
 
-func main() {
+var tracer = otel.Tracer(serviceName)
+
+func configureMetrics(e *gin.Engine) {
+	m := ginmetrics.GetMonitor()
+	m.SetMetricPath("/metrics")
+	m.Use(e)
+}
+
+func configureTracing(cfg *shipping.Configuration) (tp *sdktrace.TracerProvider, err error) {
+	c, err := stdout.New(stdout.WithPrettyPrint())
+	z, err := zipkin.New(cfg.ZipkinEndpoint)
+	if err != nil {
+		return nil, err
+	}
+
+	tp = sdktrace.NewTracerProvider(
+		sdktrace.WithSampler(sdktrace.AlwaysSample()),
+		sdktrace.WithBatcher(z),
+		sdktrace.WithBatcher(c),
+	)
+
+	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
+	return tp, nil
+}
+
+func getConfig() *shipping.Configuration {
 	cfg, err := shipping.LoadConfiguration()
 	if err != nil {
 		log.Fatalf("Error while reading configuration: %s", err)
 	}
+	return cfg
+}
+
+func configureLogging(cfg *shipping.Configuration) *logrus.Logger {
 	log := logrus.New()
 	log.SetOutput(os.Stdout)
 	log.SetLevel(logrus.DebugLevel)
@@ -38,15 +73,32 @@ func main() {
 		log.Infoln("Will run shipping service in release mode.")
 		gin.SetMode(gin.ReleaseMode)
 	}
+	return log
+}
+
+func main() {
+	cfg := getConfig()
+	log := configureLogging(cfg)
 
 	r := gin.New()
-	//todo: extract to dedicated func
-	m := ginmetrics.GetMonitor()
-	m.SetMetricPath("/metrics")
-	m.Use(r)
+
+	configureMetrics(r)
+	tp, err := configureTracing(cfg)
+	if err != nil {
+		log.Fatalf("Error while configuring tracing: %s", err)
+	}
+	defer func() {
+		if err := tp.Shutdown(context.Background()); err != nil {
+			log.Printf("Error shutting down tracer provider: %v", err)
+		}
+	}()
+
+	r.Use(otelgin.Middleware(serviceName))
 	r.Use(ginlogrus.Logger(log), gin.Recovery())
-	//todo: rename route to ship or process
+
 	r.POST("/orders", func(ctx *gin.Context) {
+		_, span := tracer.Start(ctx.Request.Context(), "process_order")
+		defer span.End()
 		var orderEnvelope cloudEvent
 		if err := ctx.BindJSON(&orderEnvelope); err != nil {
 			ctx.AbortWithStatus(400)
