@@ -20,10 +20,6 @@ jobs:
         id: install-kubectl
       - name: Verify kubectl
         run: kubectl version
-      - name: Azure CLI Login
-        uses: Azure/login@v1
-        with:
-          creds: '{"clientId":"${{ secrets.TERRAFORM_CLIENT_ID }}","clientSecret":"${{ secrets.TERRAFORM_CLIENT_SECRET }}","subscriptionId":"${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.TERRAFORM_TENANT_ID }}"}'
       - name: AKS Login (non-interactive)
         run: |
           az account set --subscription ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }} -onone && \
