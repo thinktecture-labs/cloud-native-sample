@@ -21,7 +21,7 @@ variable "rabbitmq_user" {
 
 variable "rabbitmq_password" {
   type        = string
-  default     = "Some_Secret_Password"
+  default     = "Some_Secret_Password$"
   description = "Overwrite this default value using a GitHub Secret"
   sensitive   = true
 }
