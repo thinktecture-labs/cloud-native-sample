@@ -10,6 +10,7 @@ concurrency:
   group: terraform
 env:
   TERRAFORM_VERSION: 1.3.1
+  KUBELOGIN_VERSION: v0.0.20
 jobs:
   infra:
     name: "Deploy cluster-wide services to k8s"
@@ -27,7 +28,7 @@ jobs:
           terraform_version: $TERRAFORM_VERSION
       - name: Setup kubelogin
         run: |
-          curl -LO https://github.com/Azure/kubelogin/releases/download/v0.0.20/kubelogin-linux-amd64.zip
+          curl -LO https://github.com/Azure/kubelogin/releases/download/$KUBELOGIN_VERSION/kubelogin-linux-amd64.zip
           sudo unzip -j kubelogin-linux-amd64.zip -d /usr/local/bin
           rm -f kubelogin-linux-amd64.zip
           kubelogin --version
