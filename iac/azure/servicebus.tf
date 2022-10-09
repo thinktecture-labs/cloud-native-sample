@@ -6,7 +6,18 @@ resource "azurerm_servicebus_namespace" "main" {
   tags                = local.tags
 }
 
-resource "azurerm_servicebus_queue" "main" {
-  name         = "queue-orders"
+
+resource "azurerm_servicebus_topic" "new_orders" {
+  name         = "new_orders"
+  namespace_id = azurerm_servicebus_namespace.main.id
+}
+
+resource "azurerm_servicebus_topic" "processed_orders" {
+  name         = "processed_orders"
+  namespace_id = azurerm_servicebus_namespace.main.id
+}
+
+resource "azurerm_servicebus_topic" "notifications" {
+  name         = "notifications"
   namespace_id = azurerm_servicebus_namespace.main.id
 }
