@@ -243,7 +243,11 @@ services:
     depends_on:
       - shipping
   ordermonitor:
-    build: ./src/OrderMonitorClient
+    build: 
+      context: ./src/OrderMonitorClient
+      args:
+        - TARGET=docker-compose
+
     container_name: order-monitor-client
     environment:
       - IdentityServer__Uri=http://localhost:5009/

@@ -16,15 +16,6 @@ var http = new HttpClient()
 };
 
 builder.Services.AddScoped(sp => http);
-
-using var response = await http.GetAsync("k8s/appsettings.json");
-Console.WriteLine($"Received response with status code {response.StatusCode}");
-if (response.StatusCode == HttpStatusCode.OK)
-{
-    using var stream = await response.Content.ReadAsStreamAsync();
-    builder.Configuration.AddJsonStream(stream);
-}
-
 builder.Logging.AddConfiguration(
     builder.Configuration.GetSection("Logging"));
 

@@ -1,3 +1,4 @@
+
 FROM mcr.microsoft.com/dotnet/aspnet:6.0-focal AS base
 WORKDIR /app
 EXPOSE 5005
@@ -19,9 +20,16 @@ RUN dotnet build "OrderMonitorClient.csproj" -c Release -o /app/build
 
 FROM build AS publish
 RUN dotnet publish "OrderMonitorClient.csproj" -c Release -o /app/publish /p:UseAppHost=false
+ARG TARGET=k8s
+RUN rm /app/publish/wwwroot/appsettings.json && \
+    rm /app/publish/wwwroot/appsettings.json.*
+
+RUN mv /app/publish/wwwroot/appsettings.$TARGET.json /app/publish/wwwroot/appsettings.json && \
+    rm /app/publish/wwwroot/appsettings.$TARGET.json.*
 
 FROM nginxinc/nginx-unprivileged:alpine
 EXPOSE 8080
 WORKDIR /usr/share/nginx/html
 COPY --chown=nginx:nginx --from=publish /app/publish/wwwroot .
+
 COPY nginx.conf /etc/nginx/conf.d/default.conf
