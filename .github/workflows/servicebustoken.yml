@@ -1,0 +1,36 @@
+name: Store ServiceBus ConnectionString in AKS
+on:
+  workflow_dispatch:
+env:
+  SERVICE_BUS_NAME: thinktecturedev
+  SERVICE_BUS_AUTHORIZATION_RULE_NAME: DaprCloudNative
+  SERVICE_BUS_RESOURCE_GROUP: rg-research
+jobs:
+  infra:
+    name: "Automation"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Azure CLI Login
+        uses: Azure/login@v1
+        with:
+          creds: '{"clientId":"${{ secrets.TERRAFORM_CLIENT_ID }}","clientSecret":"${{ secrets.TERRAFORM_CLIENT_SECRET }}","subscriptionId":"${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.TERRAFORM_TENANT_ID }}"}'
+      - name: Install Kubelogin
+        run: |
+          curl -LO "https://github.com/Azure/kubelogin/releases/download/$KUBELOGIN_VERSION/kubelogin-linux-amd64.zip" && \
+          sudo unzip -j "kubelogin-linux-amd64.zip" -d /usr/local/bin && \
+          rm -f "kubelogin-linux-amd64.zip" && \
+          kubelogin --version
+      - uses: azure/setup-kubectl@v3
+        id: install-kubectl
+      - name: Verify kubectl
+        run: kubectl version
+      - name: AKS Login (non-interactive)
+        run: |
+          az account set --subscription ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }} -onone && \
+          az aks get-credentials -g $RG_NAME -n $AKS_NAME && \
+          kubelogin convert-kubeconfig -l azurecli
+      - name: Store Twilio SendGrid API Key
+        run: |
+          az account set --subscription ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}
+          sbConnectionString=$(az servicebus namespace authorization-rule keys list --namespace-name $SERVICE_BUS_NAME -g $SERVICE_BUS_RESOURCE_GROUP -n $SERVICE_BUS_AUTHORIZATION_RULE_NAME --query "primaryConnectionString" -otsv)
+          kubectl create secret generic az-servicebus -n cloud-native-sample --from-literal connectionString=$sbConnectionString
