@@ -30,7 +30,7 @@ jobs:
           az account set --subscription ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }} -onone && \
           az aks get-credentials -g $RG_NAME -n $AKS_NAME && \
           kubelogin convert-kubeconfig -l azurecli
-      - name: Store Twilio SendGrid API Key
+      - name: Store Azure ServiceBus ConnectionString
         run: |
           az account set --subscription ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}
           sbConnectionString=$(az servicebus namespace authorization-rule keys list --namespace-name $SERVICE_BUS_NAME -g $SERVICE_BUS_RESOURCE_GROUP -n $SERVICE_BUS_AUTHORIZATION_RULE_NAME --query "primaryConnectionString" -otsv)
