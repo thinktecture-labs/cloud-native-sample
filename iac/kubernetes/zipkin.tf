@@ -54,6 +54,16 @@ resource "kubernetes_service" "zipkin" {
   }
 }
 
+resource "kubernetes_config_map_v1" "name" {
+  metadata {
+    name = "zipkin"
+    namespace = kubernetes_namespace.app.metadata[0].name
+  }
+  data = {
+    "endpoint" = "http://${kubernetes_service.zipkin.metadata[0].name}.${kubernetes_service.zipkin.metadata[0].namespace}.svc.cluster.local:9411/api/v2/spans"
+  }
+}
+
 resource "kubernetes_ingress_v1" "zipkin" {
   metadata {
     name      = "zipkin"

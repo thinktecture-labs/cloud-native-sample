@@ -17,6 +17,12 @@ resource "helm_release" "rabbitmq" {
     name  = "auth.password"
     value = var.rabbitmq_password
   }
+
+  lifecycle {
+    ignore_changes = [
+     set 
+    ]
+  }
 }
 
 resource "kubernetes_secret" "rabbitmq" {

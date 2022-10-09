@@ -1,0 +1,31 @@
+config:
+  snippets:
+    pipelineStages:
+    - match:
+        selector: '{container="shipping"}'
+        stages:
+        - cri: {}
+        - logfmt:
+            mapping:
+              httpMethod: method
+              httpPath: path
+              severity: level
+              statusCode: statusCode
+              timestamp: time
+        - labels:
+            httpMethod: null
+            httpPath: null
+            severity: null
+            statusCode: null
+            timestamp: null
+    - match:
+        selector: '{container="orders"}'
+        stages:
+        - cri: {}
+        - json:
+            expressions:
+              dotNetNamespace: Category
+              severity: LogLevel
+        - labels:
+            dotNetNamespace: null
+            severity: null

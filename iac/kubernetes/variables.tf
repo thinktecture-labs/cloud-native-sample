@@ -14,11 +14,6 @@ variable "dns_zone" {
   }
 }
 
-variable "dapr_config_sample_rate" {
-  type    = number
-  default = 1
-}
-
 variable "rabbitmq_user" {
   type    = string
   default = "cloudnativesample"
