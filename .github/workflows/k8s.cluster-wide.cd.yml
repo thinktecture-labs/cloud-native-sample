@@ -48,7 +48,7 @@ jobs:
         run: terraform fmt -no-color -check
         working-directory: ./iac/kubernetes
       - name: Initialize Terraform Project
-        run: terraform init --upgrade
+        run: terraform init
         env:
           ARM_CLIENT_ID: ${{ secrets.TERRAFORM_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_CLIENT_SECRET }}
