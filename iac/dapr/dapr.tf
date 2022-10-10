@@ -36,36 +36,16 @@ resource "kubernetes_manifest" "dapr_component_orders_rabbit" {
       "namespace" = data.kubernetes_namespace.app.metadata[0].name
     }
     "spec" = {
-      "type"    = "bindings.rabbitmq"
+      "type"    = "pubsub.azure.servicebus"
       "version" = "v1"
       "metadata" = [
         {
-          "name"  = "queueName"
-          "value" = "orders"
-        },
-        {
-          "name" = "host"
+          "name" = "connectionString"
           "secretKeyRef" = {
-            "name" = "rabbitmq"
+            "name" = "az-servicebus"
             "key"  = "connectionString"
 
           }
-        },
-        {
-          "name"  = "enableDeadLetter"
-          "value" = "true"
-        },
-        {
-          "name"  = "exchangeKind"
-          "value" = "topic"
-        },
-        {
-          "name"  = "deletedWhenUnused"
-          "value" = "false"
-        },
-        {
-          "name"  = "deliveryMode"
-          "value" = "2"
         }
       ]
     }
