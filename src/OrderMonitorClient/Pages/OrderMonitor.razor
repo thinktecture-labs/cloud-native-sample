@@ -19,7 +19,7 @@
 }
 else
 {
-    <MudTable Items="_orders" Hover="true" SortLabel="Sort By" Elevation="0">
+    <MudTable Items="_orders" Hover="true" SortLabel="Sort By" Elevation="0" Style="@_backgroundColor">
         <HeaderContent>
             <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<OrderMonitorListModel, object>(x => x.Id)">Order ID</MudTableSortLabel></MudTh>
             <MudTh>Positions</MudTh>
@@ -45,13 +45,14 @@ else
 
 @code {
     private List<OrderMonitorListModel>? _orders;
+    private string _backgroundColor = String.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         _orderMonitorService.OrderListChanged += HandleOrderUpdates;
 
         await _orderMonitorService.InitAsync();
-
+        
         _orders = await ListOrders();
     }
 
@@ -61,6 +62,12 @@ else
 
         _orders = await ListOrders();
 
+        _backgroundColor = "background-color: lightyellow";
+        StateHasChanged();
+        
+        await Task.Delay(500);
+
+        _backgroundColor = "background-color: none";
         StateHasChanged();
     }
 
