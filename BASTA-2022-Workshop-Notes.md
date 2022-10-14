@@ -1,21 +1,5 @@
 # Cloud-Native Workshop @ BASTA! 2022
 
-## Organisatorisches
-- **Slot 1**: 09:00 - 10:30
-- Kaffeepause ☕️ 
-- **Slot 2**: 11:00 - 12:30
-- Mittagspause 🥗
-- **Slot 3**: 13:30 - 15:00
-- Kaffeepause ☕️ 
-- **Slot 4**: 15:30 - 17:00
-
-
-## GitHub Repository
-- https://github.com/thinktecture-labs/cloud-native-sample
-
-## Architecture Diagram
-- https://miro.com/app/board/uXjVPPSbwpM=/?share_link_id=659999651466
-
 ## Links
 - YARP: https://microsoft.github.io/reverse-proxy/index.html
 - OpenTelemetry: https://opentelemetry.io/
