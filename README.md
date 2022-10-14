@@ -1,10 +1,13 @@
-# Cloud-native Sample Application - (Work-in-Progress)
+# Cloud-Native Sample Application (Work-in-Progress)
 
-*Note*: This is heavy work in progress - do not rely on the things you see here, yet ;-)
+*Note*: This is heavy work in progress - do not rely on the things you see here, yet. Please ask us if you want to adapt things in your code / environment.
 
-[TBD: Some general introduction...]
+[TBD: Some general introduction.]
 
 ## Application Diagram
+
+### Architecture overview
+![](assets/architecture-overview.jpg)
 
 ### Order Monitor Client
 
