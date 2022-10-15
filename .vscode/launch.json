@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug IdSrv in Docker",
+      "name": "Debug AuthenticationService in Docker",
       "type": "docker",
       "request": "attach",
       "platform": "netCore",
@@ -23,7 +23,7 @@
       }
     },
     {
-      "name": "Debug Notification Svc in Docker",
+      "name": "Debug NotificationService in Docker",
       "type": "docker",
       "request": "attach",
       "platform": "netCore",
@@ -32,12 +32,21 @@
       }
     },
     {
-      "name": "Debug Products Svc in Docker",
+      "name": "Debug ProductsService in Docker",
       "type": "docker",
       "request": "attach",
       "platform": "netCore",
       "sourceFileMap": {
         "/src": "${workspaceFolder}/src/ProductsService"
+      }
+    },
+    {
+      "name": "Debug OrdersService in Docker",
+      "type": "docker",
+      "request": "attach",
+      "platform": "netCore",
+      "sourceFileMap": {
+        "/src": "${workspaceFolder}/src/OrdersService"
       }
     }
   ]

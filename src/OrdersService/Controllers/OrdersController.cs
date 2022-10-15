@@ -1,6 +1,8 @@
-﻿using Dapr.Client;
+﻿using Dapr;
+using Dapr.Client;
 using Microsoft.AspNetCore.Mvc;
 using OrdersService.Configuration;
+using OrdersService.Data.Entities;
 using OrdersService.Data.Repositories;
 using OrdersService.Extensions;
 using OrdersService.Models;
@@ -41,12 +43,22 @@ public class OrdersController : ControllerBase
         var now = DateTime.Now;
         var userName = HttpContext.GetUserName();
 
-        _logger.LogTrace("Order ({Id}) submitted at {Now} by {CustomerName}", id, now.ToShortTimeString(), userName);
+        _logger.LogTrace("Order ({id}) submitted at {now} by {userName}", id, now.ToShortTimeString(), userName);
 
         var newOrder = model.ToEntity(id, now, HttpContext.GetUserId(), userName);
 
         await _repository.AddNewOrderAsync(newOrder);
-        await _dapr.PublishEventAsync(_config.CreateOrderPubSubName, _config.CreateOrderTopicName, newOrder,
+
+        var traceIdentifier = HttpContext.TraceIdentifier;
+        var cloudEvent = new CloudEvent<Order>(newOrder);
+        var metadata = new Dictionary<string, string>();
+        metadata.Add("traceparent", traceIdentifier);
+
+        await _dapr.PublishEventAsync<CloudEvent<Order>>(
+            _config.CreateOrderPubSubName, 
+            _config.CreateOrderTopicName,
+            cloudEvent,
+            metadata,
             CancellationToken.None)!;
 
         return Accepted(new { OrderId = newOrder.Id });
