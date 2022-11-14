@@ -36,7 +36,7 @@ spec:
           env:
             - name: ASPNETCORE_ENVIRONMENT
               value: "{{ .Values.environment }}"
-            - name: Gateway__ZipkinEndpoint
+            - name: Gateway__TraceEndpoint
               valueFrom:
                 configMapKeyRef:
                   name: zipkin

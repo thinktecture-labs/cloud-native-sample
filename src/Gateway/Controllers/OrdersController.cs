@@ -9,31 +9,43 @@ namespace Gateway.Controllers;
 [Route("orders")]
 public class OrdersController : ControllerBase
 {
+    private readonly ILogger<OrdersController> _logger;
     private readonly int _daprHttpPort;
     private readonly HttpClient _httpClient;
 
-    public OrdersController(IConfiguration configuration, IHttpClientFactory httpClientFactory)
+    public OrdersController(IConfiguration configuration, IHttpClientFactory httpClientFactory, ILogger<OrdersController> logger)
     {
+        _logger = logger;
         _daprHttpPort = configuration.GetValue<int>("DAPR_HTTP_PORT");
+        _logger.LogInformation("Using DARP_HTTP_PORT {actual}", _daprHttpPort);
         _httpClient = httpClientFactory.CreateClient(Constants.HttpClientName);
+        _logger.LogInformation("Created named HttpClient {Name}", Constants.HttpClientName);
     }
 
     [HttpGet]
     [Route("monitor")]
     public async Task<IActionResult> GetOrderMonitorDataAsync()
     {
-        var getOrders = _httpClient.GetAsync(BuildUrl("orders", "orders"));
-        var getProducts = _httpClient.GetAsync(BuildUrl("products", "products"));
+        var getOrdersUrl = BuildUrl("orders", "orders");
+        var getProductsUrl = BuildUrl("products", "products");
+        var getOrders = _httpClient.GetAsync(getOrdersUrl);
+        var getProducts = _httpClient.GetAsync(getProductsUrl);
 
         var res = await Task.WhenAll(getOrders, getProducts);
         // handle unauthorized
-        if (res[0].StatusCode == System.Net.HttpStatusCode.Unauthorized || res[1].StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        if (res[0].StatusCode == HttpStatusCode.Unauthorized || res[1].StatusCode == HttpStatusCode.Unauthorized)
         {
+            _logger.LogWarning("Received HTTP 401 from backend service {Url1}={ResponseCode1} {Url2}={ResponseCode2}",
+                getOrdersUrl, res[0].StatusCode,
+                getProductsUrl, res[1].StatusCode);
             return Unauthorized();
         }
-        // treat all other non successfull responses as errors
+        // treat all other non successful responses as errors
         if (!res[0].IsSuccessStatusCode || !res[1].IsSuccessStatusCode)
         {
+            _logger.LogWarning("Received non-successful StatusCode from backend service {Url1}={ResponseCode1} {Url2}={ResponseCode2}",
+                getOrdersUrl, res[0].StatusCode,
+                getProductsUrl, res[1].StatusCode);
             return StatusCode((int)HttpStatusCode.InternalServerError);
         }
         var orders = await res[0].Content.ReadFromJsonAsync<List<JsonElement>>();
@@ -66,17 +78,15 @@ public class OrdersController : ControllerBase
         {
             return new OrderMonitorPositionModel();
         }
-        else
+
+        return new OrderMonitorPositionModel
         {
-            return new OrderMonitorPositionModel
-            {
-                ProductId = pos.GetProperty("productId").GetGuid(),
-                ProductName = found.GetProperty("name").GetString() ?? string.Empty,
-                ProductDescription = found.GetProperty("description").GetString() ?? string.Empty,
-                ProductPrice = found.GetProperty("price").GetDouble(),
-                Quantity = pos.GetProperty("quantity").GetInt32()
-            };
-        }
+            ProductId = pos.GetProperty("productId").GetGuid(),
+            ProductName = found.GetProperty("name").GetString() ?? string.Empty,
+            ProductDescription = found.GetProperty("description").GetString() ?? string.Empty,
+            ProductPrice = found.GetProperty("price").GetDouble(),
+            Quantity = pos.GetProperty("quantity").GetInt32()
+        };
     }
 
     private string BuildUrl(string service, string path)
