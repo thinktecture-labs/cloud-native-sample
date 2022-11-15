@@ -69,23 +69,6 @@ resource "kubernetes_manifest" "dapr_subscription_new_orders" {
   }
 }
 
-resource "kubernetes_manifest" "dapr_subscription_processed_orders" {
-  manifest = {
-    "apiVersion" = "dapr.io/v1alpha1"
-    "kind"       = "Subscription"
-    "metadata" = {
-      "name"      = "sub-processed-orders"
-      "namespace" = data.kubernetes_namespace.app.metadata[0].name
-    }
-    "spec" = {
-      "pubsubname" = "orders"
-      "topic"      = "processed_orders"
-      "route"      = "/orders"
-    }
-    "scopes" : ["notification"]
-  }
-}
-
 resource "kubernetes_ingress_v1" "dapr_dashboard" {
   depends_on = [
     helm_release.dapr

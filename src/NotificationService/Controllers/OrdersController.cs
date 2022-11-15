@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using NotificationService.Configuration;
 using NotificationService.Models;
-
+using Dapr;
 namespace NotificationService.Controllers;
 
 [ApiController]
@@ -22,12 +22,12 @@ public class OrdersController : Controller
 
     [HttpPost]
     [Route("processed")]
+    [Topic("orders", "processed_orders")]
     public async Task<IActionResult> OnOrderProcessedAsync([FromBody]CloudEvent<DispatchedOrder> e)
     {
         _logger.LogTrace("OrderProcessed invoked for User {UserId} and order {OrderId}", e.Data.UserId, e.Data.OrderId);
 
         var group = _hubContext.Clients.Group(e.Data.UserId);
-
         if (group == null)
         {
             _logger.LogWarning("SignalR group with name {Name} not found, request will fail with 404", e.Data.UserId);
@@ -36,7 +36,6 @@ public class OrdersController : Controller
         }
 
         await group.SendAsync(_config.OnOrderProcessedMethodName, e.Data.OrderId.ToString());
-
         return Ok();
     }
 }

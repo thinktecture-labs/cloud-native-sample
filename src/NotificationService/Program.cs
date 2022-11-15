@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Logging.Console;
 using Microsoft.IdentityModel.Tokens;
 using NotificationService;
 using NotificationService.Configuration;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-
-const string ServiceName = "NotificationService";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,37 +22,54 @@ builder.Services.AddSingleton(cfg);
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole(options =>
 {
-    options.FormatterName = ConsoleFormatterNames.Json;
+    options.FormatterName = cfg.ConsoleFormatterName;
 });
+var logger = builder.Logging.Services.BuildServiceProvider().GetRequiredService<ILogger<Program>>();
 
-//traces
-if (string.IsNullOrWhiteSpace(cfg.ZipkinEndpoint))
+// traces
+if (string.IsNullOrWhiteSpace(cfg.TraceEndpoint))
 {
-    throw new ApplicationException("Zipkin Endpoint not provided");
+    logger.LogWarning("TraceEndpoint not configured. Traces will not be exported!");
 }
 
-builder.Services.AddOpenTelemetryTracing(options =>
+if (!string.IsNullOrWhiteSpace(cfg.TraceEndpoint))
 {
-    options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(ServiceName))
-        .AddAspNetCoreInstrumentation()
-        .AddZipkinExporter(config =>
+    builder.Services.AddOpenTelemetryTracing(options =>
+    {
+        logger.LogInformation("Tracing: Traces will be exported to {TraceSystem} at {TraceEndpoint}", cfg.TraceSystem, cfg.TraceEndpoint);
+        options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Constants.ServiceName)).AddAspNetCoreInstrumentation();
+        
+        logger.LogInformation("Tracing: Service Name is set to {ServiceName}", Constants.ServiceName);
+        switch (cfg.TraceSystem)
         {
-            config.Endpoint = new Uri(cfg.ZipkinEndpoint);
-        });
-});
+            case TraceSystem.Zipkin:
+                options.AddZipkinExporter(config => { config.Endpoint = new Uri(cfg.TraceEndpoint); });
+                break;
+            case TraceSystem.AzureMonitor:
+                logger.LogWarning("Azure SDK is currently not compatible with OTel SDK... Will not write traces to Azure Monitor");
+                
+                // options.AddAzureMonitorTraceExporter(config => { config.ConnectionString = cfg.TraceEndpoint; });
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    });
+}
 
 // metrics
 builder.Services.AddOpenTelemetryMetrics(options =>
 {
     options.ConfigureResource(rb =>
         {
-            rb.AddService(ServiceName);
+            rb.AddService(Constants.ServiceName);
         })
         .AddRuntimeInstrumentation()
         .AddHttpClientInstrumentation()
         .AddAspNetCoreInstrumentation()
         .AddPrometheusExporter();
-});
+    logger.LogInformation("Metrics: Service Name is set to {ServiceName}", Constants.ServiceName);
+}); 
+
 
 // Configure AuthN
 var notificationHubEndpoint = "/notifications/notificationHub";
@@ -92,16 +106,24 @@ builder.Services.AddAuthentication("Bearer")
             }
         };
     });
+logger.LogInformation("Authentication configured for {Authority} (require HTTPs: {requireHttps}) Metadata Address {MetadataAddress}", 
+    cfg.IdentityServer.Authority, 
+    cfg.IdentityServer.RequireHttpsMetadata, 
+    cfg.IdentityServer.MetadataAddress);
 
 // Configure AuthZ
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("ApiScope", policy =>
+    options.AddPolicy(Constants.AuthorizationPolicyName, policy =>
     {
         policy.RequireAuthenticatedUser();
         policy.RequireClaim(cfg.Authorization.RequiredClaimName, cfg.Authorization.RequiredClaimValue);
     });
 });
+logger.LogInformation("Authorization configured with Policy {AuthzPolicyName}: RequiredClaim: {Name} {Value}",
+    Constants.AuthorizationPolicyName,
+    cfg.Authorization.RequiredClaimName,
+    cfg.Authorization.RequiredClaimValue);
 
 builder.Services.AddSignalR();
 builder.Services.AddHealthChecks();
@@ -111,21 +133,26 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
+logger.LogInformation("Activating Middlewares");
 app.UseSwagger();
 app.UseSwaggerUI();
-
+logger.LogInformation(" - Swagger and SwaggerUI activated");
 app.UseAuthentication();
+logger.LogInformation(" - Authentication activated");
 app.UseAuthorization();
-
+logger.LogInformation(" - Authorization activated");
 app.MapHub<NotificationHub>(notificationHubEndpoint)
     .RequireAuthorization("ApiScope");
-
-app.MapHealthChecks("/healthz/readiness");
-app.MapHealthChecks("/healthz/liveness");
-
+logger.LogInformation(" - SignalR Hubs activated");
 app.MapControllers();
+logger.LogInformation(" - API Controllers activated");
+app.MapHealthChecks("/healthz/readiness");
+logger.LogInformation(" - HealthProbe (readiness) activated");
+app.MapHealthChecks("/healthz/liveness");
+logger.LogInformation(" - HealthProbe (liveness) activated");
 
 app.UseOpenTelemetryPrometheusScrapingEndpoint();
+logger.LogInformation(" - Prometheus Scraping activated");
+logger.LogInformation("All middlewares activated");
 
 app.Run();
