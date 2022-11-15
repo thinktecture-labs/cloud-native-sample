@@ -149,7 +149,7 @@ logger.LogInformation(" - Reverse Proxy activated");
 app.MapControllers();
 logger.LogInformation(" - API Controllers activated");
 app.MapHealthChecks("/healthz/readiness");
-logger.LogInformation(" - HealthProble (readiness) activated");
+logger.LogInformation(" - HealthProbe (readiness) activated");
 app.MapHealthChecks("/healthz/liveness");
 logger.LogInformation(" - HealthProbe (liveness) activated");
 app.UseOpenTelemetryPrometheusScrapingEndpoint();
