@@ -103,7 +103,7 @@ logger.LogInformation("ReverseProxy: Custom {TypeName} Transform has been regist
 
 builder.Services.AddControllers();
 
-string[] propagatedHeaders = new [] { "Authorization "};
+string[] propagatedHeaders = new [] { "Authorization"};
 builder.Services.AddHeaderPropagation(options => {
     propagatedHeaders.ToList().ForEach(h=> {
         options.Headers.Add(h);
