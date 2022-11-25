@@ -1,0 +1,19 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pricedrops
+  namespace: default
+spec:
+  type: pubsub.rabbitmq
+  version: v1
+  metadata:
+  - name: host
+    value: "amqp://rabbitmq:5672"
+  - name: enableDeadLetter
+    value: true
+  - name: exchangeKind
+    value: topic
+  - name: deletedWhenUnused
+    value: false
+  - name: deliveryMode
+    value: 2
