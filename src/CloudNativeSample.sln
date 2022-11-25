@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderMonitorClient", "Order
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthenticationService", "AuthenticationService\AuthenticationService.csproj", "{94224E64-0B3C-46DF-88C6-FF712BA5D3EE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PriceWatcher", "PriceWatcherService\PriceWatcher.csproj", "{5D436889-AC3E-4E62-BD6E-2CF667612D32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PriceDropNotifier", "PriceDropNotifierService\PriceDropNotifier.csproj", "{A096BCD7-B698-4D59-A2B3-785158147FBD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,5 +47,13 @@ Global
 		{94224E64-0B3C-46DF-88C6-FF712BA5D3EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94224E64-0B3C-46DF-88C6-FF712BA5D3EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94224E64-0B3C-46DF-88C6-FF712BA5D3EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D436889-AC3E-4E62-BD6E-2CF667612D32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D436889-AC3E-4E62-BD6E-2CF667612D32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D436889-AC3E-4E62-BD6E-2CF667612D32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D436889-AC3E-4E62-BD6E-2CF667612D32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A096BCD7-B698-4D59-A2B3-785158147FBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A096BCD7-B698-4D59-A2B3-785158147FBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A096BCD7-B698-4D59-A2B3-785158147FBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A096BCD7-B698-4D59-A2B3-785158147FBD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
