@@ -6,7 +6,7 @@ using PriceDropNotifier.Models;
 namespace PriceDropNotifier.Controllers;
 
 [ApiController]
-[Route("pricedropnotifier")]
+[Route("pricedrops")]
 public class PriceDropNotifierController : ControllerBase
 {
     private readonly DaprClient _client;
