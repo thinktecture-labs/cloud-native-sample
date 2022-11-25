@@ -275,6 +275,70 @@ services:
       options:
         loki-url: http://10.5.0.99:3100/loki/api/v1/push
         loki-retries: 5
+  pricewatcher:
+    build: ./src/PriceWatcherService
+    container_name: pricewatcher
+    environment:
+      DAPR_GRPC_PORT: 10005
+      PriceWatcherService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
+    networks:
+      - cloud-native
+    depends_on:
+      - zipkin
+      - rabbit
+    logging:
+      driver: loki
+      options:
+        loki-url: http://10.5.0.99:3100/loki/api/v1/push
+        loki-retries: 5
+  pricewatcher-dapr:
+    image: "daprio/daprd:edge"
+    container_name: pricewatcher-dapr
+    command: [ "./daprd",
+               "-app-id", "pricewatcher",
+               "-app-port", "5000",
+               "-dapr-http-port", "9005",
+               "-dapr-grpc-port", "10005",
+               "-components-path", "/dapr/components",
+               "-config", "/dapr/config/config.yml" ]
+    network_mode: "service:pricewatcher"
+    volumes:
+      - ./docker-compose-configs/dapr:/dapr/config
+      - ./src/dapr/components:/dapr/components
+    depends_on:
+      - pricewatcher
+  pricedropnotifier:
+    build: ./src/PriceDropNotifierService
+    container_name: pricedropnotifier
+    environment:
+      DAPR_GRPC_PORT: 10006
+      PriceDropNotifierService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
+    networks:
+      - cloud-native
+    depends_on:
+      - zipkin
+      - rabbit
+    logging:
+      driver: loki
+      options:
+        loki-url: http://10.5.0.99:3100/loki/api/v1/push
+        loki-retries: 5
+  pricedropnotifier-dapr:
+    image: "daprio/daprd:edge"
+    container_name: pricedropnotifier-dapr
+    command: [ "./daprd",
+               "-app-id", "pricedropnotifier",
+               "-app-port", "5000",
+               "-dapr-http-port", "9006",
+               "-dapr-grpc-port", "10006",
+               "-components-path", "/dapr/components",
+               "-config", "/dapr/config/config.yml" ]
+    network_mode: "service:pricedropnotifier"
+    volumes:
+      - ./docker-compose-configs/dapr:/dapr/config
+      - ./src/dapr/components:/dapr/components
+    depends_on:
+      - pricedropnotifier
 networks:
   cloud-native :
     driver: bridge
@@ -283,6 +347,3 @@ networks:
       config:
         - subnet: 10.5.0.0/16
           gateway: 10.5.0.1
-          
-
-  
