@@ -42,7 +42,7 @@ runs:
   using: "composite"
   steps: 
     - name: Checkout Repository
-    uses: actions/checkout@v3
+      uses: actions/checkout@v3
     - name: Install Kubelogin
       shell: bash
       run: |

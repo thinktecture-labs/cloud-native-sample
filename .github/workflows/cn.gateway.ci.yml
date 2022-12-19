@@ -32,12 +32,12 @@ jobs:
     env:
       AKS_NAME: aks-cloud-native-sample
       RG_NAME: rg-cloud-native-sample-develop
-      KUBELOGIN_VERSION: v0.0.20
+      KUBELOGIN_VERSION: v0.0.24
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
       - name: Deploy Gateway of Cloud-Native
-        uses: "./.github/templates/build-and-push"
+        uses: "./.github/templates/deploy"
         with:
           acr_name: ${{ secrets.ACR_NAME}}
           app_name: gateway
