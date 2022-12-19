@@ -1,4 +1,5 @@
-﻿using NotificationService;
+﻿using System.Text.Json;
+using NotificationService;
 using NotificationService.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,9 +28,14 @@ builder.ConfigureAuthN(cfg);
 // Configure AuthZ
 builder.ConfigureAuthZ(cfg);
 
+
 builder.Services.AddSignalR();
 builder.Services.AddHealthChecks();
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
