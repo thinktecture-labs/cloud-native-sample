@@ -36,6 +36,10 @@ spec:
           env:
             - name: ShippingService__Environment
               value: {{ .Values.environment }}
+            - name: ShippingService__PubSubName
+              value: orders
+            - name: ShippingService__TopicName
+              value: new_orders
             - name: ShippingService__ZipkinEndpoint
               valueFrom:
                 configMapKeyRef:

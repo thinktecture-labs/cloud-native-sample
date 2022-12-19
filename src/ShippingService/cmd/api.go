@@ -8,73 +8,21 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/penglongli/gin-metrics/ginmetrics"
-	"github.com/sirupsen/logrus"
+	"github.com/thinktecture-labs/cloud-native-sample/shipping-service/pkg/cloudevents"
+	"github.com/thinktecture-labs/cloud-native-sample/shipping-service/pkg/dapr"
 	"github.com/thinktecture-labs/cloud-native-sample/shipping-service/pkg/shipping"
 	ginlogrus "github.com/toorop/gin-logrus"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"go.opentelemetry.io/otel"
-	stdout "go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
-	"go.opentelemetry.io/otel/exporters/zipkin"
-	"go.opentelemetry.io/otel/propagation"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
-
-type cloudEvent struct {
-	Id   string
-	Data shipping.Order
-}
 
 const (
 	serviceName = "ShippingService"
 	defaultPort = 5000
+	envVarPort  = "PORT"
 )
 
 var tracer = otel.Tracer(serviceName)
-
-func configureMetrics(e *gin.Engine) {
-	m := ginmetrics.GetMonitor()
-	m.SetMetricPath("/metrics")
-	m.Use(e)
-}
-
-func configureTracing(cfg *shipping.Configuration) (tp *sdktrace.TracerProvider, err error) {
-	c, err := stdout.New(stdout.WithPrettyPrint())
-	z, err := zipkin.New(cfg.ZipkinEndpoint)
-	if err != nil {
-		return nil, err
-	}
-
-	tp = sdktrace.NewTracerProvider(
-		sdktrace.WithSampler(sdktrace.AlwaysSample()),
-		sdktrace.WithBatcher(z),
-		sdktrace.WithBatcher(c),
-	)
-
-	otel.SetTracerProvider(tp)
-	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
-	return tp, nil
-}
-
-func getConfig() *shipping.Configuration {
-	cfg, err := shipping.LoadConfiguration()
-	if err != nil {
-		log.Fatalf("Error while reading configuration: %s", err)
-	}
-	return cfg
-}
-
-func configureLogging(cfg *shipping.Configuration) *logrus.Logger {
-	log := logrus.New()
-	log.SetOutput(os.Stdout)
-	log.SetLevel(logrus.DebugLevel)
-
-	if cfg.IsProduction() {
-		log.Infoln("Will run shipping service in release mode.")
-		gin.SetMode(gin.ReleaseMode)
-	}
-	return log
-}
 
 func main() {
 	cfg := getConfig()
@@ -87,26 +35,29 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error while configuring tracing: %s", err)
 	}
-	defer func() {
-		if err := tp.Shutdown(context.Background()); err != nil {
-			log.Printf("Error shutting down tracer provider: %v", err)
-		}
-	}()
+	if tp != nil {
+		defer func() {
+			if err := tp.Shutdown(context.Background()); err != nil {
+				log.Printf("Error shutting down tracer provider: %v", err)
+			}
+		}()
+	}
 
 	r.Use(otelgin.Middleware(serviceName))
 	r.Use(ginlogrus.Logger(log), gin.Recovery())
+	r.GET("/dapr/subscribe", dapr.GetSubscriptionHandler(cfg))
 
 	r.POST("/orders", func(ctx *gin.Context) {
 		_, span := tracer.Start(ctx.Request.Context(), "process_order")
 		defer span.End()
-		var orderEnvelope cloudEvent
-		if err := ctx.BindJSON(&orderEnvelope); err != nil {
+		var envelope cloudevents.CloudEvent
+		if err := ctx.BindJSON(&envelope); err != nil {
 			ctx.AbortWithStatus(400)
 			return
 		}
-		log.Infof("Processing CloudEvent with id %s", orderEnvelope.Id)
+		log.Infof("Processing CloudEvent with id %s", envelope.Id)
 		s := shipping.NewShipping(cfg, log)
-		if err = s.ProcessOrder(&orderEnvelope.Data); err != nil {
+		if err = s.ProcessOrder(&envelope.Data); err != nil {
 			ctx.AbortWithStatus(500)
 			return
 		}
@@ -114,7 +65,7 @@ func main() {
 		// we must send at least! an empty JSON object, otherwise dapr component will treat response incorrectly and log
 		// skipping status check due to error parsing result from pub/sub event
 		// https://github.com/dapr/dapr/issues/2235
-		ctx.JSON(200, daprResponse{})
+		ctx.JSON(200, dapr.DaprResponse{})
 
 	})
 
@@ -133,25 +84,8 @@ func main() {
 	}
 }
 
-func getTraceProvider() *sdktrace.TracerProvider {
-	exporter, err := zipkin.New(os.Getenv("ZIPKIN_ENDPOINT"))
-	if err != nil {
-		fmt.Errorf("Could not create zipkin exporter %s", err)
-		os.Exit(1)
-	}
-	tp := sdktrace.NewTracerProvider(
-		sdktrace.WithSampler(sdktrace.AlwaysSample()),
-		sdktrace.WithBatcher(exporter),
-	)
-	otel.SetTracerProvider(tp)
-	return tp
-}
-
-type daprResponse struct {
-}
-
 func getPort() int {
-	p := os.Getenv("PORT")
+	p := os.Getenv(envVarPort)
 	if len(p) == 0 {
 		return defaultPort
 	}
@@ -160,4 +94,12 @@ func getPort() int {
 		return defaultPort
 	}
 	return port
+}
+
+func getConfig() *shipping.Configuration {
+	cfg, err := shipping.LoadConfiguration()
+	if err != nil {
+		log.Fatalf("Error while reading configuration: %s", err)
+	}
+	return cfg
 }

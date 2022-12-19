@@ -7,7 +7,11 @@ import (
 )
 
 const (
-	configFilePath = "./config.json"
+	configFilePath     = "./config.json"
+	envPubSubName      = "ShippingService__PubSubName"
+	envTopicName       = "ShippingService__TopicName"
+	envEnvironmentName = "ShippingService__Environment"
+	envZipkinEndpoint  = "ShippingService__ZipkinEndpoint"
 )
 
 func LoadConfiguration() (*Configuration, error) {
@@ -20,16 +24,16 @@ func LoadConfiguration() (*Configuration, error) {
 }
 
 func mergeEnvironmentVariables(cfg *Configuration) {
-	if v, ok := os.LookupEnv("ShippingService__PubSubName"); ok {
+	if v, ok := os.LookupEnv(envPubSubName); ok {
 		cfg.PubSubName = v
 	}
-	if v, ok := os.LookupEnv("ShippingService__TopicName"); ok {
+	if v, ok := os.LookupEnv(envTopicName); ok {
 		cfg.TopicName = v
 	}
-	if v, ok := os.LookupEnv("ShippingService__Environment"); ok {
+	if v, ok := os.LookupEnv(envEnvironmentName); ok {
 		cfg.Environment = v
 	}
-	if v, ok := os.LookupEnv("ShippingService__ZipkinEndpoint"); ok {
+	if v, ok := os.LookupEnv(envZipkinEndpoint); ok {
 		cfg.ZipkinEndpoint = v
 	}
 }
