@@ -52,6 +52,8 @@ runs:
           kubelogin --version
     - name: Install Helm3
       uses: azure/setup-helm@v3
+      with:
+        token: ${{ inputs.github_token }}
     - name: Verify Helm3 installation
       shell: bash
       run: helm version
