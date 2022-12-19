@@ -6,8 +6,6 @@ using OpenTelemetry.Trace;
 using ProductsService.Configuration;
 using ProductsService.Data.Repositories;
 
-const string ServiceName = "ProductsService";
-
 var builder = WebApplication.CreateBuilder(args);
 
 var cfg = new ProductsServiceConfiguration();
@@ -20,54 +18,19 @@ if (cfgSection == null || !cfgSection.Exists())
 }
 cfgSection.Bind(cfg);
 builder.Services.AddSingleton(cfg);
-
 // logging
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole(options =>
-{
-    options.FormatterName = ConsoleFormatterNames.Json;
-});
-
-if (string.IsNullOrWhiteSpace(cfg.ZipkinEndpoint))
-{
-    throw new ApplicationException("Zipkin Endpoint not provided");
-}
-
-//traces
-builder.Services.AddOpenTelemetryTracing(options =>
-{
-    options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(ServiceName))
-        .AddAspNetCoreInstrumentation()
-        .AddZipkinExporter(config =>
-        {
-            config.Endpoint = new Uri(cfg.ZipkinEndpoint);
-        });
-});
-
+builder.ConfigureLogging(cfg);
+// tracing
+builder.ConfigureTracing(cfg);
 // metrics
-builder.Services.AddOpenTelemetryMetrics(options =>
-{
-    options.ConfigureResource(rb =>
-        {
-            rb.AddService(ServiceName);
-        })
-        .AddRuntimeInstrumentation()
-        .AddHttpClientInstrumentation()
-        .AddAspNetCoreInstrumentation()
-        .AddPrometheusExporter();
-});
+builder.ConfigureMetrics(cfg);
 
-builder.Services.AddScoped<IProductsRepository>(serviceProvider =>
-{
-    var c = serviceProvider.GetRequiredService<ProductsServiceConfiguration>();
+// Configure AuthN
+builder.ConfigureAuthN(cfg);
+// Configure AuthZ
+builder.ConfigureAuthZ(cfg);
 
-    if (c.UseFakeImplementation)
-    {
-        var l = serviceProvider.GetRequiredService<ILogger<FakeProductsRepository>>();
-        return new FakeProductsRepository(l);
-    }
-    throw new NotFiniteNumberException("No live implementation here yet...");
-});
+builder.Services.AddScoped<IProductsRepository, InMemoryProductsRepository>();
 
 builder.Services.AddHealthChecks();
 builder.Services.AddControllers();
@@ -95,11 +58,17 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapControllers()
+    .RequireAuthorization("ApiScope");
 
-app.UseOpenTelemetryPrometheusScrapingEndpoint();
+if (cfg.ExposePrometheusMetrics)
+{
+    Console.WriteLine("Registering Prometheus scraping endpoint");
+    app.UseOpenTelemetryPrometheusScrapingEndpoint();
+}
 
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");

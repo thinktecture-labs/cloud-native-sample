@@ -3,7 +3,17 @@ namespace ProductsService.Configuration;
 public class ProductsServiceConfiguration
 {
     public const string SectionName = "ProductsService";
+ 
+    public ProductsServiceConfiguration()
+    {
+        IdentityServer = new IdentityServerConfiguration();
+        Authorization = new Authorization();
+    }
 
-    public bool UseFakeImplementation { get; set; } = false;
-    public string ZipkinEndpoint { get;set; }
+    public string ZipkinEndpoint { get; set; }
+    public bool ExposePrometheusMetrics {get;set;}
+    public string ApplicationInsightsConnectionString {get;set;}
+
+    public IdentityServerConfiguration IdentityServer { get;set; }
+    public Authorization Authorization { get; set; }
 }

@@ -34,6 +34,14 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            - name: ProductsService__IdentityServer__Authority
+              valueFrom:
+                configMapKeyRef:
+                  name: authentication
+                  key: authority
+                  optional: true
+            - name: ProductsService__ExposePrometheusMetrics
+              value: {{ .Values.exposePrometheusMetrics | quote }}
             - name: ProductsService__ZipkinEndpoint
               valueFrom:
                 configMapKeyRef:

@@ -2,9 +2,9 @@
 
 namespace ProductsService.Data.Repositories
 {
-    public class FakeProductsRepository : IProductsRepository
+    public class InMemoryProductsRepository : IProductsRepository
     {
-        private readonly ILogger<FakeProductsRepository> _logger;
+        private readonly ILogger<InMemoryProductsRepository> _logger;
         private readonly List<Product> _products = new()
         {
             new Product(Guid.Parse("b3b749d1-fd02-4b47-8e3c-540555439db6"), "Milk", "Good milk",
@@ -15,7 +15,7 @@ namespace ProductsService.Data.Repositories
                 new List<string> { "Food" }, 1.49),
         };
 
-        public FakeProductsRepository(ILogger<FakeProductsRepository> logger)
+        public InMemoryProductsRepository(ILogger<InMemoryProductsRepository> logger)
         {
             _logger = logger;
         }
