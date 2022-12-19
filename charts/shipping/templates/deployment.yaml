@@ -38,7 +38,9 @@ spec:
               value: {{ .Values.environment }}
             - name: ShippingService__PubSubName
               value: orders
-            - name: ShippingService__TopicName
+            - name: ShippingService__SourceTopicName
+              value: new_orders
+            - name: ShippingService__TargetTopicName
               value: new_orders
             - name: ShippingService__ZipkinEndpoint
               valueFrom:

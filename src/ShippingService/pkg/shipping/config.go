@@ -6,12 +6,26 @@ import (
 	"os"
 )
 
+type Configuration struct {
+	PubSubName      string
+	SourceTopicName string
+	TargetTopicName string
+	Environment     string
+	ZipkinEndpoint  string
+}
+
+func (c *Configuration) IsProduction() bool {
+	return c.Environment == environmentProduction
+}
+
 const (
-	configFilePath     = "./config.json"
-	envPubSubName      = "ShippingService__PubSubName"
-	envTopicName       = "ShippingService__TopicName"
-	envEnvironmentName = "ShippingService__Environment"
-	envZipkinEndpoint  = "ShippingService__ZipkinEndpoint"
+	environmentProduction = "Production"
+	configFilePath        = "./config.json"
+	envPubSubName         = "ShippingService__PubSubName"
+	envSourceTopicName    = "ShippingService__SourceTopicName"
+	envTargetTopicName    = "ShippingService_TargetTopicName"
+	envEnvironmentName    = "ShippingService__Environment"
+	envZipkinEndpoint     = "ShippingService__ZipkinEndpoint"
 )
 
 func LoadConfiguration() (*Configuration, error) {
@@ -27,8 +41,11 @@ func mergeEnvironmentVariables(cfg *Configuration) {
 	if v, ok := os.LookupEnv(envPubSubName); ok {
 		cfg.PubSubName = v
 	}
-	if v, ok := os.LookupEnv(envTopicName); ok {
-		cfg.TopicName = v
+	if v, ok := os.LookupEnv(envSourceTopicName); ok {
+		cfg.SourceTopicName = v
+	}
+	if v, ok := os.LookupEnv(envTargetTopicName); ok {
+		cfg.TargetTopicName = v
 	}
 	if v, ok := os.LookupEnv(envEnvironmentName); ok {
 		cfg.Environment = v

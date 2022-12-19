@@ -23,21 +23,6 @@ func NewShipping(cfg *Configuration, log *logrus.Logger) *Shipping {
 	}
 }
 
-const (
-	environmentProduction = "Production"
-)
-
-type Configuration struct {
-	PubSubName     string
-	TopicName      string
-	Environment    string
-	ZipkinEndpoint string
-}
-
-func (c *Configuration) IsProduction() bool {
-	return c.Environment == environmentProduction
-}
-
 type ShippingProcessed struct {
 	UserId       string `json:"userId"`
 	CustomerName string `json:"userName"`
@@ -81,8 +66,8 @@ func (s *Shipping) ProcessOrder(o *Order) error {
 		OrderId:      o.Id,
 		UserId:       o.UserId,
 	}
-	s.log.Infof("Publishing event to %s %s", s.cfg.PubSubName, s.cfg.TopicName)
-	if err = c.PublishEvent(context.Background(), s.cfg.PubSubName, s.cfg.TopicName, m); err != nil {
+	s.log.Infof("Publishing event to %s %s", s.cfg.PubSubName, s.cfg.TargetTopicName)
+	if err = c.PublishEvent(context.Background(), s.cfg.PubSubName, s.cfg.TargetTopicName, m); err != nil {
 		return fmt.Errorf("Will fail because publishing order-processed event failed: %s", err)
 	}
 	return nil

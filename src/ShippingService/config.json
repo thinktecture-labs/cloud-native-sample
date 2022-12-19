@@ -2,5 +2,6 @@
   "Port": 5003,
   "Environment": "Development",
   "PubSubName": "orders",
-  "TopicName": "processed_orders"
+  "SourceTopicName": "new_orders",
+  "TargetTopicName": "processed_orders"
 }

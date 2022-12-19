@@ -28,7 +28,7 @@ func GetSubscriptionHandler(cfg *shipping.Configuration) gin.HandlerFunc {
 		t := []subscription{
 			{
 				PubsubName: cfg.PubSubName,
-				Topic:      cfg.TopicName,
+				Topic:      cfg.SourceTopicName,
 				Routes: routes{
 					Rules: []rule{
 						{
