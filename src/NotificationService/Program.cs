@@ -1,10 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using NotificationService;
+﻿using NotificationService;
 using NotificationService.Configuration;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,111 +14,18 @@ cfgSection.Bind(cfg);
 builder.Services.AddSingleton(cfg);
 
 // logging
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole(options =>
-{
-    options.FormatterName = cfg.ConsoleFormatterName;
-});
+builder.ConfigureLogging(cfg);
 var logger = builder.Logging.Services.BuildServiceProvider().GetRequiredService<ILogger<Program>>();
 
 // traces
-if (string.IsNullOrWhiteSpace(cfg.TraceEndpoint))
-{
-    logger.LogWarning("TraceEndpoint not configured. Traces will not be exported!");
-}
-
-if (!string.IsNullOrWhiteSpace(cfg.TraceEndpoint))
-{
-    builder.Services.AddOpenTelemetryTracing(options =>
-    {
-        logger.LogInformation("Tracing: Traces will be exported to {TraceSystem} at {TraceEndpoint}", cfg.TraceSystem, cfg.TraceEndpoint);
-        options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Constants.ServiceName)).AddAspNetCoreInstrumentation();
-        
-        logger.LogInformation("Tracing: Service Name is set to {ServiceName}", Constants.ServiceName);
-        switch (cfg.TraceSystem)
-        {
-            case TraceSystem.Zipkin:
-                options.AddZipkinExporter(config => { config.Endpoint = new Uri(cfg.TraceEndpoint); });
-                break;
-            case TraceSystem.AzureMonitor:
-                logger.LogWarning("Azure SDK is currently not compatible with OTel SDK... Will not write traces to Azure Monitor");
-                
-                // options.AddAzureMonitorTraceExporter(config => { config.ConnectionString = cfg.TraceEndpoint; });
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    });
-}
-
+builder.ConfigureTracing(cfg);
 // metrics
-builder.Services.AddOpenTelemetryMetrics(options =>
-{
-    options.ConfigureResource(rb =>
-        {
-            rb.AddService(Constants.ServiceName);
-        })
-        .AddRuntimeInstrumentation()
-        .AddHttpClientInstrumentation()
-        .AddAspNetCoreInstrumentation()
-        .AddPrometheusExporter();
-    logger.LogInformation("Metrics: Service Name is set to {ServiceName}", Constants.ServiceName);
-}); 
-
-
+builder.ConfigureMetrics(cfg);
 // Configure AuthN
-var notificationHubEndpoint = "/notifications/notificationHub";
-
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer("Bearer", options =>
-    {
-        options.Authority = cfg.IdentityServer.Authority;
-        options.RequireHttpsMetadata = cfg.IdentityServer.RequireHttpsMetadata;
-        if(!string.IsNullOrWhiteSpace(cfg.IdentityServer.MetadataAddress))
-        {
-            options.MetadataAddress = cfg.IdentityServer.MetadataAddress;
-        }
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateAudience = false,
-            ValidIssuer = cfg.IdentityServer.Authority,
-        };
-        options.Events = new JwtBearerEvents
-        {
-            OnMessageReceived = context =>
-            {
-                var accessToken = context.Request.Query["access_token"];
-
-                // If the request is for our hub...
-                var path = context.HttpContext.Request.Path;
-                if (!string.IsNullOrEmpty(accessToken) &&
-                    (path.StartsWithSegments(notificationHubEndpoint)))
-                {
-                    // Read the token out of the query string
-                    context.Token = accessToken;
-                }
-                return Task.CompletedTask;
-            }
-        };
-    });
-logger.LogInformation("Authentication configured for {Authority} (require HTTPs: {requireHttps}) Metadata Address {MetadataAddress}", 
-    cfg.IdentityServer.Authority, 
-    cfg.IdentityServer.RequireHttpsMetadata, 
-    cfg.IdentityServer.MetadataAddress);
+builder.ConfigureAuthN(cfg);
 
 // Configure AuthZ
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy(Constants.AuthorizationPolicyName, policy =>
-    {
-        policy.RequireAuthenticatedUser();
-        policy.RequireClaim(cfg.Authorization.RequiredClaimName, cfg.Authorization.RequiredClaimValue);
-    });
-});
-logger.LogInformation("Authorization configured with Policy {AuthzPolicyName}: RequiredClaim: {Name} {Value}",
-    Constants.AuthorizationPolicyName,
-    cfg.Authorization.RequiredClaimName,
-    cfg.Authorization.RequiredClaimValue);
+builder.ConfigureAuthZ(cfg);
 
 builder.Services.AddSignalR();
 builder.Services.AddHealthChecks();
@@ -141,7 +43,7 @@ app.UseAuthentication();
 logger.LogInformation(" - Authentication activated");
 app.UseAuthorization();
 logger.LogInformation(" - Authorization activated");
-app.MapHub<NotificationHub>(notificationHubEndpoint)
+app.MapHub<NotificationHub>(Constants.NotificationHubEndpoint)
     .RequireAuthorization("ApiScope");
 logger.LogInformation(" - SignalR Hubs activated");
 app.MapControllers();

@@ -34,11 +34,13 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: NotificationService__TraceEndpoint
+            - name: NotificationService__ZipkinEndpoint
               valueFrom:
                 configMapKeyRef:
                   name: zipkin
                   key: endpoint
+            - name: NotificationService__ExposePrometheusMetrics
+              value: {{ .Values.exposePrometheusMetrics | quote }}
             - name: NotificationService__IdentityServer__Authority
               valueFrom:
                 configMapKeyRef:

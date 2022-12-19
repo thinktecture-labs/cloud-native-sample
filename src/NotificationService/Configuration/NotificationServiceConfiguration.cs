@@ -12,8 +12,9 @@ public class NotificationServiceConfiguration
     public const string SectionName = "NotificationService";
     public string ConsoleFormatterName { get; set; } = ConsoleFormatterNames.Json;
     public string OnOrderProcessedMethodName { get; set; } = "onOrderProcessed";
-    public TraceSystem TraceSystem { get; set; } = TraceSystem.Zipkin;
-    public string TraceEndpoint { get; set; }
+    public string ZipkinEndpoint { get; set; }
+    public bool ExposePrometheusMetrics {get;set;}
+    public string ApplicationInsightsConnectionString {get;set;}
     public IdentityServerConfiguration IdentityServer { get;set; }
     public Authorization Authorization { get; set; }
 }
