@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/thinktecture-labs/cloud-native-sample/shipping-service/pkg/shipping"
 	"go.opentelemetry.io/otel"
-	stdout "go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/exporters/zipkin"
 	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
@@ -13,7 +12,6 @@ func configureTracing(cfg *shipping.Configuration) (tp *sdktrace.TracerProvider,
 	if len(cfg.ZipkinEndpoint) == 0 {
 		return nil, nil
 	}
-	c, err := stdout.New(stdout.WithPrettyPrint())
 	z, err := zipkin.New(cfg.ZipkinEndpoint)
 	if err != nil {
 		return nil, err
