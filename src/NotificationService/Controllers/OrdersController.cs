@@ -36,7 +36,7 @@ public class OrdersController : Controller
             return NotFound();
         }
 
-        await group.SendAsync(_config.OnOrderProcessedMethodName, e.Data.OrderId.);
+        await group.SendAsync(_config.OnOrderProcessedMethodName, e.Data.OrderId);
         return Ok();
     }
 }
