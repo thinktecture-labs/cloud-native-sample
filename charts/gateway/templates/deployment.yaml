@@ -36,11 +36,13 @@ spec:
           env:
             - name: ASPNETCORE_ENVIRONMENT
               value: "{{ .Values.environment }}"
-            - name: Gateway__TraceEndpoint
+            - name: Gateway__ZipkinEndpoint
               valueFrom:
                 configMapKeyRef:
                   name: zipkin
                   key: endpoint
+            - name: Gateway__ExposePrometheusMetrics
+              value: {{ .Values.exposePrometheusMetrics | quote }}
           ports:
             - name: http-gateway
               containerPort: {{ .Values.containerPort }}
