@@ -51,7 +51,7 @@ public class OrdersController : ControllerBase
 
         var traceIdentifier = HttpContext.TraceIdentifier;
         var cloudEvent = new CloudEvent<Order>(newOrder){
-            Subject = "com.thinktecture/new-order"
+            Type = "com.thinktecture/new-order"
         };
         var metadata = new Dictionary<string, string>();
         metadata.Add("traceparent", traceIdentifier);
