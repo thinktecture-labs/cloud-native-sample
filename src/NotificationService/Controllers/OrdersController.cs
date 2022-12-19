@@ -25,6 +25,7 @@ public class OrdersController : Controller
     [Topic("orders", "processed_orders")]
     public async Task<IActionResult> OnOrderProcessedAsync([FromBody]CloudEvent<DispatchedOrder> e)
     {
+        _logger.LogTrace("OnOrderProcessed invoked with {Subject} and {Type}", e.Subject, e.Type);
         _logger.LogTrace("OrderProcessed invoked for User {UserId} and order {OrderId}", e.Data.UserId, e.Data.OrderId);
 
         var group = _hubContext.Clients.Group(e.Data.UserId);
@@ -35,7 +36,7 @@ public class OrdersController : Controller
             return NotFound();
         }
 
-        await group.SendAsync(_config.OnOrderProcessedMethodName, e.Data.OrderId.ToString());
+        await group.SendAsync(_config.OnOrderProcessedMethodName, e.Data.OrderId.);
         return Ok();
     }
 }
