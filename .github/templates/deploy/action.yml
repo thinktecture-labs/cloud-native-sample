@@ -1,0 +1,74 @@
+name: deploy
+description: "Deploy Application"
+inputs:
+  acr_name:
+    description: "Name of the Azure Container Registry"
+    required: true
+  app_name:
+    description: "Name of the app to build"
+    required: true
+  app_display_name:
+    description: "Display name of the app to build"
+    required: true
+  working_dir:
+    description: "Alternative working directory"
+    required: false
+  github_token:
+    description: "GitHub token of the current workflow"
+    required: true
+  kubelogin_version:
+    description: "Desired version of KubeLogin"
+    required: true
+  kubernetes_namespace:
+    description: "Desired Kubernetes namespace"
+    required: true
+  aks_name:
+    description: "Name of the AKS"
+    required: true
+  aks_resource_group_name:
+    description: "Name of the Resource Group containing the AKS"
+    required: true
+  terraform_client_id:
+    required: true
+  terraform_client_secret:
+    required: true
+  terraform_subscription_id:
+    required: true
+  terraform_tenant_id:
+    required: true
+  helm_chart_location:
+    required: true
+runs:
+  using: "composite"
+  steps: 
+    - name: Checkout Repository
+    uses: actions/checkout@v3
+    - name: Install Kubelogin
+      shell: bash
+      run: |
+          curl -LO "https://github.com/Azure/kubelogin/releases/download/${{ inputs.kubelogin_vesrion }}/kubelogin-linux-amd64.zip" && \
+          sudo unzip -j "kubelogin-linux-amd64.zip" -d /usr/local/bin && \
+          rm -f "kubelogin-linux-amd64.zip" && \
+          kubelogin --version
+    - name: Install Helm3
+      uses: azure/setup-helm@v3
+    - name: Verify Helm3 installation
+      shell: bash
+      run: helm version
+    - name: Azure CLI Login
+      uses: Azure/login@v1
+      with:
+        creds: '{"clientId":"${{ secrets.terraform_client_id }}","clientSecret":"${{ secrets.terraform_client_secret }}","subscriptionId":"${{ secrets.terraform_subscription_id }}","tenantId":"${{ secrets.terraform_tenant_id }}"}'
+    - name: AKS Login (non-interactive)
+      shell: bash
+      run: |
+          az account set --subscription ${{ secrets.terraform_subscription_id }} -onone && \
+          az aks get-credentials -g ${{ inputs.aks_resource_group_name }} -n ${{ inputs.aks_name }} && \
+          kubelogin convert-kubeconfig -l azurecli
+    - name: Deploy ${{ inputs.app_display_name }}
+      shell: bash
+      run: |
+          helm upgrade --install "${{ inputs.app_name }}" ${{ inputs.helm_chart_location }} \
+          -n ${{ inputs.kubernetes_namespace }} --create-namespace \
+          --set image.repository=${{ inputs.acr_name }}.azurecr.io/${{ inputs.app_name }} \
+          --set image.tag=${{ github.sha }}

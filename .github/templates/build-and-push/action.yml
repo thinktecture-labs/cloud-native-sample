@@ -1,0 +1,102 @@
+name: build-and-push
+description: "Build & Push Docker Images"
+inputs:
+  acr_name:
+    description: "Name of the Azure Container Registry"
+    required: true
+  acr_token_name:
+    description: "Name of the token to use for Azure Container Registry"
+    required: true
+  acr_token_password:
+    description: "Password of the token to use for Azure Container Registry"
+    required: true
+  app_name:
+    description: "Name of the app to build"
+    required: true
+  app_display_name:
+    description: "Display name of the app to build"
+    required: true
+  working_dir:
+    description: "Alternative working directory"
+    required: false
+  github_token:
+    description: "GitHub token of the current workflow"
+    required: true
+runs:
+  using: "composite"
+  steps: 
+    - name: Docker Login
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ inputs.acr_name}}.azurecr.io
+        username: ${{ inputs.acr_token_name }}
+        password: ${{ inputs.acr_token_password }}
+    - name: Build Docker Image
+      shell: bash
+      run: |
+          docker build --build-arg mode=release . \
+            -t ${{ inputs.acr_name }}.azurecr.io/${{ inputs.app_name }}:${{ github.sha }} \
+            -t ${{ inputs.acr_name }}.azurecr.io/${{ inputs.app_name }}:${{ github.ref_name }}-latest
+      working-directory: ${{ inputs.working_dir }}
+    - name: Install Dockle
+      shell: bash
+      run: |
+          VERSION=$(
+          curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | \
+          grep '"tag_name":' | \
+          sed -E 's/.*"v([^"]+)".*/\1/' \
+          ) && curl -L -o dockle.tar.gz https://github.com/goodwithtech/dockle/releases/download/v${VERSION}/dockle_${VERSION}_Linux-64bit.tar.gz &&  \
+          tar zxvf dockle.tar.gz
+      working-directory: /tmp
+    - name: Save Docker Image
+      shell: bash
+      run: docker save ${{ inputs.acr_name }}.azurecr.io/${{ inputs.app_name }}:${{ github.sha }} -o img.tar
+      working-directory: /tmp
+    - name: Scan Docker Image
+      shell: bash
+      run: |
+          ./dockle --debug --accept-key KEY_SHA512 -f json -o /tmp/dockle-results.json --input img.tar  > /dev/null
+          ./dockle --accept-key KEY_SHA512 -o /tmp/dockle-results.txt --input img.tar > /dev/null
+          DOCKLE_RESULT_JSON=$(cat /tmp/dockle-results.json)
+          DOCKLE_RESULT=$(cat /tmp/dockle-results.txt)
+          
+          echo "DOCKLE_RESULT<<EOF" >> $GITHUB_ENV
+          echo "$DOCKLE_RESULT" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+          echo "DOCKLE_RESULT_JSON<<EOF" >> $GITHUB_ENV
+          echo "$DOCKLE_RESULT_JSON" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+          echo "Dockle generated the following results:"
+          echo $DOCKLE_RESULT_JSON
+      working-directory: /tmp
+    - name: Report Vulnerabilities
+      if: contains(env.DOCKLE_RESULT, 'WARN') || contains(env.DOCKLE_RESULT, 'FATAL')
+      uses: actions-ecosystem/action-create-issue@v1
+      with:
+        github_token: ${{ inputs.github_token }}
+        title: Dockle report for ${{ inputs.app_display_name }}
+        body: |
+          The container image for ${{ inputs.app_display_name }} (`${{ inputs.app_name }}:${{ github.sha }}`) was scanned during CI for ${{ github.sha }} using dockle. Please see the findings mentioned below:
+
+          ## Dockle results
+
+          ```json
+          ${{ env.DOCKLE_RESULT_JSON }}
+          ```
+        labels: |
+          containers
+          security
+      #- name: Fail if Vulnerable
+      #  if: contains(env.DOCKLE_RESULT, 'WARN') || contains(env.DOCKLE_RESULT, 'FATAL')
+      #  run: |
+      #    echo "::error ::Please check scan results (see corresponding issue)"
+      #    exit 1
+    - name: Push Docker Image
+      if: ${{ success() }}
+      shell: bash
+      run: |
+          docker push ${{ inputs.acr_name }}.azurecr.io/${{ inputs.acr_name }}:${{ github.sha }}
+          docker push ${{ inputs.acr_name }}.azurecr.io/${{ inputs.acr_name }}:${{ github.ref_name }}-latest
+      working-directory: ${{ inputs.working_dir }}
