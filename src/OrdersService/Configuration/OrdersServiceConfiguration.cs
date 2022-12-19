@@ -11,6 +11,8 @@ public class OrdersServiceConfiguration
     public string CreateOrderPubSubName { get; set; } = "orders";
     public string CreateOrderTopicName { get; set; } = "new_orders";
     public string ZipkinEndpoint { get; set; }
+    public bool ExposePrometheusMetrics {get;set;}
+    public string ApplicationInsightsConnectionString {get;set;}
     public IdentityServerConfiguration IdentityServer { get;set; }
     public Authorization Authorization { get; set; }
 }

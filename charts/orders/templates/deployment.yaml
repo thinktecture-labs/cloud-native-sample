@@ -39,6 +39,8 @@ spec:
                 configMapKeyRef:
                   name: zipkin
                   key: endpoint
+            - name: OrdersService__ExposePrometheusMetrics
+              value: {{ .Values.exposePrometheusMetrics | quote }}
             - name: OrdersService__IdentityServer__Authority
               valueFrom:
                 configMapKeyRef:

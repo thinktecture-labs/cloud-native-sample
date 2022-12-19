@@ -2,15 +2,9 @@
 using Microsoft.OpenApi.Models;
 using OrdersService.Configuration;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.Console;
 using OrdersService.Data;
 using OrdersService.Data.Repositories;
-using Microsoft.IdentityModel.Tokens;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 
-const string ServiceName = "OrdersService";
 var builder = WebApplication.CreateBuilder(args);
 
 var cfg = new OrdersServiceConfiguration();
@@ -25,67 +19,16 @@ cfgSection.Bind(cfg);
 builder.Services.AddSingleton(cfg);
 
 // logging
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole(options =>
-{
-    options.FormatterName = ConsoleFormatterNames.Json;
-});
-
-//traces
-if (string.IsNullOrWhiteSpace(cfg.ZipkinEndpoint))
-{
-    throw new ApplicationException("Zipkin Endpoint not provided");
-}
-builder.Services.AddOpenTelemetryTracing(options =>
-{
-    options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(ServiceName))
-        .AddAspNetCoreInstrumentation()
-        .AddZipkinExporter(options =>
-        {
-            options.Endpoint = new Uri(cfg.ZipkinEndpoint);
-        });
-});
-
+builder.ConfigureLogging(cfg);
+// tracing
+builder.ConfigureTracing(cfg);
 // metrics
-builder.Services.AddOpenTelemetryMetrics(options =>
-{
-    options.ConfigureResource(rb =>
-        {
-            rb.AddService(ServiceName);
-        })
-        .AddRuntimeInstrumentation()
-        .AddHttpClientInstrumentation()
-        .AddAspNetCoreInstrumentation()
-        .AddPrometheusExporter();
-});
+builder.ConfigureMetrics(cfg);
 
 // Configure AuthN
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer("Bearer", options =>
-    {
-        options.Authority = cfg.IdentityServer.Authority;
-        options.RequireHttpsMetadata = cfg.IdentityServer.RequireHttpsMetadata;
-        
-        if (!string.IsNullOrWhiteSpace(cfg.IdentityServer.MetadataAddress))
-        {
-            options.MetadataAddress = cfg.IdentityServer.MetadataAddress;
-        }
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateAudience = false,
-            ValidIssuer = cfg.IdentityServer.Authority  
-        };
-    });
-
+builder.ConfigureAuthN(cfg);
 // Configure AuthZ
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("ApiScope", policy =>
-    {
-        policy.RequireAuthenticatedUser();
-        policy.RequireClaim(cfg.Authorization.RequiredClaimName, cfg.Authorization.RequiredClaimValue);
-    });
-});
+builder.ConfigureAuthZ(cfg);
 
 builder.Services.AddDbContext<OrdersServiceContext>(options =>
     options.UseInMemoryDatabase(databaseName: "OrdersService"));
@@ -126,6 +69,10 @@ app.MapControllers()
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");
 
-app.UseOpenTelemetryPrometheusScrapingEndpoint();
+if (cfg.ExposePrometheusMetrics)
+{
+    Console.WriteLine("Registering Prometheus scraping endpoint");
+    app.UseOpenTelemetryPrometheusScrapingEndpoint();
+}
 
 app.Run();
