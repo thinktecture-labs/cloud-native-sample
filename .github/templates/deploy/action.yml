@@ -46,7 +46,7 @@ runs:
     - name: Install Kubelogin
       shell: bash
       run: |
-          curl -LO "https://github.com/Azure/kubelogin/releases/download/${{ inputs.kubelogin_vesrion }}/kubelogin-linux-amd64.zip" && \
+          curl -LO "https://github.com/Azure/kubelogin/releases/download/${{ inputs.kubelogin_version }}/kubelogin-linux-amd64.zip" && \
           sudo unzip -j "kubelogin-linux-amd64.zip" -d /usr/local/bin && \
           rm -f "kubelogin-linux-amd64.zip" && \
           kubelogin --version
