@@ -58,11 +58,11 @@ runs:
     - name: Azure CLI Login
       uses: Azure/login@v1
       with:
-        creds: '{"clientId":"${{ secrets.terraform_client_id }}","clientSecret":"${{ secrets.terraform_client_secret }}","subscriptionId":"${{ secrets.terraform_subscription_id }}","tenantId":"${{ secrets.terraform_tenant_id }}"}'
+        creds: '{"clientId":"${{ inputs.terraform_client_id }}","clientSecret":"${{ inputs.terraform_client_secret }}","subscriptionId":"${{ inputs.terraform_subscription_id }}","tenantId":"${{ inputs.terraform_tenant_id }}"}'
     - name: AKS Login (non-interactive)
       shell: bash
       run: |
-          az account set --subscription ${{ secrets.terraform_subscription_id }} -onone && \
+          az account set --subscription ${{ inputs.terraform_subscription_id }} -onone && \
           az aks get-credentials -g ${{ inputs.aks_resource_group_name }} -n ${{ inputs.aks_name }} && \
           kubelogin convert-kubeconfig -l azurecli
     - name: Deploy ${{ inputs.app_display_name }}
