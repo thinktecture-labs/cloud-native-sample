@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-      - name: Build & Push RelayServer Management API
+      - name: Build & Push Gateway of Cloud-Native
         uses: "./.github/templates/build-and-push"
         with:
           acr_name: ${{ secrets.ACR_NAME}}
@@ -36,7 +36,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-      - name: Build & Push RelayServer Management API
+      - name: Deploy Gateway of Cloud-Native
         uses: "./.github/templates/build-and-push"
         with:
           acr_name: ${{ secrets.ACR_NAME}}
