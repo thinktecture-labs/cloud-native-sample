@@ -39,23 +39,23 @@ func (c *Configuration) IsProduction() bool {
 }
 
 type ShippingProcessed struct {
-	UserId       string
-	CustomerName string
-	OrderId      string
+	UserId       string `json:"userId"`
+	CustomerName string `json:"userName"`
+	OrderId      string `json:"orderId"`
 }
 
 type Order struct {
-	Id           string
-	UserId       string
-	CustomerName string
-	SubmittedAt  time.Time
-	Positions    []OrderPosition
+	Id           string          `json:"id"`
+	UserId       string          `json:"userId"`
+	CustomerName string          `json:"userName"`
+	SubmittedAt  time.Time       `json:"submittedAt"`
+	Positions    []OrderPosition `json:"positions"`
 }
 
 type OrderPosition struct {
-	ProductId   string
-	ProductName string
-	Quantity    int
+	Id        string `json:"id"`
+	ProductId string `json:"productId"`
+	Quantity  int    `json:"quantity"`
 }
 
 func (s *Shipping) ProcessOrder(o *Order) error {

@@ -30,6 +30,12 @@ func GetSubscriptionHandler(cfg *shipping.Configuration) gin.HandlerFunc {
 				PubsubName: cfg.PubSubName,
 				Topic:      cfg.TopicName,
 				Routes: routes{
+					Rules: []rule{
+						{
+							Match: `event.type == "com.thinktecture/new-order"`,
+							Path:  "/orders",
+						},
+					},
 					Default: "/orders",
 				},
 			},

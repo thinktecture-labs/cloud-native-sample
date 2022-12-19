@@ -52,10 +52,11 @@ func main() {
 		defer span.End()
 		var envelope cloudevents.CloudEvent
 		if err := ctx.BindJSON(&envelope); err != nil {
+			log.Warnf("BadRequest - Error while binding JSON to CloudEvent %s", err)
 			ctx.AbortWithStatus(400)
 			return
 		}
-		log.Infof("Processing CloudEvent with id %s", envelope.Id)
+		log.Infof("Processing CloudEvent of type %s (id %s)", envelope.Type, envelope.Id)
 		s := shipping.NewShipping(cfg, log)
 		if err = s.ProcessOrder(&envelope.Data); err != nil {
 			ctx.AbortWithStatus(500)
