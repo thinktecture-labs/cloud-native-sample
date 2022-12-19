@@ -20,7 +20,6 @@ func configureTracing(cfg *shipping.Configuration) (tp *sdktrace.TracerProvider,
 	tp = sdktrace.NewTracerProvider(
 		sdktrace.WithSampler(sdktrace.AlwaysSample()),
 		sdktrace.WithBatcher(z),
-		sdktrace.WithBatcher(c),
 	)
 
 	otel.SetTracerProvider(tp)
