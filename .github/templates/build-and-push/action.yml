@@ -97,6 +97,5 @@ runs:
       if: ${{ success() }}
       shell: bash
       run: |
-          docker push ${{ inputs.acr_name }}.azurecr.io/${{ inputs.acr_name }}:${{ github.sha }}
-          docker push ${{ inputs.acr_name }}.azurecr.io/${{ inputs.acr_name }}:${{ github.ref_name }}-latest
-      working-directory: ${{ inputs.working_dir }}
+          docker push ${{ inputs.acr_name }}.azurecr.io/${{ inputs.app_name }}:${{ github.sha }}
+          docker push ${{ inputs.acr_name }}.azurecr.io/${{ inputs.app_name }}:${{ github.ref_name }}-latest
