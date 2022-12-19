@@ -7,4 +7,5 @@ public class Constants
     public const string CorsPolicyName = "GatewayPolicy";
     public const string ServiceName = "Gateway";
     public const string HttpClientName = "ordermonitor";
+    
 }
