@@ -50,7 +50,10 @@ public class OrdersController : ControllerBase
         await _repository.AddNewOrderAsync(newOrder);
 
         var traceIdentifier = HttpContext.TraceIdentifier;
-        var cloudEvent = new CloudEvent<Order>(newOrder);
+        var cloudEvent = new CloudEvent<Order>(newOrder){
+            Type = "com.thinktecture/new-order"
+        };
+        
         var metadata = new Dictionary<string, string>();
         metadata.Add("traceparent", traceIdentifier);
 
