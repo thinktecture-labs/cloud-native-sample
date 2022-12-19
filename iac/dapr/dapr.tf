@@ -52,23 +52,6 @@ resource "kubernetes_manifest" "dapr_component_orders_rabbit" {
   }
 }
 
-resource "kubernetes_manifest" "dapr_subscription_new_orders" {
-  manifest = {
-    "apiVersion" = "dapr.io/v1alpha1"
-    "kind"       = "Subscription"
-    "metadata" = {
-      "name"      = "sub-new-orders"
-      "namespace" = data.kubernetes_namespace.app.metadata[0].name
-    }
-    "spec" = {
-      "pubsubname" = "orders"
-      "topic"      = "new_orders"
-      "route"      = "/orders"
-    }
-    "scopes" : ["shipping"]
-  }
-}
-
 resource "kubernetes_ingress_v1" "dapr_dashboard" {
   depends_on = [
     helm_release.dapr
