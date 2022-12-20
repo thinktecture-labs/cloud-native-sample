@@ -4,31 +4,27 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/thinktecture-labs/cloud-native-sample/shipping-service/pkg/cloudevents"
 	"github.com/thinktecture-labs/cloud-native-sample/shipping-service/pkg/dapr"
 	"github.com/thinktecture-labs/cloud-native-sample/shipping-service/pkg/shipping"
-	ginlogrus "github.com/toorop/gin-logrus"
+
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"go.opentelemetry.io/otel"
 )
 
 const (
 	serviceName = "ShippingService"
-	defaultPort = 5000
-	envVarPort  = "PORT"
 )
 
 var tracer = otel.Tracer(serviceName)
 
 func main() {
 	cfg := getConfig()
-	log := configureLogging(cfg)
 
 	r := gin.New()
+	log := configureLogging(r, cfg)
 
 	configureMetrics(r)
 	tp, err := configureTracing(cfg)
@@ -44,7 +40,7 @@ func main() {
 	}
 
 	r.Use(otelgin.Middleware(serviceName))
-	r.Use(ginlogrus.Logger(log), gin.Recovery())
+	r.Use(gin.Recovery())
 	r.GET("/dapr/subscribe", dapr.GetSubscriptionHandler(cfg))
 
 	r.POST("/orders", func(ctx *gin.Context) {
@@ -62,39 +58,23 @@ func main() {
 			ctx.AbortWithStatus(500)
 			return
 		}
-
 		// we must send at least! an empty JSON object, otherwise dapr component will treat response incorrectly and log
 		// skipping status check due to error parsing result from pub/sub event
 		// https://github.com/dapr/dapr/issues/2235
 		ctx.JSON(200, dapr.DaprResponse{})
-
 	})
+	healthz := r.Group("/healthz")
+	healthz.GET("/readiness", ok)
+	healthz.GET("/liveness", ok)
 
-	r.GET("/healthz/readiness", func(ctx *gin.Context) {
-		ctx.Status(200)
-	})
-
-	r.GET("/healthz/liveness", func(ctx *gin.Context) {
-		ctx.Status(200)
-	})
-
-	p := getPort()
-	log.Infof("Starting shipping service on port %d", p)
-	if err := r.Run(fmt.Sprintf(":%d", p)); err != nil {
+	log.Infof("Starting shipping service on port %d", cfg.Port)
+	if err := r.Run(fmt.Sprintf(":%d", cfg.Port)); err != nil {
 		log.Fatalf("Error while running gin: %s", err)
 	}
 }
 
-func getPort() int {
-	p := os.Getenv(envVarPort)
-	if len(p) == 0 {
-		return defaultPort
-	}
-	port, err := strconv.Atoi(p)
-	if err != nil {
-		return defaultPort
-	}
-	return port
+func ok(c *gin.Context) {
+	c.Status(200)
 }
 
 func getConfig() *shipping.Configuration {

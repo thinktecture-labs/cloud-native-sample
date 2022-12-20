@@ -66,8 +66,8 @@ func (s *Shipping) ProcessOrder(o *Order) error {
 		OrderId:      o.Id,
 		UserId:       o.UserId,
 	}
-	s.log.Infof("Publishing event to %s %s", s.cfg.PubSubName, s.cfg.TargetTopicName)
-	if err = c.PublishEvent(context.Background(), s.cfg.PubSubName, s.cfg.TargetTopicName, m); err != nil {
+	s.log.Infof("Publishing event to %s %s", s.cfg.TargetPubSubName, s.cfg.TargetTopicName)
+	if err = c.PublishEvent(context.Background(), s.cfg.TargetPubSubName, s.cfg.TargetTopicName, m); err != nil {
 		return fmt.Errorf("Will fail because publishing order-processed event failed: %s", err)
 	}
 	return nil
