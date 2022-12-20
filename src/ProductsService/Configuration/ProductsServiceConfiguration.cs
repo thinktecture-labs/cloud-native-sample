@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging.Console;
+
 namespace ProductsService.Configuration;
 
 public class ProductsServiceConfiguration
@@ -9,7 +11,8 @@ public class ProductsServiceConfiguration
         IdentityServer = new IdentityServerConfiguration();
         Authorization = new Authorization();
     }
-
+    public string ConsoleFormatterName { get; set; } = ConsoleFormatterNames.Json;
+    public bool DisableConsoleLog { get; set; }
     public string ZipkinEndpoint { get; set; }
     public bool ExposePrometheusMetrics {get;set;}
     public string ApplicationInsightsConnectionString {get;set;}
