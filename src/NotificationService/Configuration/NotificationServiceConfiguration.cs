@@ -11,6 +11,7 @@ public class NotificationServiceConfiguration
     }
     public const string SectionName = "NotificationService";
     public string ConsoleFormatterName { get; set; } = ConsoleFormatterNames.Json;
+    public bool DisableConsoleLog { get; set; }
     public string OnOrderProcessedMethodName { get; set; } = "onOrderProcessed";
     public string ZipkinEndpoint { get; set; }
     public bool ExposePrometheusMetrics {get;set;}
