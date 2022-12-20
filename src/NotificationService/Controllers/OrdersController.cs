@@ -23,20 +23,23 @@ public class OrdersController : Controller
     [HttpPost]
     [Route("processed")]
     [Topic("orders", "processed_orders")]
-    public async Task<IActionResult> OnOrderProcessedAsync([FromBody]CloudEvent<DispatchedOrder> e)
+    public async Task<IActionResult> OnOrderProcessedAsync([FromBody]DispatchedOrder order)
     {
-        _logger.LogTrace("OnOrderProcessed invoked with {Subject} and {Type}", e.Subject, e.Type);
-        _logger.LogTrace("OrderProcessed invoked for User {UserId} and order {OrderId}", e.Data.UserId, e.Data.OrderId);
-
-        var group = _hubContext.Clients.Group(e.Data.UserId);
+        if (order == null){
+            _logger.LogWarning("OnOrderProcessed: Received null as order.");
+            return StatusCode(500);
+        }
+        _logger.LogTrace("OnOrderProcessed: Received order with {OrderId} and {UserId}", order.OrderId, order.UserId);
+        
+        var group = _hubContext.Clients.Group(order.UserId);
         if (group == null)
         {
-            _logger.LogWarning("SignalR group with name {Name} not found, request will fail with 404", e.Data.UserId);
+            _logger.LogWarning("SignalR group with name {Name} not found, request will fail with 404", order.UserId);
 
             return NotFound();
         }
 
-        await group.SendAsync(_config.OnOrderProcessedMethodName, e.Data.OrderId);
+        await group.SendAsync(_config.OnOrderProcessedMethodName, order.OrderId);
         return Ok();
     }
 }

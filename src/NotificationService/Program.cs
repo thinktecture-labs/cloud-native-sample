@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Dapr;
 using NotificationService;
 using NotificationService.Configuration;
 
@@ -54,7 +55,6 @@ app.MapHub<NotificationHub>(Constants.NotificationHubEndpoint)
 logger.LogInformation(" - SignalR Hubs activated");
 app.MapControllers();
 logger.LogInformation(" - API Controllers activated");
-app.UseCloudEvents();
 app.MapSubscribeHandler();
 logger.LogInformation(" - Dapr Subscriptions activated with CloudEvents");
 app.MapHealthChecks("/healthz/readiness");
