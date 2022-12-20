@@ -28,11 +28,13 @@ public static class WebApplicationBuilderExtensions
         {
             builder.Logging.AddDebug();
         }
-        builder.Logging.AddConsole(options =>
+        if (!cfg.DisableConsoleLog)
         {
-            options.FormatterName = ConsoleFormatterNames.Json;
-        });
-
+            builder.Logging.AddConsole(options =>
+            {
+                options.FormatterName = cfg.ConsoleFormatterName;
+            });
+        }
         builder.Logging.AddOpenTelemetry(options =>
         {
             options.ConfigureResource(GetOpenTelemetryResourceBuilder());
