@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "orders.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: ClusterIP
   ports:
     - port: {{ .Values.service.port }}
       targetPort: http-orders
