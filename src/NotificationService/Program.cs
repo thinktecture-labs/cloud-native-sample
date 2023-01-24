@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Dapr;
 using NotificationService;
 using NotificationService.Configuration;
@@ -62,9 +62,11 @@ app.MapHealthChecks("/healthz/readiness");
 logger.LogInformation(" - HealthProbe (readiness) activated");
 app.MapHealthChecks("/healthz/liveness");
 logger.LogInformation(" - HealthProbe (liveness) activated");
-
-app.UseOpenTelemetryPrometheusScrapingEndpoint();
-logger.LogInformation(" - Prometheus Scraping activated");
+if (cfg.ExposePrometheusMetrics)
+{
+    app.UseOpenTelemetryPrometheusScrapingEndpoint();
+    logger.LogInformation(" - Prometheus Scraping activated");
+}
 logger.LogInformation("All middlewares activated");
 
 app.Run();
