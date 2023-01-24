@@ -8,7 +8,7 @@ resource "helm_release" "dapr" {
   create_namespace = true
 }
 
-resource "kubernetes_manifest" "darp_configuration" {
+resource "kubernetes_manifest" "dapr_configuration" {
   manifest = {
     "apiVersion" = "dapr.io/v1alpha1"
     "kind"       = "Configuration"
