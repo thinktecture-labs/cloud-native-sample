@@ -8,7 +8,7 @@ resource "helm_release" "dapr" {
   create_namespace = true
 }
 
-resource "kubernetes_manifest" "darp_configuration" {
+resource "kubernetes_manifest" "dapr_configuration" {
   manifest = {
     "apiVersion" = "dapr.io/v1alpha1"
     "kind"       = "Configuration"
@@ -17,6 +17,9 @@ resource "kubernetes_manifest" "darp_configuration" {
       "namespace" = data.kubernetes_namespace.app.metadata[0].name
     }
     "spec" = {
+      "metric" = {
+        "enabled" = true
+      }
       "tracing" = {
         "samplingRate" = "${var.dapr_config_sample_rate}"
         "zipkin" = {
