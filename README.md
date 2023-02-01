@@ -78,6 +78,10 @@ docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all
 Find the `Makefile` in the root of the repository. Use it to perform common tasks as shown below:
 
 ```bash
+
+# Install loki plugin locally
+make init
+
 # Start the sample locally (in docker)
 make start 
 

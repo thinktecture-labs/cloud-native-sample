@@ -1,4 +1,7 @@
-.PHONY: start stop quickstart logs cleanup
+.PHONY: init start stop quickstart logs cleanup 
+
+init:
+	docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
 
 start:
 	docker-compose up --build -d
