@@ -53,7 +53,7 @@ func (s *Shipping) ProcessOrder(o *Order) error {
 	s.log.Infof("Applying shipping business logic on message %s", o.Id)
 
 	rand.Seed(time.Now().UnixNano())
-	min := 1
+	min := 2
 	max := 4
 	randomNumber := rand.Intn(max-min+1) + min
 
