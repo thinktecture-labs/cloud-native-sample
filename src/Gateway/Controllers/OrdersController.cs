@@ -17,7 +17,7 @@ public class OrdersController : ControllerBase
     {
         _logger = logger;
         _daprHttpPort = configuration.GetValue<int>("DAPR_HTTP_PORT");
-        _logger.LogInformation("Using DARP_HTTP_PORT {actual}", _daprHttpPort);
+        _logger.LogInformation("Using DAPR_HTTP_PORT {actual}", _daprHttpPort);
         _httpClient = httpClientFactory.CreateClient(Constants.HttpClientName);
         _logger.LogInformation("Created named HttpClient {Name}", Constants.HttpClientName);
     }
