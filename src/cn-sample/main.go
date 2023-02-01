@@ -16,17 +16,17 @@ func Init() {
 
 // 🚀 Start the cloud-native sample
 func Start() {
-	sh.Run("docker-compose", "up --build -d")
+	sh.Run("docker-compose up --build -d")
 }
 
 // ⚡️ Quickstart the cloud-native sample
 func Quickstart() {
-	sh.Run("docker-compose", "up -d")
+	sh.Run("docker-compose up -d")
 }
 
 // 🛑 Stop the cloud-native sample
 func Stop() {
-	sh.Run("docker-compose", "down")
+	sh.Run("docker-compose down")
 }
 
 // 📝 View the logs of the cloud-native sample
@@ -36,5 +36,5 @@ func Logs() {
 
 // 🧹 Clean-up your loacl machine
 func CleanUp() {
-	sh.Run("docker-compose", "down --rmi all --volumes --remove-orphans")
+	sh.Run("docker-compose down --rmi all --volumes --remove-orphans")
 }
