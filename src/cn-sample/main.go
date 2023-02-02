@@ -4,6 +4,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/magefile/mage/sh"
@@ -16,25 +17,43 @@ func Init() {
 
 // 🚀 Start the cloud-native sample
 func Start() {
-	sh.Run("docker-compose up --build -d")
+	guard()
+	sh.Run("docker-compose up -d")
 }
 
 // ⚡️ Quickstart the cloud-native sample
 func Quickstart() {
+	guard()
 	sh.Run("docker-compose up -d")
 }
 
 // 🛑 Stop the cloud-native sample
 func Stop() {
+	guard()
 	sh.Run("docker-compose down")
 }
 
 // 📝 View the logs of the cloud-native sample
 func Logs() {
-	sh.Exec(make(map[string]string), os.Stdout, os.Stderr, "docker-compose", "logs", "-f")
+	guard()
+	sh.Exec(make(map[string]string), os.Stdout, os.Stderr, "docker-compose logs -f")
 }
 
 // 🧹 Clean-up your loacl machine
 func CleanUp() {
 	sh.Run("docker-compose down --rmi all --volumes --remove-orphans")
+}
+
+func guard() {
+	// check if docker-compose.yaml exists
+	_, err := os.Stat("docker-compose.yml")
+
+	if os.IsNotExist(err) {
+		fmt.Println("docker-compose.yml not found.")
+		fmt.Println("Run cn-sample CLI in project root directory.")
+		os.Exit(1)
+	} else if err != nil {
+		fmt.Println("Error: ", err)
+		os.Exit(1)
+	}
 }

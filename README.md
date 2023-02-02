@@ -64,6 +64,8 @@ When running the application in Docker Compose, you'll end up with the following
   * Username: `guest`
   * Password: `guest`
 
+**Use [http://localhost:5000](http://localhost:5000) to access the OMC proxied through the gateway locally.**
+
 Note: *Dapr-dashboard does currently not work in Docker compose mode*
 
 ### Necessary plugin installation for Docker Compose
