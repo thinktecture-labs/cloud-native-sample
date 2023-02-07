@@ -86,6 +86,7 @@ services:
         loki-retries: 5
     environment:
       ASPNETCORE_ENVIRONMENT: DockerCompose
+      Gateway__ExposePrometheusMetrics: true
       Gateway__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
       DAPR_HTTP_PORT: 9000
     networks:
@@ -120,10 +121,11 @@ services:
       - rabbit
     environment:
       DAPR_GRPC_PORT: 10002
+      OrdersService__ExposePrometheusMetrics: true
+      OrdersService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
       OrdersService__IdentityServer__Authority: http://localhost:5009
       OrdersService__IdentityServer__RequireHttpsMetadata: false
       OrdersService__IdentityServer__MetadataAddress: http://authn:5000/.well-known/openid-configuration
-      OrdersService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
     logging:
       driver: loki
       options:
@@ -150,6 +152,7 @@ services:
     container_name: products
     environment:
       DAPR_GRPC_PORT: 10001
+      ProductsService__ExposePrometheusMetrics: true
       ProductsService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
       ProductsService__IdentityServer__Authority: http://localhost:5009
       ProductsService__IdentityServer__RequireHttpsMetadata: false
@@ -184,6 +187,7 @@ services:
     container_name: notification
     environment:
       DAPR_GRPC_PORT: 10004
+      NotificationService__ExposePrometheusMetrics: true
       NotificationService__IdentityServer__Authority: http://localhost:5009
       NotificationService__IdentityServer__RequireHttpsMetadata: false
       NotificationService__IdentityServer__MetadataAddress: http://authn:5000/.well-known/openid-configuration
