@@ -82,7 +82,9 @@ public static class WebApplicationBuilderExtensions
             options.ConfigureResource(GetOpenTelemetryResourceBuilder())
                 .AddRuntimeInstrumentation()
                 .AddHttpClientInstrumentation()
-                .AddAspNetCoreInstrumentation();
+                .AddAspNetCoreInstrumentation()
+                .AddMeter(CustomMetrics.NotificationsSent.Name);
+
             if (!string.IsNullOrWhiteSpace(cfg.ApplicationInsightsConnectionString))
             {
                 Console.WriteLine("Metrics: Adding Azure Monitor Exporter");

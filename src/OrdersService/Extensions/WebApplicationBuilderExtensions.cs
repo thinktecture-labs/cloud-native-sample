@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using OrdersService;
 using OrdersService.Configuration;
 
 namespace Microsoft.AspNetCore.Builder;
@@ -79,7 +80,9 @@ public static class WebApplicationBuilderExtensions
             options.ConfigureResource(GetOpenTelemetryResourceBuilder())
                 .AddRuntimeInstrumentation()
                 .AddHttpClientInstrumentation()
-                .AddAspNetCoreInstrumentation();
+                .AddAspNetCoreInstrumentation()
+                .AddMeter(CustomMetrics.OrdersCreated.Name);
+                
             if (!string.IsNullOrWhiteSpace(cfg.ApplicationInsightsConnectionString))
             {
                 Console.WriteLine("Metrics: Adding Azure Monitor Exporter");

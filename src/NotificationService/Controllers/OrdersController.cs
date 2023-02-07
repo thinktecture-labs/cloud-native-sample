@@ -23,14 +23,15 @@ public class OrdersController : Controller
     [HttpPost]
     [Route("processed")]
     [Topic("orders", "processed_orders")]
-    public async Task<IActionResult> OnOrderProcessedAsync([FromBody]DispatchedOrder order)
+    public async Task<IActionResult> OnOrderProcessedAsync([FromBody] DispatchedOrder order)
     {
-        if (order == null){
+        if (order == null)
+        {
             _logger.LogWarning("OnOrderProcessed: Received null as order.");
             return StatusCode(500);
         }
         _logger.LogTrace("OnOrderProcessed: Received order with {OrderId} and {UserId}", order.OrderId, order.UserId);
-        
+
         var group = _hubContext.Clients.Group(order.UserId);
         if (group == null)
         {
@@ -40,6 +41,7 @@ public class OrdersController : Controller
         }
 
         await group.SendAsync(_config.OnOrderProcessedMethodName, order.OrderId);
+        CustomMetrics.NotificationsSent.Add(1);
         return Ok();
     }
 }

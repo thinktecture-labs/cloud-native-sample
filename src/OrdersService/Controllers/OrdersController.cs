@@ -62,7 +62,7 @@ public class OrdersController : ControllerBase
             cloudEvent,
             metadata,
             CancellationToken.None)!;
-
+        CustomMetrics.OrdersCreated.Add(1);
         return Accepted(new { OrderId = newOrder.Id });
     }
 
