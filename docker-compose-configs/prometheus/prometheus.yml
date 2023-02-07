@@ -1,15 +1,15 @@
 scrape_configs:
-- job_name: cadvisor
-  scrape_interval: 5s
-  static_configs:
-  - targets:
-    - cadvisor:8080
-- job_name: apps
-  scrape_interval: 5s
-  static_configs:
-  - targets:
-    - gateway:5000
-    - products:5001
-    - orders:5002
-    - shipping:5003
-    - notification:5004
+  - job_name: cadvisor
+    scrape_interval: 5s
+    static_configs:
+      - targets:
+          - cadvisor:8080
+  - job_name: apps
+    scrape_interval: 5s
+    static_configs:
+      - targets:
+          - gateway:5000
+          - products:5000
+          - orders:5000
+          - shipping:5000
+          - notification:5000
