@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 )
 
@@ -17,30 +18,31 @@ func Init() {
 
 // 🚀 Start the cloud-native sample
 func Start() {
-	guard()
+	mg.Deps(guard)
 	sh.Run("docker-compose up -d")
 }
 
 // ⚡️ Quickstart the cloud-native sample
 func Quickstart() {
-	guard()
+	mg.Deps(guard)
 	sh.Run("docker-compose up -d")
 }
 
 // 🛑 Stop the cloud-native sample
 func Stop() {
-	guard()
+	mg.Deps(guard)
 	sh.Run("docker-compose down")
 }
 
 // 📝 View the logs of the cloud-native sample
 func Logs() {
-	guard()
+	mg.Deps(guard)
 	sh.Exec(make(map[string]string), os.Stdout, os.Stderr, "docker-compose logs -f")
 }
 
 // 🧹 Clean-up your loacl machine
 func CleanUp() {
+	mg.Deps(guard)
 	sh.Run("docker-compose down --rmi all --volumes --remove-orphans")
 }
 
