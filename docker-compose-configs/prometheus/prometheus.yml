@@ -5,7 +5,7 @@ scrape_configs:
       - targets:
           - cadvisor:8080
   - job_name: apps
-    scrape_interval: 5s
+    scrape_interval: 10s
     static_configs:
       - targets:
           - gateway:5000
