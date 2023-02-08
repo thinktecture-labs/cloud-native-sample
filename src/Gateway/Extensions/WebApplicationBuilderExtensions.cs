@@ -5,6 +5,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Gateway.Configuration;
+using Gateway;
 
 namespace Microsoft.AspNetCore.Builder;
 
@@ -78,7 +79,9 @@ public static class WebApplicationBuilderExtensions
             options.ConfigureResource(GetOpenTelemetryResourceBuilder())
                 .AddRuntimeInstrumentation()
                 .AddHttpClientInstrumentation()
-                .AddAspNetCoreInstrumentation();
+                .AddAspNetCoreInstrumentation()
+                .AddMeter(CustomMetrics.Default.Name);
+                
             if (!string.IsNullOrWhiteSpace(cfg.ApplicationInsightsConnectionString))
             {
                 Console.WriteLine("Metrics: Adding Azure Monitor Exporter");

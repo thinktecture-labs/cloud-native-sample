@@ -26,6 +26,9 @@ namespace Gateway.TransformProviders
                 {
                     _logger.LogTrace("Daprizing route with id {RouteId}", context.Route.RouteId);
 
+                    CustomMetrics
+                        .ProxiedRequests
+                        .Add(1, new KeyValuePair<string, object?>("kind", "dapr"));
                     context.AddRequestTransform(t =>
                     {
                         t.ProxyRequest.RequestUri =

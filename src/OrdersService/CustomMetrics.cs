@@ -11,4 +11,5 @@ public class CustomMetrics
     public static readonly Counter<long> OrdersCreated =
         Default.CreateCounter<long>("cloud_native_sample_orders_created",
             description: "Number of orders created");
+    
 }

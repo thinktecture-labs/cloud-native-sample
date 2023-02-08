@@ -50,6 +50,9 @@ public class OrdersController : ControllerBase
         }
         var orders = await res[0].Content.ReadFromJsonAsync<List<JsonElement>>();
         var products = await res[1].Content.ReadFromJsonAsync<List<JsonElement>>();
+        CustomMetrics
+            .ProxiedRequests
+            .Add(1, new KeyValuePair<string, object?>("kind", "composition"));
 
         return Ok(orders.Select(o =>
         {
