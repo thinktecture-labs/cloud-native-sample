@@ -1,0 +1,18 @@
+global:
+  
+route:
+  receiver: 'mail'
+  group_wait: 10s
+  group_interval: 2m
+  repeat_interval: 3h
+  group_by: [ alertname ]
+
+receivers:
+  - name: 'mail'
+    email_configs:
+    - smarthost: 'smtp:5025'
+      auth_username: 'alert@cn.thinktecture-demos.com'
+      auth_password: ""
+      require_tls: false
+      from: 'alert@cn.thinktecture-demos.com'
+      to: 'thorsten.hans@thinktecture.com'

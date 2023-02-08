@@ -81,7 +81,7 @@ public static class WebApplicationBuilderExtensions
                 .AddRuntimeInstrumentation()
                 .AddHttpClientInstrumentation()
                 .AddAspNetCoreInstrumentation()
-                .AddMeter(CustomMetrics.OrdersCreated.Name);
+                .AddMeter(CustomMetrics.Default.Name);
                 
             if (!string.IsNullOrWhiteSpace(cfg.ApplicationInsightsConnectionString))
             {

@@ -83,7 +83,7 @@ public static class WebApplicationBuilderExtensions
                 .AddRuntimeInstrumentation()
                 .AddHttpClientInstrumentation()
                 .AddAspNetCoreInstrumentation()
-                .AddMeter(CustomMetrics.NotificationsSent.Name);
+                .AddMeter(CustomMetrics.Default.Name);
 
             if (!string.IsNullOrWhiteSpace(cfg.ApplicationInsightsConnectionString))
             {

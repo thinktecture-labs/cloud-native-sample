@@ -63,6 +63,7 @@ public class OrdersController : ControllerBase
             metadata,
             CancellationToken.None)!;
         CustomMetrics.OrdersCreated.Add(1);
+        
         return Accepted(new { OrderId = newOrder.Id });
     }
 

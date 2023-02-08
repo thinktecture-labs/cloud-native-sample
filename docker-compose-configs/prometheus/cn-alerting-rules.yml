@@ -1,0 +1,11 @@
+groups:
+  - name: cloud-native-sample
+    rules:
+      - alert: HighOrderVolume
+        expr: increase(cloud_native_sample_orders_created[5m]) > 5
+        for: 1m
+        labels:
+          severity: high
+        annotations:
+          summary: High order Volume detected
+          description: We've detected a high order volume on cn.thinktecture-demos.com ("{{ $value }}"). 
