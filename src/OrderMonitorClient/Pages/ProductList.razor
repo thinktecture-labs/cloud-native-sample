@@ -1,0 +1,50 @@
+﻿@page "/products"
+
+@attribute [Authorize]
+
+@using OrderMonitorClient.Services
+@using OrderMonitorClient.Models
+
+@inject ProductsService _productsService
+
+<PageTitle>Order Monitor</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">All Products</MudText>
+
+@if (_products == null)
+{
+    <MudText Class="mt-4 mb-8">
+        Be patient, we're loading all products for you...
+    </MudText>
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <MudTable Items="_products" Hover="true" SortLabel="Sort By" Elevation="0" Style="@_backgroundColor">
+        <HeaderContent>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ProductListModel, object>(x => x.Name)">Name</MudTableSortLabel></MudTh>
+            <MudTh>Description</MudTh>
+            <MudTh>Price</MudTh>
+            <MudTh>Id</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Description">@context.Description</MudTd>
+            <MudTd DataLabel="Price">@context.Price</MudTd>
+            <MudTd DataLabel="Id">@context.Id</MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new int[] { 50, 100 }" />
+        </PagerContent>
+    </MudTable>
+}
+
+@code {
+    private List<ProductListModel>? _products;
+    private string _backgroundColor = String.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _products = await _productsService.GetProductsAsync();
+    }
+}
