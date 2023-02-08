@@ -5,7 +5,7 @@ on:
       - "main"
     paths:
       - "charts/fake-smtp/**"
-      - ".github/workflows/cn.fakesmtp.yml"
+      - ".github/workflows/cn.fakesmtp.ci.yml"
   workflow_dispatch:
 jobs:
   cd:
