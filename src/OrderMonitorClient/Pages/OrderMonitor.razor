@@ -82,6 +82,6 @@ else
     private async Task AddOrder()
     {
         await _orderMonitorService.AddOrderAsync();
-        Snackbar.Add("Order added", Severity.Success);
+        Snackbar.Add("Your order has been submitted.", Severity.Success);
     }
 }
