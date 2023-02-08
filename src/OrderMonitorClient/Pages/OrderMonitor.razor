@@ -6,15 +6,17 @@
 @using Gateway.Models
 
 @inject OrderMonitorService _orderMonitorService
+@inject ISnackbar Snackbar
 
 <PageTitle>Order Monitor</PageTitle>
 
-<MudText Typo="Typo.h4">
-    Your processed orders will appear here.
-</MudText>
+<MudText Typo="Typo.h3" GutterBottom="true">Your Orders</MudText>
 
 @if (_orders == null)
 {
+    <MudText Class="mt-4 mb-8">
+        Your orders will appear here, once they have been processed.
+    </MudText>
     <MudProgressCircular Color="Color.Default" Indeterminate="true" />
 }
 else
@@ -41,6 +43,7 @@ else
             <MudTablePager PageSizeOptions="new int[] { 50, 100 }" />
         </PagerContent>
     </MudTable>
+    <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.AddCircle" Color="Color.Primary" @onclick="AddOrder">Add Order</MudButton>
 }
 
 @code {
@@ -74,5 +77,11 @@ else
     private async Task<List<OrderMonitorListModel>> ListOrders()
     {
         return await _orderMonitorService.ListOrdersAsync();
+    }
+
+    private async Task AddOrder()
+    {
+        await _orderMonitorService.AddOrderAsync();
+        Snackbar.Add("Order added", Severity.Success);
     }
 }

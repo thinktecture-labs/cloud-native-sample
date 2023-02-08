@@ -64,5 +64,41 @@ namespace OrderMonitorClient.Services
 
             return result;
         }
+
+        public async Task AddOrderAsync()
+        {
+            var rnd = new Random();
+            const int min = 1;
+            const int max = 20;
+
+            var model = new OrderCreateModel
+            {
+                Positions = new List<OrderPositionCreateModel>{
+                    new OrderPositionCreateModel
+                    {
+                        ProductId = "b3b749d1-fd02-4b47-8e3c-540555439db6",
+                        Quantity = rnd.Next(min, max)
+                    },
+                    new OrderPositionCreateModel
+                    {
+                        ProductId = "aaaaaaaa-fd02-4b47-8e3c-540555439db6",
+                        Quantity = rnd.Next(min, max)
+                    },
+                }
+            };
+            var result = await _httpClient.PostAsJsonAsync($"{_apiRoot}/orders", model);
+            
+        }
+
+        private class OrderCreateModel
+        {
+            public List<OrderPositionCreateModel> Positions { get; set; }
+        }
+
+        private class OrderPositionCreateModel
+        {
+            public string ProductId { get; set; }
+            public int Quantity { get; set; }
+        }
     }
 }

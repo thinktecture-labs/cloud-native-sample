@@ -10,7 +10,6 @@
         <MudSpacer />
         <LoginDisplay />
         <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/thinktecture-labs/cloud-native-sample" Target="_blank" />
-
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
         <MudDrawerHeader>
@@ -23,6 +22,7 @@
             @Body
         </MudContainer>
     </MudMainContent>
+    <MudSnackbarProvider/>
 </MudLayout>
 
 @code {
