@@ -1,0 +1,21 @@
+nameOverride: ""
+fullnameOverride: ""
+podAnnotations: {}
+podSecurityContext: {}
+securityContext: {}
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: 
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: cn-fakesmtp.thinktecture-demos.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: 
+   - secretName: fakesmtptls
+     hosts:
+       - cn-fakesmtp.thinktecture-demos.com
