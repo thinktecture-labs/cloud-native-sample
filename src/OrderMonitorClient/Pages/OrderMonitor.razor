@@ -3,9 +3,10 @@
 @attribute [Authorize]
 
 @using OrderMonitorClient.Services
-@using Gateway.Models
+@using OrderMonitorClient.Models
 
 @inject OrderMonitorService _orderMonitorService
+@inject ProductsService _productsService
 @inject ISnackbar Snackbar
 
 <PageTitle>Order Monitor</PageTitle>
@@ -32,7 +33,8 @@ else
             <MudTd DataLabel="Position">
                 @foreach (var pos in context.Positions)
                 {
-                    @(pos.Quantity + "x " + pos.ProductName)
+                    @(pos.Quantity + "x ")
+                    <b>@pos.ProductName</b>
                     <br>
                     @pos.ProductDescription
                     <br><br>
@@ -43,7 +45,7 @@ else
             <MudTablePager PageSizeOptions="new int[] { 50, 100 }" />
         </PagerContent>
     </MudTable>
-    <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.AddCircle" Color="Color.Primary" @onclick="AddOrder">Add Order</MudButton>
+    <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.AddCircle" Color="Color.Primary" @onclick="AddOrder">Place a new order</MudButton>
 }
 
 @code {
@@ -81,7 +83,31 @@ else
 
     private async Task AddOrder()
     {
-        await _orderMonitorService.AddOrderAsync();
-        Snackbar.Add("Your order has been submitted.", Severity.Success);
+        var products = await _productsService.GetProductsAsync();
+        if (products == null)
+        {
+            Snackbar.Add("Could not load products", Severity.Error);
+            return;
+        }
+        var order = BuildRandomOrder(products);
+        await _orderMonitorService.PlaceOrderAsync(order);
+        Snackbar.Add($"Submitted an order with {order.Positions.Count} positions for you 💜", Severity.Success);
+    }
+
+    private OrderCreateModel BuildRandomOrder(List<ProductListModel> products)
+    {
+        var order = new OrderCreateModel();
+        var rnd = new Random();
+        var count = rnd.Next(1, 5);
+        for (int i = 0; i < count; i++)
+        {
+            var product = products[rnd.Next(0, products.Count)];
+            order.Positions.Add(new OrderPositionCreateModel
+            {
+                ProductId = product.Id.ToString(),
+                Quantity = rnd.Next(1, 10)
+            });
+        }
+        return order;
     }
 }

@@ -1,4 +1,4 @@
-namespace Gateway.Models;
+namespace OrderMonitorClient.Models;
 
 public class OrderMonitorListModel
 {
@@ -14,4 +14,19 @@ public class OrderMonitorPositionModel
     public string ProductDescription { get; set; }
     public int Quantity { get; set; }
     public double ProductPrice { get; set; }
+}
+
+public class OrderCreateModel
+{
+    public OrderCreateModel()
+    {
+        Positions = new List<OrderPositionCreateModel>();
+    }
+    public List<OrderPositionCreateModel> Positions { get; set; }
+}
+
+public class OrderPositionCreateModel
+{
+    public string ProductId { get; set; }
+    public int Quantity { get; set; }
 }

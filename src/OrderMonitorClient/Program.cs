@@ -35,7 +35,10 @@ builder.Services.AddOidcAuthentication(options =>
     builder.Configuration.Bind("Oidc", options.ProviderOptions);
 });
 
-builder.Services.AddScoped<OrderMonitorService>();
+builder.Services
+    .AddScoped<OrderMonitorService>()
+    .AddScoped<ProductsService>();
+    
 builder.Services.AddMudServices();
 
 await builder.Build().RunAsync();
