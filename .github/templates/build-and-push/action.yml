@@ -42,11 +42,6 @@ runs:
             -t ${{ inputs.acr_name }}.azurecr.io/${{ inputs.app_name }}:${{ github.sha }} \
             -t ${{ inputs.acr_name }}.azurecr.io/${{ inputs.app_name }}:${{ github.ref_name }}-latest
       working-directory: ${{ inputs.working_dir }}
-      working-directory: /tmp
-    - name: Save Docker Image
-      shell: bash
-      run: docker save ${{ inputs.acr_name }}.azurecr.io/${{ inputs.app_name }}:${{ github.sha }} -o img.tar
-      working-directory: /tmp
     - name: Scan Docker Image
       shell: bash
       run: |
