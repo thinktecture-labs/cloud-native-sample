@@ -73,11 +73,11 @@ runs:
         labels: |
           containers
           security
-      #- name: Fail if Vulnerable
-      #  if: contains(env.DOCKLE_RESULT, 'WARN') || contains(env.DOCKLE_RESULT, 'FATAL')
-      #  run: |
-      #    echo "::error ::Please check scan results (see corresponding issue)"
-      #    exit 1
+    - name: Fail if Vulnerable
+      if: contains(env.DOCKLE_RESULT, 'WARN') || contains(env.DOCKLE_RESULT, 'FATAL')
+      run: |
+        echo "::error ::Please check scan results (see corresponding issue)"
+        exit 1
     - name: Push Docker Image
       if: ${{ success() }}
       shell: bash
