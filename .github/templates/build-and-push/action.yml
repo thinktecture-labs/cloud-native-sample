@@ -22,10 +22,6 @@ inputs:
   github_token:
     description: "GitHub token of the current workflow"
     required: true
-  dockle_version:
-    description: "Desired version of Dockle"
-    default: "0.4.9"
-    required: false
 runs:
   using: "composite"
   steps: 
