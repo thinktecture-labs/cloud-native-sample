@@ -42,11 +42,6 @@ runs:
             -t ${{ inputs.acr_name }}.azurecr.io/${{ inputs.app_name }}:${{ github.sha }} \
             -t ${{ inputs.acr_name }}.azurecr.io/${{ inputs.app_name }}:${{ github.ref_name }}-latest
       working-directory: ${{ inputs.working_dir }}
-    - name: Install Dockle
-      shell: bash
-      run: |
-          curl -L -o dockle.tar.gz https://github.com/goodwithtech/dockle/releases/download/v${{ inputs.dockle_version }}/dockle_${{ inputs.dockle_version }}_Linux-64bit.tar.gz &&  \
-          tar zxvf dockle.tar.gz
       working-directory: /tmp
     - name: Save Docker Image
       shell: bash
@@ -55,8 +50,8 @@ runs:
     - name: Scan Docker Image
       shell: bash
       run: |
-          ./dockle --debug --accept-key KEY_SHA512 -f json -o /tmp/dockle-results.json --input img.tar  > /dev/null
-          ./dockle --accept-key KEY_SHA512 -o /tmp/dockle-results.txt --input img.tar > /dev/null
+          docker run -v $PWD/.dockleignore:/.dockleignore -v /var/run/docker.sock:/var/run/docker.sock goodwithtech/dockle:latest --exit-code 1 --exit-level fatal --accept-key KEY_SHA512 --format json ${{ inputs.acr_name }}.azurecr.io/${{ inputs.app_name }}:${{ github.sha }} > /tmp/dockle-results.json
+          docker run -v $PWD/.dockleignore:/.dockleignore -v /var/run/docker.sock:/var/run/docker.sock goodwithtech/dockle:latest --exit-code 1 --exit-level fatal --accept-key KEY_SHA512 ${{ inputs.acr_name }}.azurecr.io/${{ inputs.app_name }}:${{ github.sha }} > /tmp/dockle-results.txt
           DOCKLE_RESULT_JSON=$(cat /tmp/dockle-results.json)
           DOCKLE_RESULT=$(cat /tmp/dockle-results.txt)
           
@@ -70,7 +65,6 @@ runs:
 
           echo "Dockle generated the following results:"
           echo $DOCKLE_RESULT_JSON
-      working-directory: /tmp
     - name: Report Vulnerabilities
       if: contains(env.DOCKLE_RESULT, 'WARN') || contains(env.DOCKLE_RESULT, 'FATAL')
       uses: actions-ecosystem/action-create-issue@v1
