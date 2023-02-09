@@ -19,3 +19,15 @@ variable "acr_token_name" {
   type        = string
   description = "Desired ACR token name"
 }
+
+variable "sql_server_admin_user" {
+  type        = string
+  default     = "cnadmin"
+  description = "Username for the SQL Server admin user"
+}
+
+variable "sql_server_admin_password" {
+  type        = string
+  sensitive   = true
+  description = "Password for the SQL Server admin user"
+}
