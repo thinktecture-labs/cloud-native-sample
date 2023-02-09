@@ -4,12 +4,12 @@ services:
   #####################
   ## Troubleshooting ##
   #####################
-  ubuntu:
-    image: ubuntu:latest
-    container_name: debug
-    command: ["sleep","infinity"]
-    networks:
-      - cloud-native
+  # ubuntu:
+  #   image: ubuntu:latest
+  #   container_name: debug
+  #   command: ["sleep","infinity"]
+  #   networks:
+  #     - cloud-native
   
   ######################
   ## App Dependencies ##
