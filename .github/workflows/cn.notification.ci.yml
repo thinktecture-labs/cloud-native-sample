@@ -7,6 +7,7 @@ on:
       - "src/NotificationService/**"
       - "charts/notification/**"
       - ".github/workflows/cn.notification.*.yml"
+      - ".github/templates/**/*.yml"
   workflow_dispatch:
 jobs:
   ci:

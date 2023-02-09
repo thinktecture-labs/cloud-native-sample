@@ -7,6 +7,7 @@ on:
       - "src/ProductsService/**"
       - "charts/products/**"
       - ".github/workflows/cn.products.*.yml"
+      - ".github/templates/**/*.yml"
   workflow_dispatch:
 jobs:
   ci:

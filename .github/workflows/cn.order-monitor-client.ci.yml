@@ -7,6 +7,7 @@ on:
       - "src/OrderMonitorClient/**"
       - "charts/order-monitor-client/**"
       - ".github/workflows/cn.order-monitor-client.*.yml"
+      - ".github/templates/**/*.yml"
   workflow_dispatch:
 jobs:
   ci:
