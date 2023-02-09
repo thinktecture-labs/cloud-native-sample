@@ -6,11 +6,11 @@ container:
   port: 5000
   resources:
     requests:
-      cpu:
-      memory:
+      cpu: 100m
+      memory: 64Mi
     limits:
-      cpu:
-      memory:
+      cpu: 100m
+      memory: 96Mi
 
 annotations:
   dapr.io/enabled: "true"
