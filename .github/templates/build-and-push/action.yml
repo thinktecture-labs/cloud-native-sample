@@ -74,6 +74,7 @@ runs:
           containers
           security
     - name: Fail if Vulnerable
+      shell: bash
       if: contains(env.DOCKLE_RESULT, 'WARN') || contains(env.DOCKLE_RESULT, 'FATAL')
       run: |
         echo "::error ::Please check scan results (see corresponding issue)"
