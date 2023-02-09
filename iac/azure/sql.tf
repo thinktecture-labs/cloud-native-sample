@@ -12,7 +12,6 @@ resource "azurerm_mssql_server" "main" {
 resource "azurerm_mssql_database" "products" {
   name           = "cnproducts"
   server_id      = azurerm_mssql_server.main.id
-  max_size_gb    = 4
   sku_name       = "S0"
   zone_redundant = false
 
