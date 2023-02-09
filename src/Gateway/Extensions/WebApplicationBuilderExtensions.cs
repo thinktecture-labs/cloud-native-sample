@@ -1,11 +1,11 @@
 using System.Reflection;
 using Azure.Monitor.OpenTelemetry.Exporter;
-using Microsoft.Extensions.Logging.Console;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Gateway.Configuration;
 using Gateway;
+using OpenTelemetry;
 
 namespace Microsoft.AspNetCore.Builder;
 
@@ -13,14 +13,11 @@ public static class WebApplicationBuilderExtensions
 {
     private static string serviceName = "Gateway";
     private static string appVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "0.0.0";
-    private static Action<ResourceBuilder> GetOpenTelemetryResourceBuilder()
-    {
-
-        return builder => builder.AddService(serviceName,
+    private static Action<ResourceBuilder> ConfigureOpenTelemetryResource = builder => builder.AddService(serviceName,
             serviceVersion: appVersion,
             serviceInstanceId: Environment.MachineName
-        ).Build();
-    }
+        );
+
 
     public static WebApplicationBuilder ConfigureLogging(this WebApplicationBuilder builder, GatewayConfiguration cfg)
     {
@@ -38,7 +35,9 @@ public static class WebApplicationBuilderExtensions
         }
         builder.Logging.AddOpenTelemetry(options =>
         {
-            options.ConfigureResource(GetOpenTelemetryResourceBuilder());
+            var b = ResourceBuilder.CreateDefault();
+            ConfigureOpenTelemetryResource(b);
+            options.SetResourceBuilder(b);
             if (!string.IsNullOrWhiteSpace(cfg.ApplicationInsightsConnectionString))
             {
                 Console.WriteLine("Logs: Sending to Azure Monitor");
@@ -51,9 +50,13 @@ public static class WebApplicationBuilderExtensions
 
     public static WebApplicationBuilder ConfigureTracing(this WebApplicationBuilder builder, GatewayConfiguration cfg)
     {
-        builder.Services.AddOpenTelemetryTracing(options =>
+
+        builder.Services.AddOpenTelemetry()
+            .ConfigureResource(ConfigureOpenTelemetryResource)
+            .WithTracing(options =>
         {
-            options.ConfigureResource(GetOpenTelemetryResourceBuilder())
+            options
+                .AddHttpClientInstrumentation()
                 .AddAspNetCoreInstrumentation();
             if (!string.IsNullOrWhiteSpace(cfg.ApplicationInsightsConnectionString))
             {
@@ -74,14 +77,16 @@ public static class WebApplicationBuilderExtensions
 
     public static WebApplicationBuilder ConfigureMetrics(this WebApplicationBuilder builder, GatewayConfiguration cfg)
     {
-        builder.Services.AddOpenTelemetryMetrics(options =>
+        builder.Services.AddOpenTelemetry()
+            .ConfigureResource(ConfigureOpenTelemetryResource)
+            .WithMetrics(options =>
         {
-            options.ConfigureResource(GetOpenTelemetryResourceBuilder())
+            options
                 .AddRuntimeInstrumentation()
-                .AddHttpClientInstrumentation()
                 .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
                 .AddMeter(CustomMetrics.Default.Name);
-                
+
             if (!string.IsNullOrWhiteSpace(cfg.ApplicationInsightsConnectionString))
             {
                 Console.WriteLine("Metrics: Adding Azure Monitor Exporter");

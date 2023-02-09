@@ -41,6 +41,8 @@ spec:
                 configMapKeyRef:
                   name: zipkin
                   key: endpoint
+            - name: Gateway__LimitRequestsPerMinute
+              value: {{ .Values.limitRequestsPerMinute }}
             - name: Gateway__ExposePrometheusMetrics
               value: {{ .Values.exposePrometheusMetrics | quote }}
           ports:

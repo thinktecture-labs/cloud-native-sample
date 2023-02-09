@@ -2,6 +2,7 @@ replicaCount: 1
 
 environment: Production
 exposePrometheusMetrics: true
+limitRequestsPerMinute: 3000
 # image and tag will be set by GitHub Actions
 image:
   repository: nginx

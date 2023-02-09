@@ -13,6 +13,8 @@ public class GatewayConfiguration
     public string ConfigSection { get; set; } = "ReverseProxy";
     public string[] CorsOrigins { get; set; } = { "http://localhost:5005" };
 
+    public int LimitRequestsPerMinute { get; set; } = 3000;
+
     public string[] DaprServiceNames { get; set; } = {
         Constants.ProductsRouteName,
         Constants.OrdersRouteName

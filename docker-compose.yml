@@ -36,6 +36,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: DockerCompose
       Gateway__ExposePrometheusMetrics: true
+      Gateway__LimitRequestsPerMinute: 2000
       Gateway__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
       DAPR_HTTP_PORT: 9000
     networks:

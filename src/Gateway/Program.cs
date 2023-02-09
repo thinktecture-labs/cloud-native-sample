@@ -29,7 +29,8 @@ Gateway.Features.ResponseCompression.Add(builder);
 Gateway.Features.Cors.Add(builder, cfg);
 Gateway.Features.HeaderPropagation.Add(builder);
 logger.LogInformation("Middlewares: HTTP Header Propagation activated for {HeaderNames}", string.Join(",",
-    Gateway.Features.HeaderPropagation.PropagatedHeaders));
+Gateway.Features.HeaderPropagation.PropagatedHeaders));
+Gateway.Features.RateLimiting.Add(builder, cfg);
 
 // Reverse Proxy
 logger.LogInformation("ReverseProxy: Loading Reverse Proxy configuration from {Section}", cfg.ConfigSection);
@@ -72,19 +73,20 @@ Gateway.Features.Cors.Use(app);
 logger.LogInformation(" - CORS activated");
 Gateway.Features.HeaderPropagation.Use(app);
 logger.LogInformation(" - HTTP Header propagation activated");
-
-app.MapReverseProxy();
-logger.LogInformation(" - Reverse Proxy activated");
-app.MapControllers();
-logger.LogInformation(" - API Controllers activated");
 app.MapHealthChecks("/healthz/readiness");
 logger.LogInformation(" - HealthProbe (readiness) activated");
-app.MapHealthChecks("/healthz/liveness");
-logger.LogInformation(" - HealthProbe (liveness) activated");
 if (cfg.ExposePrometheusMetrics)
 {
     app.UseOpenTelemetryPrometheusScrapingEndpoint();
     logger.LogInformation(" - Prometheus Scraping activated");
 }
+app.UseRateLimiter();
+logger.LogInformation(" - Rate Limiter activated");
+app.MapHealthChecks("/healthz/liveness");
+logger.LogInformation(" - HealthProbe (liveness) activated");
+app.MapReverseProxy();
+logger.LogInformation(" - Reverse Proxy activated");
+app.MapControllers();
+logger.LogInformation(" - API Controllers activated");
 logger.LogInformation("All middlewares activated");
 app.Run();
