@@ -1,8 +1,10 @@
 environment: Production
 disableConsoleLog: false
-container:
+image:
   repository: nginx
   tag: "alpine"
+  
+container:
   port: 5000
   resources:
     requests:
