@@ -1,0 +1,35 @@
+environment: Production
+disableConsoleLog: false
+container:
+  repository: nginx
+  tag: "alpine"
+  port: 5000
+  resources:
+    requests:
+      cpu:
+      memory:
+    limits:
+      cpu:
+      memory:
+
+annotations:
+  dapr.io/enabled: "true"
+  dapr.io/app-id: "ordermonitorservice"
+  dapr.io/app-port: "5000"
+  dapr.io/config: "cloud-native-sample"
+  prometheus.io/scrape: 'true'
+  prometheus.io/port: '5000'
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  port: 80
+
+replicas: 1
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80

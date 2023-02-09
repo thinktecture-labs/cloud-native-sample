@@ -38,6 +38,7 @@ builder.Services.AddReverseProxy()
     .AddTransforms<DaprTransformProvider>();
 logger.LogInformation("ReverseProxy: Custom {TypeName} Transform has been registered", nameof(DaprTransformProvider));
 
+
 builder.Services.AddControllers();
 
 builder.Services.AddSwaggerGen(c =>

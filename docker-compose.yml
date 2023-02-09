@@ -1,5 +1,15 @@
 version: "3.9"
 services:
+
+  #####################
+  ## Troubleshooting ##
+  #####################
+  ubuntu:
+    image: ubuntu:latest
+    container_name: debug
+    command: ["sleep","infinity"]
+    networks:
+      - cloud-native
   
   ######################
   ## App Dependencies ##
@@ -73,6 +83,24 @@ services:
       options:
         loki-url: http://10.5.0.99:3100/loki/api/v1/push
         loki-retries: 5
+  ordermonitorservice:
+    build: ./src/OrderMonitorService
+    container_name: order-monitor-service
+    environment:
+      DAPR_HTTP_PORT: 9005
+      OrderMonitorService__Environment: Development
+      OrderMonitorService__DisableConsoleLog: false
+      OrderMonitorService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
+    networks:
+      - cloud-native
+    depends_on:
+      - orders
+      - products
+    logging:
+      driver: loki
+      options:
+        loki-url: http://10.5.0.99:3100/loki/api/v1/push
+        loki-retries: 5 
   notification:
     build: ./src/NotificationService
     container_name: notification
@@ -193,6 +221,22 @@ services:
       - ./src/dapr/components:/dapr/components
     depends_on:
       - products
+  ordermonitorservice-dapr:
+    image: "daprio/daprd:edge"
+    container_name: ordermonitorservice-dapr
+    command: [ "./daprd",
+               "-app-id", "ordermonitorservice",
+               "-app-port", "5000",
+               "-dapr-http-port", "9005",
+               "-dapr-grpc-port", "10005",
+               "-components-path", "/dapr/components",
+               "-config", "/dapr/config/config.yml" ]
+    network_mode: "service:ordermonitorservice"
+    volumes:
+      - ./docker-compose-configs/dapr:/dapr/config
+      - ./src/dapr/components:/dapr/components
+    depends_on:
+      - ordermonitorservice
   notification-dapr:
     image: "daprio/daprd:edge"
     container_name: notification-dapr

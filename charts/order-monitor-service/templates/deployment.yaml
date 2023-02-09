@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "order-monitor-service.fullname" . }}
+  labels:
+    {{- include "order-monitor-service.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicas }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "order-monitor-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "order-monitor-service.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.container.repository }}:{{ .Values.container.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: OrderMonitorService__ZipkinEndpoint
+              valueFrom:
+                configMapKeyRef:
+                  name: zipkin
+                  key: endpoint
+            - name: OrderMonitorService__Environment
+              value: {{ .Values.environment }}
+            - name: OrderMonitorService__DisableConsoleLog
+              value: {{ .Values.disableConsoleLog | quote }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.container.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz/liveness
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /healthz/readiness
+              port: http
+          resources:
+            {{- toYaml .Values.container.resources | nindent 12 }}
