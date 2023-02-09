@@ -5,4 +5,5 @@ resource "azurerm_redis_cache" "redis" {
   capacity            = 1
   family              = "C"
   sku_name            = "Basic"
+  tags                = local.tags
 }
