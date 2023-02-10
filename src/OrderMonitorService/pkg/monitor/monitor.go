@@ -106,14 +106,14 @@ func getData(ctx context.Context, wg *sync.WaitGroup, r chan backendResult, serv
 
 	res, err := client.Do(req)
 
-	// check if status code is 401 and return custom error
-	if res.StatusCode == http.StatusUnauthorized {
-		r <- newErrorBackendResult(UnauthorizedError{}, service)
+	if err != nil {
+		r <- newErrorBackendResult(err, service)
 		return
 	}
 
-	if err != nil {
-		r <- newErrorBackendResult(err, service)
+	// check if status code is 401 and return custom error
+	if res.StatusCode == http.StatusUnauthorized {
+		r <- newErrorBackendResult(UnauthorizedError{}, service)
 		return
 	}
 
