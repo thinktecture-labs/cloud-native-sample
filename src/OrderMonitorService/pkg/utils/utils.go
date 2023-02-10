@@ -3,5 +3,6 @@ package utils
 type ContextKey string
 
 const (
-	AuthKey = ContextKey("Authorization")
+	AuthKey        = ContextKey("Authorization")
+	BackendTimeOut = ContextKey("BackendTimeOut")
 )

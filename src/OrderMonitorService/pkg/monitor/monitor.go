@@ -17,15 +17,15 @@ const (
 	methodProducts = "products"
 )
 
-func GetOrderMonitorData(ctx context.Context) ([]OrderListModel, error) {
+func GetOrderMonitorData(ctx context.Context, timeout int) ([]OrderListModel, error) {
 	// we need to get the data from the orders and products backend
 	// so we want to call them in parallel using go-routines
 	resChan := make(chan backendResult, 2)
 	var wg sync.WaitGroup
 	wg.Add(2)
 
-	go getData(ctx, &wg, resChan, kindOrders, methodOrders)
-	go getData(ctx, &wg, resChan, kindProducts, methodProducts)
+	go getData(ctx, &wg, resChan, kindOrders, methodOrders, timeout)
+	go getData(ctx, &wg, resChan, kindProducts, methodProducts, timeout)
 
 	// wait for the slowest request to finish
 	wg.Wait()
@@ -88,7 +88,7 @@ func buildResult(orders []Order, products []Product) ([]OrderListModel, error) {
 	return result, nil
 }
 
-func getData(ctx context.Context, wg *sync.WaitGroup, r chan backendResult, service string, action string) {
+func getData(ctx context.Context, wg *sync.WaitGroup, r chan backendResult, service string, action string, timeout int) {
 	defer wg.Done()
 	u, err := buildBackendUrl(service, action)
 	if err != nil {
@@ -97,7 +97,7 @@ func getData(ctx context.Context, wg *sync.WaitGroup, r chan backendResult, serv
 	}
 	// we want to wait a maximum of 2 secs for the request to finish
 	client := http.Client{
-		Timeout: 5 * time.Second,
+		Timeout: time.Duration(timeout) * time.Second,
 	}
 
 	req, _ := http.NewRequest(http.MethodGet, u, nil)

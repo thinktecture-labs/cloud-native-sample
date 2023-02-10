@@ -12,6 +12,7 @@ type Configuration struct {
 	Environment       string `json:"environment"`
 	ZipkinEndpoint    string `json:"zipkinEndpoint"`
 	DisableConsoleLog bool   `json:"disableConsoleLog"`
+	BackendTimeout    int    `json:"backendTimeout"`
 }
 
 func (c *Configuration) IsProduction() bool {
@@ -20,12 +21,14 @@ func (c *Configuration) IsProduction() bool {
 
 const (
 	defaultPort           = 5000
+	defaultBackendTimeout = 5
 	envPort               = "PORT"
 	environmentProduction = "Production"
 	configFilePath        = "./config.json"
 	envEnvironmentName    = "OrderMonitorService__Environment"
 	envZipkinEndpoint     = "OrderMonitorService__ZipkinEndpoint"
 	envDisableConsoleLog  = "OrderMonitorService__DisableConsoleLog"
+	envBackendTimeout     = "OrderMonitorService__BackendTimeout"
 )
 
 func LoadConfiguration() (*Configuration, error) {
@@ -63,6 +66,16 @@ func mergeEnvironmentVariables(cfg *Configuration) {
 	}
 	if v, ok := os.LookupEnv(envZipkinEndpoint); ok {
 		cfg.ZipkinEndpoint = v
+	}
+	if v, ok := os.LookupEnv(envBackendTimeout); ok {
+		if len(v) == 0 {
+			cfg.BackendTimeout = defaultBackendTimeout
+		}
+		timeout, err := strconv.Atoi(v)
+		if err != nil {
+			cfg.BackendTimeout = defaultBackendTimeout
+		}
+		cfg.BackendTimeout = timeout
 	}
 }
 

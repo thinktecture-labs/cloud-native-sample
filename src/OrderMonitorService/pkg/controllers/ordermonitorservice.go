@@ -13,7 +13,7 @@ const (
 	ordermonitorservice_prefix = "/orders"
 )
 
-func RegisterOrderMonitorServiceEndpoints(e *gin.Engine) {
+func RegisterOrderMonitorServiceEndpoints(e *gin.Engine, cfg *monitor.Configuration) {
 	g := e.Group(ordermonitorservice_prefix)
 	g.GET("/monitor", func(ctx *gin.Context) {
 		authValue := ctx.Request.Header.Get("Authorization")
@@ -25,7 +25,8 @@ func RegisterOrderMonitorServiceEndpoints(e *gin.Engine) {
 		// we just need to forward the authn header
 
 		c := context.WithValue(context.Background(), utils.AuthKey, authValue)
-		res, err := monitor.GetOrderMonitorData(c)
+
+		res, err := monitor.GetOrderMonitorData(c, cfg.BackendTimeout)
 		if err != nil && errors.Is(err, monitor.UnauthorizedError{}) {
 			ctx.JSON(401, gin.H{"error": err.Error()})
 			return

@@ -41,7 +41,7 @@ func main() {
 	e.Use(gin.Recovery())
 
 	controllers.RegisterHealthEndpoints(e)
-	controllers.RegisterOrderMonitorServiceEndpoints(e)
+	controllers.RegisterOrderMonitorServiceEndpoints(e, cfg)
 
 	log.Infof("Starting %s on port %d", serviceName, cfg.Port)
 	if err := e.Run(fmt.Sprintf(":%d", cfg.Port)); err != nil {
