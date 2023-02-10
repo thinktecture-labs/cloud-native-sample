@@ -5,6 +5,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using ProductsService.Configuration;
 using ProductsService.Data.Repositories;
+using ProductsService.Migrations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,12 +26,23 @@ builder.ConfigureTracing(cfg);
 // metrics
 builder.ConfigureMetrics(cfg);
 
+// Run Database Migrations
+builder.RunMigrations(cfg);
+
 // Configure AuthN
 builder.ConfigureAuthN(cfg);
 // Configure AuthZ
 builder.ConfigureAuthZ(cfg);
 
-builder.Services.AddScoped<IProductsRepository, InMemoryProductsRepository>();
+builder.Services.AddScoped<IProductsRepository>(services =>
+{
+    var cfg = services.GetRequiredService<ProductsServiceConfiguration>();
+    if (string.IsNullOrWhiteSpace(cfg.ConnectionString))
+    {
+        return new InMemoryProductsRepository(services.GetRequiredService<ILogger<InMemoryProductsRepository>>());
+    }
+    return new ProductsRepository(cfg, services.GetRequiredService<ILogger<ProductsRepository>>());
+});
 
 builder.Services.AddHealthChecks();
 builder.Services.AddControllers();

@@ -21,7 +21,6 @@ services:
       - "15672:15672"
     networks:
       - cloud-native
-
   ##################
   ## App Services ##
   ##################
@@ -79,6 +78,7 @@ services:
       - cloud-native
     depends_on:
       - zipkin
+      - sql
     logging:
       driver: loki
       options:

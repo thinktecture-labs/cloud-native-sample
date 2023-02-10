@@ -19,4 +19,5 @@ public class ProductsServiceConfiguration
 
     public IdentityServerConfiguration IdentityServer { get;set; }
     public Authorization Authorization { get; set; }
+    public string ConnectionString { get; set; }
 }

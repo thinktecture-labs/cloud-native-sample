@@ -7,6 +7,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using ProductsService.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using ProductsService.Migrations;
 
 namespace Microsoft.AspNetCore.Builder;
 
@@ -23,6 +24,28 @@ public static class WebApplicationBuilderExtensions
         ).Build();
     }
 
+    public static WebApplicationBuilder RunMigrations(this WebApplicationBuilder builder, ProductsServiceConfiguration cfg)
+    {
+        if (!String.IsNullOrWhiteSpace(cfg.ConnectionString))
+        {
+            try
+            {
+                var migrationsLogger = builder.Services
+                    .BuildServiceProvider()
+                    .GetRequiredService<ILogger<Migrations>>();
+
+                var migrations = new Migrations(cfg, migrationsLogger);
+                migrations.Migrate();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error while migrating database");
+                Console.WriteLine(e);
+                Environment.Exit(1);
+            }
+        }
+        return builder;
+    }
     public static WebApplicationBuilder ConfigureLogging(this WebApplicationBuilder builder, ProductsServiceConfiguration cfg)
     {
         builder.Logging.ClearProviders();
