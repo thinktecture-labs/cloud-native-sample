@@ -11,19 +11,18 @@ public class InitialMigration : IMigration
 CREATE TABLE DatabaseVersion (
     Version INT NOT NULL PRIMARY KEY
 );
-GO;
+
 INSERT INTO DatabaseVersion VALUES (" + Version + @");
-GO;
+
 CREATE TABLE Products (
     Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
   	Name VARCHAR(50) NOT NULL,
   	Description VARCHAR(255) NOT NULL,
   	Tags VARCHAR(255) NOT NULL,
   	Price DECIMAL(2)
-);
-GO;";
+);";
 
-    public async Task PostMigrateAsync(SqlConnection con)
+    public async void PostMigrate(SqlConnection con)
     {
         var products = new List<Product> {
             new Product (Guid.NewGuid(), "Beer", "Tasty craft beer", new List<string> { "Drinks", "Food" }, 3.99),
@@ -33,17 +32,17 @@ GO;";
         var tx = con.BeginTransaction();
         try
         {
-            var tasks = products.Select(async p =>
+            products.ForEach(p =>
             {
-                var cmd = new SqlCommand("INSERT INTO Products (Name, Description, Tags, Price) VALUES (@Name, @Description, @Tags, @Price)", con);
+                var cmd = new SqlCommand("INSERT INTO Products (Name, Description, Tags, Price) VALUES (@Name, @Description, @Tags, @Price)");
+                cmd.Connection = con;
                 cmd.Transaction = tx;
                 cmd.Parameters.AddWithValue("@Name", p.Name);
                 cmd.Parameters.AddWithValue("@Description", p.Description);
                 cmd.Parameters.AddWithValue("@Tags", string.Join(',', p.Categories));
                 cmd.Parameters.AddWithValue("@Price", p.Price);
-                await cmd.ExecuteNonQueryAsync();
+                cmd.ExecuteNonQuery();
             });
-            await Task.WhenAll(tasks);
             tx.Commit();
         }
         catch

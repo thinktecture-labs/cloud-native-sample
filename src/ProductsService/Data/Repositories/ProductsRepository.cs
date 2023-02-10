@@ -19,7 +19,8 @@ namespace ProductsService.Data.Repositories
         {
             using var con = new SqlConnection(_cfg.ConnectionString);
             con.Open();
-            using var cmd = new SqlCommand("SELECT Id,Name,Description,Tags,Price FROM Products", con);
+            using var cmd = new SqlCommand("SELECT Id,Name,Description,Tags,Price FROM Products");
+            cmd.Connection = con;
             var reader = await cmd.ExecuteReaderAsync();
             var products = new List<Product>();
             while (reader.Read())
@@ -38,7 +39,8 @@ namespace ProductsService.Data.Repositories
         {
             using var con = new SqlConnection(_cfg.ConnectionString);
             con.Open();
-            var cmd = new SqlCommand("SELECT Id,Name,Description,Tags,Price FROM Products WHERE Id = @Id", con);
+            var cmd = new SqlCommand("SELECT Id,Name,Description,Tags,Price FROM Products WHERE Id = @Id");
+            cmd.Connection = con;
             cmd.Parameters.AddWithValue("@Id", id);
             var reader = await cmd.ExecuteReaderAsync();
             if (reader.Read())

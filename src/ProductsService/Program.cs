@@ -27,6 +27,8 @@ builder.ConfigureTracing(cfg);
 builder.ConfigureMetrics(cfg);
 
 // Run Database Migrations
+// This is a poor-man's migration system. It's not very robust, but it's good enough for this demo.
+// In a real-world scenario, you'd probably want to use a proper migration system like FluentMigrator.
 builder.RunMigrations(cfg);
 
 // Configure AuthN

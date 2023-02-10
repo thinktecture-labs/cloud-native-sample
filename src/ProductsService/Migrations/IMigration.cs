@@ -6,5 +6,5 @@ public interface IMigration
 {
     int Version { get; }
     string Script {get;}
-    Task PostMigrateAsync(SqlConnection con);
+    void PostMigrate(SqlConnection con);
 }
