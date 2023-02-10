@@ -67,6 +67,7 @@ public class Migrations
     {
         using var tx = con.BeginTransaction();
         using var cmd = new SqlCommand(m.Script, con);
+        cmd.Transaction = tx;
         await cmd.ExecuteNonQueryAsync();
         using var updateVersionCmd = new SqlCommand("UPDATE DatabaseVersion SET Version = @Version", con);
         updateVersionCmd.Parameters.AddWithValue("@Version", m.Version);
