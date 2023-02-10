@@ -38,6 +38,15 @@ namespace ProductsService.Data.Repositories
             _logger = logger;
         }
 
+        public async Task<Product> CreateAsync(Product product)
+        {
+            return await Task.Run(() => {
+                product.Id = Guid.NewGuid();
+                _products.Add(product);
+                return product;
+            });
+        }
+
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
             _logger.LogTrace("List of all products has been requested");

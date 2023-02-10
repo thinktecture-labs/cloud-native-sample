@@ -5,6 +5,11 @@ namespace ProductsService.Extensions;
 
 public static class ProductExtensions
 {
+    public static Product ToEntity(this ProductCreateModel p)
+    {
+        return new Product(Guid.Empty, p.Name, p.Description, p.Tags, p.Price);
+
+    }
     public static ProductListModel ToListModel(this Product p)
     {
         return new ProductListModel
@@ -24,7 +29,7 @@ public static class ProductExtensions
             Name = p.Name,
             Description = p.Description,
             Price = p.Price,
-            Categories = p.Categories.ToArray()
+            Tags = p.Categories.ToArray()
         };
     }
 }

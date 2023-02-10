@@ -15,6 +15,20 @@ namespace ProductsService.Data.Repositories
             _logger = logger;
         }
 
+        public async Task<Product> CreateAsync(Product product)
+        {
+            using var con = new SqlConnection(_cfg.ConnectionString);
+            con.Open();
+            var cmd = new SqlCommand("INSERT INTO Products (Id,Name,Description,Tags,Price) VALUES (@Id,@Name,@Description,@Tags,@Price); SELECT SCOPE_IDENTITY()");
+            cmd.Connection = con;
+            cmd.Parameters.AddWithValue("@Name", product.Name);
+            cmd.Parameters.AddWithValue("@Description", product.Description);
+            cmd.Parameters.AddWithValue("@Tags", string.Join(',', product.Categories));
+            cmd.Parameters.AddWithValue("@Price", product.Price);
+            product.Id = (Guid) await cmd.ExecuteScalarAsync();
+            return product;
+        }
+
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
             using var con = new SqlConnection(_cfg.ConnectionString);

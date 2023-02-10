@@ -32,6 +32,20 @@ public class ProductsController : ControllerBase
         return Ok(res.Select(p => p.ToListModel()));
     }
 
+    [HttpPost]
+    [Route("", Name = "CreateProduct")]
+    [SwaggerOperation(OperationId = "CreateProduct", Tags = new []{"Products"}, Summary = "Create a new product", Description = "Call into this endpoint to create a new product")]
+    [SwaggerResponse(201, Description = "The created product", Type = typeof(ProductDetailsModel))]
+    [SwaggerResponse(400)]
+    [SwaggerResponse(500)]
+    public async Task<IActionResult> CreateProductAsync([FromBody]ProductCreateModel model)
+    {
+        var product = model.ToEntity();
+        var created = await _repository.CreateAsync(product);
+
+        return CreatedAtRoute("GetProductById", new { id = product.Id }, product.ToDetailsModel());
+    }
+
     [HttpGet]
     [Route("{id:guid}", Name = "GetProductById")]
     [SwaggerOperation(OperationId = "GetProductById", Tags = new []{"Products"}, Summary = "Get a product by its id", Description = "Call into this endpoint to retrieve a particular product by its identifier")]
