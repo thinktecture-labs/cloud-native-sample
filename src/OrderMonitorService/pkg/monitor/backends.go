@@ -51,6 +51,10 @@ func (r backendResult) asOrders() ([]Order, error) {
 	}
 	var orders []Order
 	err := json.Unmarshal(r.data, &orders)
+	if err != nil {
+		fmt.Println("error unmarshalling orders")
+		fmt.Println(string(r.data))
+	}
 	return orders, err
 }
 
@@ -63,6 +67,10 @@ func (r backendResult) asProducts() ([]Product, error) {
 	}
 	var products []Product
 	err := json.Unmarshal(r.data, &products)
+	if err != nil {
+		fmt.Println("error unmarshalling products")
+		fmt.Println(string(r.data))
+	}
 	return products, err
 }
 
@@ -84,8 +92,8 @@ type Position struct {
 type Product struct {
 	Id          string  `json:"id"`
 	Name        string  `json:"name"`
-	Price       float64 `json:"price"`
 	Description string  `json:"description"`
+	Price       float64 `json:"price"`
 }
 
 func buildBackendUrl(service string, action string) (string, error) {
