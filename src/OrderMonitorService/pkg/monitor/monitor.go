@@ -97,7 +97,7 @@ func getData(ctx context.Context, wg *sync.WaitGroup, r chan backendResult, serv
 	}
 	// we want to wait a maximum of 2 secs for the request to finish
 	client := http.Client{
-		Timeout: 2 * time.Second,
+		Timeout: 5 * time.Second,
 	}
 
 	req, _ := http.NewRequest(http.MethodGet, u, nil)
