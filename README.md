@@ -29,6 +29,15 @@ This repository contains a sample application that serves as a demonstration for
 
 ![Architecture Overview](assets/architecture-overview.jpg)
 
+## Observability Stack
+
+For the scope of this application, we've choosen the following technologies to address observability concerns:
+
+* Metrics: [Prometheus](https://prometheus.io)
+* Distributed Tracing: [Zipkin](https://zipkin.io)
+* Logs: [Grafana Loki](https://grafana.com/oss/loki/)
+* Visualization: [Grafana](https://grafana.com/grafana/)
+
 ## Local execution
 
 We decided to go with Docker Compose for local development story. As an alternative, you can also setup a local Kubernetes cluster (KIND / minikube /...).
