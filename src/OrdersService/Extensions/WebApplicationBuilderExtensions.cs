@@ -2,6 +2,7 @@ using System.Reflection;
 using Azure.Monitor.OpenTelemetry.Exporter;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.IdentityModel.Tokens;
+using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -14,14 +15,10 @@ public static class WebApplicationBuilderExtensions
 {
     private static string serviceName = "OrdersService";
     private static string appVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "0.0.0";
-    private static Action<ResourceBuilder> GetOpenTelemetryResourceBuilder()
-    {
-
-        return builder => builder.AddService(serviceName,
+    private static Action<ResourceBuilder> ConfigureOpenTelemetryResource = builder => builder.AddService(serviceName,
             serviceVersion: appVersion,
             serviceInstanceId: Environment.MachineName
-        ).Build();
-    }
+    );
 
     public static WebApplicationBuilder ConfigureLogging(this WebApplicationBuilder builder, OrdersServiceConfiguration cfg)
     {
@@ -39,7 +36,9 @@ public static class WebApplicationBuilderExtensions
         }
         builder.Logging.AddOpenTelemetry(options =>
         {
-            options.ConfigureResource(GetOpenTelemetryResourceBuilder());
+            var b = ResourceBuilder.CreateDefault();
+            ConfigureOpenTelemetryResource(b);
+            options.SetResourceBuilder(b);
             if (!string.IsNullOrWhiteSpace(cfg.ApplicationInsightsConnectionString))
             {
                 Console.WriteLine("Logs: Sending to Azure Monitor");
@@ -52,48 +51,57 @@ public static class WebApplicationBuilderExtensions
 
     public static WebApplicationBuilder ConfigureTracing(this WebApplicationBuilder builder, OrdersServiceConfiguration cfg)
     {
-        builder.Services.AddOpenTelemetryTracing(options =>
-        {
-            options.ConfigureResource(GetOpenTelemetryResourceBuilder())
-                .AddAspNetCoreInstrumentation();
-            if (!string.IsNullOrWhiteSpace(cfg.ApplicationInsightsConnectionString))
+        builder.Services
+            .AddOpenTelemetry()
+            .ConfigureResource(ConfigureOpenTelemetryResource)
+            .WithTracing(options =>
             {
-                Console.WriteLine("Tracing: Adding Azure Monitor Exporter");
-                options.AddAzureMonitorTraceExporter(o => o.ConnectionString = cfg.ApplicationInsightsConnectionString);
-            }
-            if (!string.IsNullOrWhiteSpace(cfg.ZipkinEndpoint))
-            {
-                Console.WriteLine("Tracing: Adding Zipkin Exporter (" + cfg.ZipkinEndpoint + ")");
-                options.AddZipkinExporter(o =>
+                options
+                    .AddHttpClientInstrumentation()
+                    .AddAspNetCoreInstrumentation();
+                if (!string.IsNullOrWhiteSpace(cfg.ApplicationInsightsConnectionString))
                 {
-                    o.Endpoint = new Uri(cfg.ZipkinEndpoint);
-                });
-            }
-        });
+                    Console.WriteLine("Tracing: Adding Azure Monitor Exporter");
+                    options.AddAzureMonitorTraceExporter(o => o.ConnectionString = cfg.ApplicationInsightsConnectionString);
+                }
+                if (!string.IsNullOrWhiteSpace(cfg.ZipkinEndpoint))
+                {
+                    Console.WriteLine("Tracing: Adding Zipkin Exporter (" + cfg.ZipkinEndpoint + ")");
+                    options.AddZipkinExporter(o =>
+                    {
+                        o.Endpoint = new Uri(cfg.ZipkinEndpoint);
+                    });
+                }
+            }).StartWithHost();
+
         return builder;
     }
 
     public static WebApplicationBuilder ConfigureMetrics(this WebApplicationBuilder builder, OrdersServiceConfiguration cfg)
     {
-        builder.Services.AddOpenTelemetryMetrics(options =>
-        {
-            options.ConfigureResource(GetOpenTelemetryResourceBuilder())
-                .AddRuntimeInstrumentation()
-                .AddHttpClientInstrumentation()
-                .AddAspNetCoreInstrumentation()
-                .AddMeter(CustomMetrics.Default.Name);
-                
-            if (!string.IsNullOrWhiteSpace(cfg.ApplicationInsightsConnectionString))
+        builder.Services
+            .AddOpenTelemetry()
+            .ConfigureResource(ConfigureOpenTelemetryResource)
+            .WithMetrics(options =>
             {
-                Console.WriteLine("Metrics: Adding Azure Monitor Exporter");
-                options.AddAzureMonitorMetricExporter(o => o.ConnectionString = cfg.ApplicationInsightsConnectionString);
-            }
-            if (cfg.ExposePrometheusMetrics)
-            {
-                Console.WriteLine("Exposing Prometheus Metrics");
-                options.AddPrometheusExporter();
-            }
-        });
+                options
+                    .AddRuntimeInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddAspNetCoreInstrumentation()
+                    .AddMeter(CustomMetrics.Default.Name);
+
+                if (!string.IsNullOrWhiteSpace(cfg.ApplicationInsightsConnectionString))
+                {
+                    Console.WriteLine("Metrics: Adding Azure Monitor Exporter");
+                    options.AddAzureMonitorMetricExporter(o => o.ConnectionString = cfg.ApplicationInsightsConnectionString);
+                }
+                if (cfg.ExposePrometheusMetrics)
+                {
+                    Console.WriteLine("Exposing Prometheus Metrics");
+                    options.AddPrometheusExporter();
+                }
+            }).StartWithHost();
+
         return builder;
     }
 
