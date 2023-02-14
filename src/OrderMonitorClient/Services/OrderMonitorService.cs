@@ -36,13 +36,17 @@ namespace OrderMonitorClient.Services
             _hubConnection = new HubConnectionBuilder()
                 .WithUrl(
                     _navigationManager.ToAbsoluteUri($"{_apiRoot}/notifications/notificationHub"),
-                    options => {
-                        options.AccessTokenProvider = async () => {
+                    options =>
+                    {
+                        options.AccessTokenProvider = async () =>
+                        {
                             var result = await _tokenProvider.RequestAccessToken();
-                            if (result.TryGetToken(out var token)) {
+                            if (result.TryGetToken(out var token))
+                            {
                                 return token.Value;
                             }
-                            else {
+                            else
+                            {
                                 return string.Empty;
                             }
                         };
@@ -54,8 +58,15 @@ namespace OrderMonitorClient.Services
             {
                 OrderListChanged?.Invoke(this, new OrderEventArgs { Id = orderId });
             });
-
-            await _hubConnection.StartAsync();
+            //todo: retry with exponential backoff
+            try
+            {
+                await _hubConnection.StartAsync();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Could not connect to SignalR Hub");
+            }
         }
 
         public async Task<List<OrderMonitorListModel>> ListOrdersAsync()
@@ -70,6 +81,6 @@ namespace OrderMonitorClient.Services
             var result = await _httpClient.PostAsJsonAsync($"{_apiRoot}/orders", model);
         }
 
-        
+
     }
 }
