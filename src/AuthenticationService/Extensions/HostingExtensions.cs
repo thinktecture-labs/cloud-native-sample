@@ -1,4 +1,3 @@
-using Serilog;
 using Duende.IdentityServer;
 using Microsoft.IdentityModel.Tokens;
 using AuthenticationService.Configuration;
@@ -80,9 +79,7 @@ internal static class HostingExtensions
             app.UsePathBase(cfg.VirtualPath);
         }
         app.UseForwardedHeaders();
-
-        app.UseSerilogRequestLogging();
-
+ 
         if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
