@@ -1,34 +1,40 @@
-﻿using AuthenticationService;
-using Serilog;
-
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .CreateBootstrapLogger();
-
-Log.Information("Starting up");
+﻿using AuthenticationService.Configuration;
+using AuthenticationService.Extensions;
 
 try
 {
     var builder = WebApplication.CreateBuilder(args);
 
-    builder.Host.UseSerilog((ctx, lc) => lc
-        .MinimumLevel.Debug()
-        .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}")
-        .Enrich.FromLogContext()
-        .ReadFrom.Configuration(ctx.Configuration));
+    var cfg = new IdentityServerConfig();
+    var cfgSection = builder.Configuration.GetSection(IdentityServerConfig.SectionName);
+
+    if (cfgSection == null || !cfgSection.Exists())
+    {
+        throw new ApplicationException(
+            $"Could not find Authentication configuration. Please ensure a '{IdentityServerConfig.SectionName}' exists");
+    }
+
+    cfgSection.Bind(cfg);
+    builder.Services.AddSingleton(cfg);
+
+    // logging
+    builder.ConfigureLogging(cfg);
+    // traces
+    builder.ConfigureTracing(cfg);
+    // metrics
+    builder.ConfigureMetrics(cfg);
 
     var app = builder
         .ConfigureServices()
         .ConfigurePipeline();
-    
+
     app.Run();
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "Unhandled exception");
+    Console.WriteLine("Unhandled exception" + ex);
 }
 finally
 {
-    Log.Information("Shut down complete");
-    Log.CloseAndFlush();
+    Console.WriteLine("Shut down complete");
 }

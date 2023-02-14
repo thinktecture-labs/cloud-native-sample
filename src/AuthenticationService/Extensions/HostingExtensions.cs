@@ -1,12 +1,10 @@
-using AuthenticationService;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Serilog;
 using Duende.IdentityServer;
 using Microsoft.IdentityModel.Tokens;
 using AuthenticationService.Configuration;
 using Microsoft.AspNetCore.HttpOverrides;
 
-namespace AuthenticationService;
+namespace AuthenticationService.Extensions;
 
 internal static class HostingExtensions
 {
