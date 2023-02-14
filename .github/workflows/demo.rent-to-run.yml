@@ -69,6 +69,6 @@ jobs:
         working-directory: ./iac/dapr
       - name: Restart Deployments
         run: |
-          kubectl rollout restart deploy orders
-          kubectl rollout restart deploy shipping
-          kubectl rollout restart deploy notification
+          kubectl rollout restart deploy orders -n cloud-native-sample
+          kubectl rollout restart deploy shipping -n cloud-native-sample
+          kubectl rollout restart deploy notification -n cloud-native-sample
