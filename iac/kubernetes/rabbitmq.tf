@@ -17,6 +17,31 @@ resource "helm_release" "rabbitmq" {
     name  = "auth.password"
     value = var.rabbitmq_password
   }
+
+  set {
+    name  = "ingress.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "ingress.className"
+    value = "nginx"
+  }
+
+  set {
+    name  = "ingress.hostname"
+    value = "cn-rabbitmq.thinktecture-demos.com"
+  }
+
+  set {
+    name  = "ingress.tls"
+    value = "true"
+  }
+
+  set {
+    name  = "ingress.annotations.cert-manager\\.io/cluster-issuer"
+    value = "letsencrypt-prod"
+  }
 }
 
 resource "kubernetes_secret" "rabbitmq" {
