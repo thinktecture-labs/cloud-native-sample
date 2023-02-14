@@ -78,7 +78,6 @@ services:
       - cloud-native
     depends_on:
       - zipkin
-      - sql
     logging:
       driver: loki
       options:
