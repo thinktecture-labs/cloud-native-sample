@@ -1,43 +1,35 @@
-# Cloud-Native Sample Application (Work-in-Progress)
+# Cloud-Native Sample Application
 
-*Note*: This is heavy work in progress - do not rely on the things you see here, yet. Please ask us if you want to adapt things in your code / environment.
+This repository contains a sample application that serves as a demonstration for building and automating a polyglot cloud-native application. The application is designed to showcase proven practices for developing and deploying cloud-native software using a combination of programming languages and tools:
+
+* Programming Languages
+  * .NET (C#)
+  * Go
+
+* Tools
+  * Docker
+  * Docker Compose
+  * Dapr (Distributed Application Runtime)
+  * Kubernetes (when running in Azure)
+  * HashiCorp Terraform
+  * GitHub Actions
+  * Makefiles
 
 [TBD: Some general introduction.]
 
-## Application Diagram
+## Builds
 
-### Architecture overview
+![AuthenticationService](https://img.shields.io/github/actions/workflow/status/thinktecture-labs/cloud-native-sample/cn.authn.ci.yml?branch=main&label=Authentication%20Service&logo=github) ![OrdersService](https://img.shields.io/github/actions/workflow/status/thinktecture-labs/cloud-native-sample/cn.orders.ci.yml?branch=main&label=Orders%20Service&logo=github) ![ProductsService](https://img.shields.io/github/actions/workflow/status/thinktecture-labs/cloud-native-sample/cn.products.ci.yml?branch=main&label=Products%20Service&logo=github) ![ShippingService](https://img.shields.io/github/actions/workflow/status/thinktecture-labs/cloud-native-sample/cn.shipping.ci.yml?branch=main&label=Shipping%20Service&logo=github) ![OMC](https://img.shields.io/github/actions/workflow/status/thinktecture-labs/cloud-native-sample/cn.order-monitor-client.ci.yml?branch=main&label=Order%20Monitor%20Client&logo=github) ![OrderMonitorService](https://img.shields.io/github/actions/workflow/status/thinktecture-labs/cloud-native-sample/cn.authn.ci.yml?branch=main&label=Order%20Monitor%20Service&logo=github) ![Gateway](https://img.shields.io/github/actions/workflow/status/thinktecture-labs/cloud-native-sample/cn.gateway.ci.yml?branch=main&label=Gateway&logo=github)
+
+## License
+
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+
+## Application Diagram
 
 ![Architecture Overview](assets/architecture-overview.jpg)
 
-### Order Monitor Client
-
-```mermaid
-flowchart TD
-
-    A[Browse Order Monitor Client] --> B{Is Authenticated?};
-    B -- yes --> F[Call API Gateway];
-    B -- no --> D[Authentication Service];
-    D -- http --> E[Authenticate with Azure AD];
-    E -- token --> D;
-    D -- token --> A;
-    F -- http --> G[Order Service]
-    F -- http --> H[Products Service]
-```
-
-### Create an order with Postman
-
-```mermaid
-flowchart TD
-A[Create Order] -- with token --> B[Call API Gateway];
-    B -- http --> C[Order Service];
-    C -- mqtt --> D[RabbitMQ];
-    D -- mqtt --> E[Shipping Service];
-    D -- mqtt --> F[Notification Service];
-    F -- ws --> G[Order Management Client];
-```
-
-## Docker Compose
+## Local execution
 
 We decided to go with Docker Compose for local development story. As an alternative, you can also setup a local Kubernetes cluster (KIND / minikube /...).
 
@@ -45,18 +37,23 @@ We decided to go with Docker Compose for local development story. As an alternat
 
 When running the application in Docker Compose, you'll end up with the following ports forwarded on your host machine:
 
-* Frontend (Order Monitor Client)
-  * [http://localhost:5005](http://localhost:5005)
+* Frontend: Order Monitor Client (OMC)
+  * [http://localhost:5000](http://localhost:5000)
 * Authentication Service (IdSrv)
   * [http://localhost:5009](http://localhost:5009)
+  * Credentials (`bob:bob`)
 * Gateway
-  * Root: [http://localhost:5000](http://localhost:5000)
+  * Root: [http://localhost:5000](http://localhost:5000) -> Serves the Frontend (OMC)
   * Swagger (Products Service): [http://localhost:5000/products/swagger/](http://localhost:5000/products/swagger/)
   * Swagger (Orders Service): [http://localhost:5000/orders/swagger/](http://localhost:5000/orders/swagger/)
 * Grafana
   * [http://localhost:3000](http://localhost:3000)
   * Username: `admin`
   * Password: `admin`
+* Prometheus
+  * [http://localhost:9090](http://localhost:9090)
+* Alertmanager
+  * [http://localhost:9093](http://localhost:9093)
 * Zipkin
   * [http://localhost:9411](http://localhost:9411)
 * RabbitMQ
@@ -68,7 +65,9 @@ When running the application in Docker Compose, you'll end up with the following
 
 Note: *Dapr-dashboard does currently not work in Docker compose mode*
 
-### Necessary plugin installation for Docker Compose
+### Necessary plugins for local execution
+
+We use Loki as log aggregation system. In the local environment, we leverage lokis docker plugin to ship all logs from containers output streams (`STDOUT` and `STDERR`) to Loki.
 
 ```bash
 # Install Docker Plugin for Loki
