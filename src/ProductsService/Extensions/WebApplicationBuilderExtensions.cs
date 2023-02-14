@@ -2,6 +2,7 @@ using System.Reflection;
 using Azure.Monitor.OpenTelemetry.Exporter;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.IdentityModel.Tokens;
+using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -15,14 +16,10 @@ public static class WebApplicationBuilderExtensions
 {
     private static string serviceName = "ProductsService";
     private static string appVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "0.0.0";
-    private static Action<ResourceBuilder> GetOpenTelemetryResourceBuilder()
-    {
-
-        return builder => builder.AddService(serviceName,
+    private static Action<ResourceBuilder> ConfigureOpenTelemetryResource = builder => builder.AddService(serviceName,
             serviceVersion: appVersion,
             serviceInstanceId: Environment.MachineName
-        ).Build();
-    }
+    );
 
     public static WebApplicationBuilder RunMigrations(this WebApplicationBuilder builder, ProductsServiceConfiguration cfg)
     {
@@ -62,7 +59,10 @@ public static class WebApplicationBuilderExtensions
         }
         builder.Logging.AddOpenTelemetry(options =>
         {
-            options.ConfigureResource(GetOpenTelemetryResourceBuilder());
+            var b = ResourceBuilder.CreateDefault();
+            ConfigureOpenTelemetryResource(b);
+            options.SetResourceBuilder(b);
+
             if (!string.IsNullOrWhiteSpace(cfg.ApplicationInsightsConnectionString))
             {
                 Console.WriteLine("Logs: Sending to Azure Monitor");
@@ -75,9 +75,13 @@ public static class WebApplicationBuilderExtensions
 
     public static WebApplicationBuilder ConfigureTracing(this WebApplicationBuilder builder, ProductsServiceConfiguration cfg)
     {
-        builder.Services.AddOpenTelemetryTracing(options =>
+        builder.Services
+            .AddOpenTelemetry()
+            .ConfigureResource(ConfigureOpenTelemetryResource)
+            .WithTracing(options =>
         {
-            options.ConfigureResource(GetOpenTelemetryResourceBuilder())
+            options
+                .AddHttpClientInstrumentation()
                 .AddAspNetCoreInstrumentation();
             if (!string.IsNullOrWhiteSpace(cfg.ApplicationInsightsConnectionString))
             {
@@ -92,16 +96,18 @@ public static class WebApplicationBuilderExtensions
                     o.Endpoint = new Uri(cfg.ZipkinEndpoint);
                 });
             }
-        });
+        }).StartWithHost();
         return builder;
     }
 
     public static WebApplicationBuilder ConfigureMetrics(this WebApplicationBuilder builder, ProductsServiceConfiguration cfg)
     {
-        builder.Services.AddOpenTelemetryMetrics(options =>
+        builder.Services
+            .AddOpenTelemetry()
+            .ConfigureResource(ConfigureOpenTelemetryResource)
+            .WithMetrics(options =>
         {
-            options.ConfigureResource(GetOpenTelemetryResourceBuilder())
-                .AddRuntimeInstrumentation()
+            options.AddRuntimeInstrumentation()
                 .AddHttpClientInstrumentation()
                 .AddAspNetCoreInstrumentation();
             if (!string.IsNullOrWhiteSpace(cfg.ApplicationInsightsConnectionString))
