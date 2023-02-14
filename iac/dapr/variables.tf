@@ -20,3 +20,12 @@ variable "zipkin_config" {
     namespace = "zipkin"
   }
 }
+
+variable "message_broker" {
+  type    = string
+  default = "azservicebus"
+  validation {
+    condition     = contains(["azservicebus", "rabbitmq"], var.message_broker)
+    error_message = "Message broker must be either azservicebus or rabbitmq"
+  }
+}

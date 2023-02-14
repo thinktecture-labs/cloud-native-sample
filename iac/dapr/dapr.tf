@@ -30,29 +30,8 @@ resource "kubernetes_manifest" "dapr_configuration" {
   }
 }
 
-resource "kubernetes_manifest" "dapr_component_orders_rabbit" {
-  manifest = {
-    "apiVersion" = "dapr.io/v1alpha1"
-    "kind"       = "Component"
-    "metadata" = {
-      "name"      = "orders"
-      "namespace" = data.kubernetes_namespace.app.metadata[0].name
-    }
-    "spec" = {
-      "type"    = "pubsub.azure.servicebus"
-      "version" = "v1"
-      "metadata" = [
-        {
-          "name" = "connectionString"
-          "secretKeyRef" = {
-            "name" = "az-servicebus"
-            "key"  = "connectionString"
-
-          }
-        }
-      ]
-    }
-  }
+resource "kubernetes_manifest" "dapr_component_orders" {
+  manifest = yamldecode(file("${path.module}/manifests/orders_${var.message_broker}.yml"))
 }
 
 resource "kubernetes_ingress_v1" "dapr_dashboard" {
