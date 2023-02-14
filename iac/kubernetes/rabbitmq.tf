@@ -24,7 +24,7 @@ resource "helm_release" "rabbitmq" {
   }
 
   set {
-    name  = "ingress.className"
+    name  = "ingress.ingressClassName"
     value = "nginx"
   }
 
