@@ -83,7 +83,7 @@ We use Loki as log aggregation system. In the local environment, we leverage lok
 docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
 ```
 
-### Local Environment
+### Local Environment Execution using the Makefile
 
 Find the `Makefile` in the root of the repository. Use it to perform common tasks as shown below:
 
@@ -113,7 +113,7 @@ make stop
 make cleanup
 ```
 
-### Common Docker-Compose commands
+### Local Environment Execution using the docker-compose CLI
 
 ```bash
 # Build Container images
@@ -131,7 +131,7 @@ docker-compose up
 docker-compose logs
 ```
 
-### Cleanup environment
+#### Cleanup environment
 
 ```bash
 # remove running containers
@@ -144,20 +144,18 @@ docker network rm cloud-native -f
 docker plugin rm loki -f
 ```
 
+### Local Environment Execution using the `cn-sample` CLI
+
+You can also automate the local environment execution using the `cn-sample` CLI (see `/tools/<your_platform>`).
+
+Consider adding `cn-sample` to your path before invoking it.
+
+The `sn-sample` CLI is designed to be invoked from the root directory of this repository.
+
 ## Azure environment
 
-### Azure Service Bus
+For demonstration purposes, we added all necessary Infrastructure-as-Code (IaC) (using [HashiCorp Terraform](https://terraform.io)) and corresponding [GitHub Actions](./github/workflows) to deploy and run the application in Microsoft Azure leveraging Azure Kubernetes Service (AKS).
 
-When using Azure Service Bus as a message broker, make sure to have at least a **Standard tier** in place which is required to use *Topics* (Basic will not work).Please add your own SAS connection string in the .yaml file for Azure Service Bus.
+When running in the cloud, one must always decide on **Run vs. Rent**. For example: Instead of running a message broker like [RabbitMQ](https://www.rabbitmq.com/) on your own (yes, running something in a container means you run it on your own, because you've to maintain and troubleshoot it), and renting a message broker like [Azure Service Bus](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messaging-overview).
 
-## Tools
-
-### Load-Testing with Hey
-
-[Hey](https://github.com/rakyll/hey) is a portable load tester
-
-```bash
-brew install hey
-
-hey -c 1 -n 1000 http://localhost:5000/products
-```
+Again, you can find corresponding GitHub Actions in the repository to switch between **Run** and **Rent** in Azure. Those GitHub Actions must be triggered manually.
