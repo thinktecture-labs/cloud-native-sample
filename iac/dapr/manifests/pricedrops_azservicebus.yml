@@ -1,0 +1,13 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pricedrops
+  namespace: cloud-native-sample
+spec:
+  type: pubsub.azure.servicebus
+  version: v1
+  metadata:
+  - name: connectionString
+    secretKeyRef:
+      key: connectionString
+      name: az-servicebus

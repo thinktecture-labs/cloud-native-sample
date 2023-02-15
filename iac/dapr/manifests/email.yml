@@ -1,0 +1,15 @@
+kind: Component
+apiVersion: dapr.io/v1alpha1
+metadata:
+  name: email
+  namespace: cloud-native-sample
+spec:
+  type: bindings.twilio.sendgrid
+  version: v1
+  metadata:
+  - name: emailFrom
+    value: "christian.weyer@thinktecture.com" 
+  - name: apiKey
+    secretKeyRef:
+      key: apiKey
+      name: twilio

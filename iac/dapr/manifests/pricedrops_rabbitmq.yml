@@ -1,0 +1,21 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pricedrops
+  namespace: cloud-native-sample
+spec:
+  type: pubsub.rabbitmq
+  version: v1
+  metadata:
+  - name: host
+    secretKeyRef:
+      key: connectionString
+      name: rabbitmq
+  - name: enableDeadLetter
+    value: true
+  - name: exchangeKind
+    value: topic
+  - name: deletedWhenUnused
+    value: false
+  - name: deliveryMode
+    value: "2"

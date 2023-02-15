@@ -34,6 +34,14 @@ resource "kubernetes_manifest" "dapr_component_orders" {
   manifest = yamldecode(file("${path.module}/manifests/orders_${var.message_broker}.yml"))
 }
 
+resource "kubernetes_manifest" "dapr_component_pricedrops" {
+  manifest = yamldecode(file("${path.module}/manifests/orders_${var.message_broker}.yml"))
+}
+
+resource "kubernetes_manifest" "dapr_component_email" {
+    manifest = yamldecode(file("${path.module}/manifests/email.yml"))
+}
+
 resource "kubernetes_ingress_v1" "dapr_dashboard" {
   depends_on = [
     helm_release.dapr
