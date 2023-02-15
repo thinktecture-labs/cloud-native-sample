@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/thinktecture-labs/cloud-native-sample/ordermonitorservice/pkg/controllers"
@@ -36,8 +37,18 @@ func main() {
 			}
 		}()
 	}
+	dontTrace := otelgin.WithFilter(func(r *http.Request) bool {
+		urls := []string{"/healthz/readiness", "/healthz/liveness", "/metrics"}
+		// return false if request url is in the list
+		for _, url := range urls {
+			if r.URL.Path == url {
+				return false
+			}
+		}
+		return true
+	})
 
-	e.Use(otelgin.Middleware(serviceName))
+	e.Use(otelgin.Middleware(serviceName, dontTrace))
 	e.Use(gin.Recovery())
 
 	controllers.RegisterHealthEndpoints(e)
