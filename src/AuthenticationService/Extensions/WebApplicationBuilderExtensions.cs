@@ -1,4 +1,5 @@
 using System.Reflection;
+using AuthenticationService;
 using AuthenticationService.Configuration;
 using Azure.Monitor.OpenTelemetry.Exporter;
 using Duende.IdentityServer;
@@ -53,6 +54,8 @@ public static class WebApplicationBuilderExtensions
             .ConfigureResource(ConfigureOpenTelemetryResource)
             .WithTracing(options =>
             {
+                options.AddProcessor<CustomProcessor>();
+                
                 options.AddSource(IdentityServerConstants.Tracing.Basic)
                     .AddSource(IdentityServerConstants.Tracing.Cache)
                     .AddSource(IdentityServerConstants.Tracing.Services)

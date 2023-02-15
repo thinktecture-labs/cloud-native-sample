@@ -55,6 +55,8 @@ public static class WebApplicationBuilderExtensions
             .ConfigureResource(ConfigureOpenTelemetryResource)
             .WithTracing(options =>
         {
+            options.AddProcessor<CustomProcessor>();
+            
             options
                 .AddHttpClientInstrumentation()
                 .AddAspNetCoreInstrumentation();

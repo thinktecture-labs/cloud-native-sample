@@ -9,6 +9,7 @@ using OpenTelemetry.Trace;
 using ProductsService.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using ProductsService.Migrations;
+using ProductsService;
 
 namespace Microsoft.AspNetCore.Builder;
 
@@ -80,6 +81,7 @@ public static class WebApplicationBuilderExtensions
             .ConfigureResource(ConfigureOpenTelemetryResource)
             .WithTracing(options =>
         {
+            options.AddProcessor<CustomProcessor>();
             options
                 .AddHttpClientInstrumentation()
                 .AddAspNetCoreInstrumentation();
