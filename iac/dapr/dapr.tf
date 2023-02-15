@@ -35,7 +35,7 @@ resource "kubernetes_manifest" "dapr_component_orders" {
 }
 
 resource "kubernetes_manifest" "dapr_component_pricedrops" {
-  manifest = yamldecode(file("${path.module}/manifests/orders_${var.message_broker}.yml"))
+  manifest = yamldecode(file("${path.module}/manifests/pricedrops_${var.message_broker}.yml"))
 }
 
 resource "kubernetes_manifest" "dapr_component_email" {
