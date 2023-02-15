@@ -33,6 +33,43 @@
 			"response": []
 		},
 		{
+			"name": "Create Order (local)",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6Ijc0NTg0QzI2RkRGODhCNTM1QzVGNUQ1NkZGMzgyMEIwIiwidHlwIjoiYXQrand0In0.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUwMDkiLCJuYmYiOjE2Njc0NjYyMjIsImlhdCI6MTY2NzQ2NjIyMiwiZXhwIjoxNjY3NDY5ODIyLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUwMDkvcmVzb3VyY2VzIiwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsInNhbXBsZSJdLCJhbXIiOlsicHdkIl0sImNsaWVudF9pZCI6ImludGVyYWN0aXZlIiwic3ViIjoiMTEiLCJhdXRoX3RpbWUiOjE2Njc0NjA2OTQsImlkcCI6ImxvY2FsIiwibmFtZSI6IkJvYiBTbWl0aCIsInNpZCI6IkMzQkFBMkQ5NTVFMUM0ODhBQ0Q2MTJCMDMxNTQ2MEUwIiwianRpIjoiRDcyOTZDQzlEQzQyOEFBMkYyNDJDQzcyNkM4ODg5MkMifQ.aFE3apBMJtgfqXGFeyXVgP_hWXkMQNZkoKmp3bY8N-XxHoRF5Uub5Ybi98ZR5ZLmfUMz2UZNmG5kH3ZpAi_E3r10KeTEH86Y__lMMmPYl6h85LU5trsaIMhNOC0gRrTPfrD9Nm6urKmdLLS-KufeJ9gwxT8ABbAigJjVrjz6WjleqHn6Ne0GV9TPrwqpw9doE2KQfDgHmAdGd3jtudOTi1KidHN-PtC2muaWKdSxvdw3MNOGyVHYlOa-l6nfDiI0N-JT1q4_jgMcPEJt2h9XcQXLD36jCr5OyKkh5h2Q1TAUxGu2QD4tm3rZpiTXuZKPKFv1_lkA_Ysls0SBFwA7wg",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"positions\": [\n        {\n            \"productId\": \"b3b749d1-fd02-4b47-8e3c-540555439db6\",\n            \"quantity\": 3\n        },\n        {\n            \"productId\": \"aaaaaaaa-fd02-4b47-8e3c-540555439db6\",\n            \"quantity\": 1\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get Orders",
 			"request": {
 				"method": "GET",
@@ -44,6 +81,23 @@
 					],
 					"path": [
 						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Products",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{root}}/products",
+					"host": [
+						"{{root}}"
+					],
+					"path": [
+						"products"
 					]
 				}
 			},
@@ -109,12 +163,10 @@
 					}
 				},
 				"url": {
-					"raw": "https://localhost:7045/pricedrops/invoke",
-					"protocol": "https",
+					"raw": "{{root}}/pricedrops/invoke",
 					"host": [
-						"localhost"
+						"{{root}}"
 					],
-					"port": "7045",
 					"path": [
 						"pricedrops",
 						"invoke"
@@ -128,6 +180,16 @@
 		"type": "oauth2",
 		"oauth2": [
 			{
+				"key": "scope",
+				"value": "sample openid profile admin",
+				"type": "string"
+			},
+			{
+				"key": "clientId",
+				"value": "{{clientId}}",
+				"type": "string"
+			},
+			{
 				"key": "authUrl",
 				"value": "https://cn.thinktecture-demos.com/login/connect/authorize",
 				"type": "string"
@@ -135,16 +197,6 @@
 			{
 				"key": "accessTokenUrl",
 				"value": "https://cn.thinktecture-demos.com/login/connect/token",
-				"type": "string"
-			},
-			{
-				"key": "clientId",
-				"value": "interactive",
-				"type": "string"
-			},
-			{
-				"key": "scope",
-				"value": "sample openid profile",
 				"type": "string"
 			},
 			{
@@ -198,6 +250,11 @@
 		{
 			"key": "authority",
 			"value": "https://cn.thinktecture-demos.com/login",
+			"type": "string"
+		},
+		{
+			"key": "clientId",
+			"value": "postman",
 			"type": "string"
 		}
 	]
