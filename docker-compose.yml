@@ -53,7 +53,7 @@ services:
       - zipkin
       - rabbit
     environment:
-      DAPR_GRPC_PORT: 10002
+      DAPR_GRPC_PORT: 10000
       OrdersService__ExposePrometheusMetrics: true
       OrdersService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
       OrdersService__IdentityServer__Authority: http://localhost:5009
@@ -68,7 +68,7 @@ services:
     build: ./src/ProductsService
     container_name: products
     environment:
-      DAPR_GRPC_PORT: 10001
+      DAPR_GRPC_PORT: 10000
       ProductsService__ExposePrometheusMetrics: true
       ProductsService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
       ProductsService__IdentityServer__Authority: http://localhost:5009
@@ -87,7 +87,7 @@ services:
     build: ./src/OrderMonitorService
     container_name: order-monitor-service
     environment:
-      DAPR_HTTP_PORT: 9005
+      DAPR_HTTP_PORT: 9000
       OrderMonitorService__Environment: Development
       OrderMonitorService__DisableConsoleLog: false
       OrderMonitorService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
@@ -105,7 +105,7 @@ services:
     build: ./src/NotificationService
     container_name: notification
     environment:
-      DAPR_GRPC_PORT: 10004
+      DAPR_GRPC_PORT: 10000
       NotificationService__ExposePrometheusMetrics: true
       NotificationService__IdentityServer__Authority: http://localhost:5009
       NotificationService__IdentityServer__RequireHttpsMetadata: false
@@ -125,7 +125,7 @@ services:
     build: ./src/ShippingService
     container_name: shipping
     environment:
-      DAPR_GRPC_PORT: 10003
+      DAPR_GRPC_PORT: 10000
       ShippingService__Environment: Development
       ShippingService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
     networks:
@@ -169,7 +169,45 @@ services:
       options:
         loki-url: http://10.5.0.99:3100/loki/api/v1/push
         loki-retries: 5
-
+  pricewatcher:
+    build: ./src/PriceWatcherService
+    container_name: pricewatcher
+    networks:
+      - cloud-native
+    depends_on:
+      - rabbit
+    environment:
+      DAPR_GRPC_PORT: 10000
+      PriceWatcherService__ExposePrometheusMetrics: true
+      PriceWatcherService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
+      PriceWatcherService__IdentityServer__Authority: http://localhost:5009
+      PriceWatcherService__IdentityServer__RequireHttpsMetadata: false
+      PriceWatcherService__IdentityServer__MetadataAddress: http://authn:5000/.well-known/openid-configuration
+    logging:
+      driver: loki
+      options:
+        loki-url: http://10.5.0.99:3100/loki/api/v1/push
+        loki-retries: 5
+  pricedropnotifier:
+    build: ./src/PriceDropNotifierService
+    container_name: pricedropnotifier
+    networks:
+      - cloud-native
+    depends_on:
+      - smtp
+    environment:
+      DAPR_GRPC_PORT: 10000
+      PriceDropNotifierService__ExposePrometheusMetrics: true
+      PriceDropNotifierService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
+      PriceDropNotifierService__IdentityServer__Authority: http://localhost:5009
+      PriceDropNotifierService__IdentityServer__RequireHttpsMetadata: false
+      PriceDropNotifierService__IdentityServer__MetadataAddress: http://authn:5000/.well-known/openid-configuration
+      Logging__LogLeveL__Microsoft.AspNetCore: Information
+    logging:
+      driver: loki
+      options:
+        loki-url: http://10.5.0.99:3100/loki/api/v1/push
+        loki-retries: 5
   ###################
   ## Dapr Sidecars ##
   ###################
@@ -209,9 +247,9 @@ services:
         "-app-port",
         "5000",
         "-dapr-http-port",
-        "9002",
+        "9000",
         "-dapr-grpc-port",
-        "10002",
+        "10000",
         "-components-path",
         "/dapr/components",
         "-config",
@@ -234,9 +272,9 @@ services:
         "-app-port",
         "5000",
         "-dapr-http-port",
-        "9001",
+        "9000",
         "-dapr-grpc-port",
-        "10001",
+        "10000",
         "-components-path",
         "/dapr/components",
         "-config",
@@ -259,9 +297,9 @@ services:
         "-app-port",
         "5000",
         "-dapr-http-port",
-        "9005",
+        "9000",
         "-dapr-grpc-port",
-        "10005",
+        "10000",
         "-components-path",
         "/dapr/components",
         "-config",
@@ -284,9 +322,9 @@ services:
         "-app-port",
         "5000",
         "-dapr-http-port",
-        "9004",
+        "9000",
         "-dapr-grpc-port",
-        "10004",
+        "10000",
         "-components-path",
         "/dapr/components",
         "-config",
@@ -309,9 +347,9 @@ services:
         "-app-port",
         "5000",
         "-dapr-http-port",
-        "9003",
+        "9000",
         "-dapr-grpc-port",
-        "10003",
+        "10000",
         "-components-path",
         "/dapr/components",
         "-config",
@@ -323,7 +361,56 @@ services:
       - ./docker-compose-configs/dapr/components:/dapr/components:ro
     depends_on:
       - shipping
-
+  pricewatcher-dapr:
+    image: "daprio/daprd:edge"
+    container_name: pricewatcher-dapr
+    command:
+      [
+        "./daprd",
+        "-app-id",
+        "pricewatcher",
+        "-app-port",
+        "5000",
+        "-dapr-http-port",
+        "9000",
+        "-dapr-grpc-port",
+        "10000",
+        "-components-path",
+        "/dapr/components",
+        "-config",
+        "/dapr/config/config.yml"
+      ]
+    network_mode: "service:pricewatcher"
+    volumes:
+      - ./docker-compose-configs/dapr/config.yml:/dapr/config/config.yml:ro
+      - ./docker-compose-configs/dapr/components:/dapr/components:ro
+    depends_on:
+      - pricewatcher
+  pricedropnotifier-dapr:
+    image: "daprio/daprd:edge"
+    container_name: pricedropnotifier-dapr
+    command:
+      [
+        "./daprd",
+        "-app-id",
+        "pricedropnotifier",
+        "-app-port",
+        "5000",
+        "-dapr-http-port",
+        "9000",
+        "-dapr-grpc-port",
+        "10000",
+        "-components-path",
+        "/dapr/components",
+        "-config",
+        "/dapr/config/config.yml"
+      ]
+    network_mode: "service:pricedropnotifier"
+    volumes:
+      - ./docker-compose-configs/dapr/config.yml:/dapr/config/config.yml:ro
+      - ./docker-compose-configs/dapr/components:/dapr/components:ro
+    depends_on:
+      - pricedropnotifier
   ###################
   ## Observability ##
   ###################
@@ -374,6 +461,9 @@ services:
   smtp:
     image: gessnerfl/fake-smtp-server
     container_name: smtp
+    environment:
+      - SPRING_MAIL_USERNAME=cnadmin
+      - SPRING_MAIL_PASSWORD=somepassword
     ports:
       - "5080:5080"
     networks:

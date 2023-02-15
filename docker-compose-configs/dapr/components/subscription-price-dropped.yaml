@@ -1,0 +1,10 @@
+apiVersion: dapr.io/v1alpha1
+kind: Subscription
+metadata:
+  name: sub-pricedrop-notifications
+spec:
+  topic: notifications
+  route: /pricedrops/notify
+  pubsubname: pricedrops
+scopes:
+  - pricedropnotifier

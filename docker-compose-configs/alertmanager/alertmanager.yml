@@ -11,8 +11,8 @@ receivers:
   - name: 'mail'
     email_configs:
     - smarthost: 'smtp:5025'
-      auth_username: 'alert@cn.thinktecture-demos.com'
-      auth_password: ""
+      auth_username: 'cnadmin'
+      auth_password: 'somepassword'
       require_tls: false
       from: 'alert@cn.thinktecture-demos.com'
       to: 'thorsten.hans@thinktecture.com'

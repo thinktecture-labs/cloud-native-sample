@@ -1,0 +1,1 @@
+PriceWatcher Service has been provisioned to Namespace {{ .Release.Namespace }}
