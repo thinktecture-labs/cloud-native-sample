@@ -10,7 +10,7 @@ services:
   #   command: ["sleep","infinity"]
   #   networks:
   #     - cloud-native
-  
+
   ######################
   ## App Dependencies ##
   ######################
@@ -42,7 +42,7 @@ services:
       - cloud-native
     depends_on:
       - zipkin
-    ports: 
+    ports:
       - "5000:5000"
   orders:
     build: ./src/OrdersService
@@ -100,7 +100,7 @@ services:
       driver: loki
       options:
         loki-url: http://10.5.0.99:3100/loki/api/v1/push
-        loki-retries: 5 
+        loki-retries: 5
   notification:
     build: ./src/NotificationService
     container_name: notification
@@ -137,9 +137,9 @@ services:
       driver: loki
       options:
         loki-url: http://10.5.0.99:3100/loki/api/v1/push
-        loki-retries: 5 
+        loki-retries: 5
   ordermonitor:
-    build: 
+    build:
       context: ./src/OrderMonitorClient
       args:
         - TARGET=docker-compose
@@ -169,20 +169,29 @@ services:
       options:
         loki-url: http://10.5.0.99:3100/loki/api/v1/push
         loki-retries: 5
-  
+
   ###################
   ## Dapr Sidecars ##
   ###################
   gateway-dapr:
     image: "daprio/daprd:edge"
     container_name: gateway-dapr
-    command: [ "./daprd",
-               "-app-id", "gateway",
-               "-app-port", "5000",
-               "-dapr-http-port", "9000",
-               "-dapr-grpc-port", "10000",
-               "-components-path", "/dapr/components",
-               "-config", "/dapr/config/config.yml" ]
+    command:
+      [
+        "./daprd",
+        "-app-id",
+        "gateway",
+        "-app-port",
+        "5000",
+        "-dapr-http-port",
+        "9000",
+        "-dapr-grpc-port",
+        "10000",
+        "-components-path",
+        "/dapr/components",
+        "-config",
+        "/dapr/config/config.yml"
+      ]
     network_mode: "service:gateway"
     volumes:
       - ./docker-compose-configs/dapr:/dapr/config
@@ -192,13 +201,22 @@ services:
   orders-dapr:
     image: "daprio/daprd:edge"
     container_name: orders-dapr
-    command: [ "./daprd",
-               "-app-id", "orders",
-               "-app-port", "5000",
-               "-dapr-http-port", "9002",
-               "-dapr-grpc-port", "10002",
-               "-components-path", "/dapr/components",
-               "-config", "/dapr/config/config.yml" ]
+    command:
+      [
+        "./daprd",
+        "-app-id",
+        "orders",
+        "-app-port",
+        "5000",
+        "-dapr-http-port",
+        "9002",
+        "-dapr-grpc-port",
+        "10002",
+        "-components-path",
+        "/dapr/components",
+        "-config",
+        "/dapr/config/config.yml"
+      ]
     network_mode: "service:orders"
     volumes:
       - ./docker-compose-configs/dapr:/dapr/config
@@ -208,13 +226,22 @@ services:
   products-dapr:
     image: "daprio/daprd:edge"
     container_name: products-dapr
-    command: [ "./daprd",
-               "-app-id", "products",
-               "-app-port", "5000",
-               "-dapr-http-port", "9001",
-               "-dapr-grpc-port", "10001",
-               "-components-path", "/dapr/components",
-               "-config", "/dapr/config/config.yml" ]
+    command:
+      [
+        "./daprd",
+        "-app-id",
+        "products",
+        "-app-port",
+        "5000",
+        "-dapr-http-port",
+        "9001",
+        "-dapr-grpc-port",
+        "10001",
+        "-components-path",
+        "/dapr/components",
+        "-config",
+        "/dapr/config/config.yml"
+      ]
     network_mode: "service:products"
     volumes:
       - ./docker-compose-configs/dapr:/dapr/config
@@ -224,13 +251,22 @@ services:
   ordermonitorservice-dapr:
     image: "daprio/daprd:edge"
     container_name: ordermonitorservice-dapr
-    command: [ "./daprd",
-               "-app-id", "ordermonitorservice",
-               "-app-port", "5000",
-               "-dapr-http-port", "9005",
-               "-dapr-grpc-port", "10005",
-               "-components-path", "/dapr/components",
-               "-config", "/dapr/config/config.yml" ]
+    command:
+      [
+        "./daprd",
+        "-app-id",
+        "ordermonitorservice",
+        "-app-port",
+        "5000",
+        "-dapr-http-port",
+        "9005",
+        "-dapr-grpc-port",
+        "10005",
+        "-components-path",
+        "/dapr/components",
+        "-config",
+        "/dapr/config/config.yml"
+      ]
     network_mode: "service:ordermonitorservice"
     volumes:
       - ./docker-compose-configs/dapr:/dapr/config
@@ -240,13 +276,22 @@ services:
   notification-dapr:
     image: "daprio/daprd:edge"
     container_name: notification-dapr
-    command: [ "./daprd",
-               "-app-id", "notification",
-               "-app-port", "5000",
-               "-dapr-http-port", "9004",
-               "-dapr-grpc-port", "10004",
-               "-components-path", "/dapr/components",
-               "-config", "/dapr/config/config.yml" ]
+    command:
+      [
+        "./daprd",
+        "-app-id",
+        "notification",
+        "-app-port",
+        "5000",
+        "-dapr-http-port",
+        "9004",
+        "-dapr-grpc-port",
+        "10004",
+        "-components-path",
+        "/dapr/components",
+        "-config",
+        "/dapr/config/config.yml"
+      ]
     network_mode: "service:notification"
     volumes:
       - ./docker-compose-configs/dapr:/dapr/config
@@ -256,20 +301,29 @@ services:
   shipping-dapr:
     image: "daprio/daprd:edge"
     container_name: shipping-dapr
-    command: [ "./daprd",
-               "-app-id", "shipping",
-               "-app-port", "5000",
-               "-dapr-http-port", "9003",
-               "-dapr-grpc-port", "10003",
-               "-components-path", "/dapr/components",
-               "-config", "/dapr/config/config.yml" ]
+    command:
+      [
+        "./daprd",
+        "-app-id",
+        "shipping",
+        "-app-port",
+        "5000",
+        "-dapr-http-port",
+        "9003",
+        "-dapr-grpc-port",
+        "10003",
+        "-components-path",
+        "/dapr/components",
+        "-config",
+        "/dapr/config/config.yml"
+      ]
     network_mode: "service:shipping"
     volumes:
       - ./docker-compose-configs/dapr:/dapr/config
       - ./src/dapr/components:/dapr/components
     depends_on:
       - shipping
-  
+
   ###################
   ## Observability ##
   ###################
@@ -358,13 +412,10 @@ services:
 ## Network Setup ##
 ###################
 networks:
-  cloud-native :
+  cloud-native:
     driver: bridge
     name: cloud-native
     ipam:
       config:
         - subnet: 10.5.0.0/16
           gateway: 10.5.0.1
-          
-
-  
