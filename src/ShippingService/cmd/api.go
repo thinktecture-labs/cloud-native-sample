@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/thinktecture-labs/cloud-native-sample/shipping-service/pkg/cloudevents"
@@ -39,7 +40,18 @@ func main() {
 		}()
 	}
 
-	r.Use(otelgin.Middleware(serviceName))
+	dontTrace := otelgin.WithFilter(func(r *http.Request) bool {
+		urls := []string{"/healthz/readiness", "/healthz/liveness", "/metrics"}
+		// return false if request url is in the list
+		for _, url := range urls {
+			if r.URL.Path == url {
+				return false
+			}
+		}
+		return true
+	})
+
+	r.Use(otelgin.Middleware(serviceName, dontTrace))
 	r.Use(gin.Recovery())
 	r.GET("/dapr/subscribe", dapr.GetSubscriptionHandler(cfg))
 

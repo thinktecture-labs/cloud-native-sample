@@ -5,21 +5,27 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/zipkin"
 	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 )
 
 func configureTracing(cfg *shipping.Configuration) (tp *sdktrace.TracerProvider, err error) {
 	if len(cfg.ZipkinEndpoint) == 0 {
 		return nil, nil
 	}
-	z, err := zipkin.New(cfg.ZipkinEndpoint)
+	zipinExporter, err := zipkin.New(cfg.ZipkinEndpoint)
 	if err != nil {
 		return nil, err
 	}
 
 	tp = sdktrace.NewTracerProvider(
 		sdktrace.WithSampler(sdktrace.AlwaysSample()),
-		sdktrace.WithBatcher(z),
+		sdktrace.WithBatcher(zipinExporter),
+		sdktrace.WithResource(resource.NewWithAttributes(
+			semconv.SchemaURL,
+			semconv.ServiceName(serviceName),
+		)),
 	)
 
 	otel.SetTracerProvider(tp)
