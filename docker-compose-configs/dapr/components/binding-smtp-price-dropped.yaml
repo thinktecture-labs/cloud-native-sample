@@ -1,0 +1,20 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: email
+spec:
+  type: bindings.smtp
+  version: v1
+  metadata:
+  - name: host
+    value: "smtp"
+  - name: port
+    value: "5025"
+  - name: user
+    value: "cnadmin"
+  - name: password
+    value: "somepassword"
+  - name: skipTLSVerify
+    value: true
+  - name: emailFrom
+    value: "price-drop@cn.thinktecture.com"
