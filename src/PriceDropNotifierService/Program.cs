@@ -1,69 +1,69 @@
 using Microsoft.Extensions.Logging.Console;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
+using Microsoft.OpenApi.Models;
+using PriceDropNotifier.Configuration;
 
-const string ServiceName = "PriceDropNotifier";
 
 var builder = WebApplication.CreateBuilder(args);
-// logging
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole(options =>
-{
-    options.FormatterName = ConsoleFormatterNames.Json;
-});
 
-//traces
-var zipkinEndpoint = builder.Configuration.GetValue<string>("ZipkinEndpoint");
-if (string.IsNullOrWhiteSpace(zipkinEndpoint))
+var cfg = new PriceDropNotifierServiceConfiguration();
+var cfgSection = builder.Configuration.GetSection(PriceDropNotifierServiceConfiguration.SectionName);
+
+if (cfgSection == null || !cfgSection.Exists())
 {
-    throw new ApplicationException("Zipkin Endpoint not provided");
+    throw new ApplicationException(
+        $"Could not find service config. Please provide a '{PriceDropNotifierServiceConfiguration.SectionName}' section in your appsettings.json file."
+    );
 }
 
-builder.Services.AddOpenTelemetryTracing(options =>
-{
-    options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(ServiceName))
-        .AddAspNetCoreInstrumentation()
-        .AddZipkinExporter(config =>
-        {
-            config.Endpoint = new Uri(zipkinEndpoint);
-        });
-});
+cfgSection.Bind(cfg);
+builder.Services.AddSingleton(cfg);
 
-// metrics
-builder.Services.AddOpenTelemetryMetrics(options =>
-{
-    options.ConfigureResource(rb => { rb.AddService(ServiceName); })
-        .AddRuntimeInstrumentation()
-        .AddHttpClientInstrumentation()
-        .AddAspNetCoreInstrumentation()
-        .AddPrometheusExporter();
-});
+builder.ConfigureLogging(cfg)
+    .ConfigureTracing(cfg)
+    .ConfigureMetrics(cfg)
+    .ConfigureAuthN(cfg)
+    .ConfigureAuthZ(cfg)
+    .Services.AddHealthChecks()
+    .Services.AddDaprClient();
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddHealthChecks();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(config =>
+{
+    config.EnableAnnotations();
+    config.SwaggerDoc("v1", new OpenApiInfo()
+    {
+        Version = "v1",
+        Title = "PriceDrop Service",
+        Description = "Fairly simple .NET API to watch for price drops.",
+        Contact = new OpenApiContact
+        {
+            Name = "Thinktecture AG",
+            Email = "info@thinktecture.com",
+            Url = new Uri("https://thinktecture.com")
+        }
+    });
+});
 
 var app = builder.Build();
+app.UseSwagger();
+app.UseSwaggerUI();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapControllers()
+    .RequireAuthorization("ApiScope");
+
+if (cfg.ExposePrometheusMetrics)
+{
+    app.UseOpenTelemetryPrometheusScrapingEndpoint();
+}
 
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");
-
-app.MapControllers();
-
-app.UseOpenTelemetryPrometheusScrapingEndpoint();
-
 app.Run();
+
