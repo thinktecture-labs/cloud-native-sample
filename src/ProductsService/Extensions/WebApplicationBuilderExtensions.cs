@@ -1,13 +1,11 @@
 using System.Reflection;
 using Azure.Monitor.OpenTelemetry.Exporter;
-using Microsoft.Extensions.Logging.Console;
 using Microsoft.IdentityModel.Tokens;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using ProductsService.Configuration;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using ProductsService.Migrations;
 using ProductsService;
 
