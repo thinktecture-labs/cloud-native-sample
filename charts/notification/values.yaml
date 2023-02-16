@@ -20,6 +20,7 @@ podAnnotations:
   dapr.io/app-id: "notification"
   dapr.io/app-port: "5000"
   dapr.io/config: "cloud-native-sample"
+  dapr.io/app-token-secret: "dapr-api-auth"
   prometheus.io/scrape: 'true'
   prometheus.io/port: '5000'
 

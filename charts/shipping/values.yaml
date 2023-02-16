@@ -20,6 +20,7 @@ podAnnotations:
   dapr.io/enabled: "true"
   dapr.io/app-id: "shipping"
   dapr.io/app-port: "5000"
+  dapr.io/app-token-secret: "dapr-api-auth"
   prometheus.io/scrape: 'true'
   prometheus.io/port: '5000'
 
