@@ -8,3 +8,6 @@ resource "helm_release" "prometheus" {
   values = [file("${path.module}/values/prometheus.yml")]
 }
 
+locals {
+  prometheus_endpoint = "http://${helm_release.prometheus.name}-server.${helm_release.prometheus.namespace}.svc.cluster.local:80"
+}

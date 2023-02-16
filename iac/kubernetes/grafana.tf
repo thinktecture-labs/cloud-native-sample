@@ -6,33 +6,10 @@ resource "helm_release" "grafana" {
   namespace        = "grafana"
   create_namespace = true
 
-  set {
-    name  = "ingress.enabled"
-    value = "true"
-  }
-
-  set {
-    name  = "ingress.hosts[0]"
-    value = "cn-grafana.thinktecture-demos.com"
-  }
-
-  set {
-    name  = "ingress.tls[0].hosts[0]"
-    value = "cn-grafana.thinktecture-demos.com"
-  }
-
-  set {
-    name  = "ingress.tls[0].secretName"
-    value = "grafanatls"
-  }
-
-  set {
-    name  = "ingress.ingressClassName"
-    value = "nginx"
-  }
-
-  set {
-    name  = "ingress.annotations.cert-manager\\.io/cluster-issuer"
-    value = "letsencrypt-prod"
-  }
+  values = [
+    templatefile("${path.module}/values/grafana.yml", {
+      prometheus_endpoint = local.prometheus_endpoint
+      loki_endpoint       = local.loki_endpoint
+    }),
+  ]
 }

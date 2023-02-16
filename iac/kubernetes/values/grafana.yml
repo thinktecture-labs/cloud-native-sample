@@ -1,0 +1,29 @@
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - cn-grafana.thinktecture-demos.com
+  tls:
+    - secretName: grafanatls
+      hosts:
+        - cn-grafana.thinktecture-demos.com
+
+persistence:
+  enabled: true
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        url: ${prometheus_endpoint}
+        access: proxy
+        isDefault: true
+      - name: Loki
+        type: loki
+        url: ${loki_endpoint}
+        access: proxy
+        
