@@ -11,7 +11,7 @@ namespace Microsoft.AspNetCore.Builder;
 
 public static class WebApplicationBuilderExtensions
 {
-    private static string serviceName = "Gateway";
+    private static string serviceName = "GatewayService";
     private static string appVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "0.0.0";
     private static Action<ResourceBuilder> ConfigureOpenTelemetryResource = builder => builder.AddService(serviceName,
             serviceVersion: appVersion,
