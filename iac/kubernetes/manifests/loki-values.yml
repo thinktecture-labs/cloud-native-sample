@@ -1,0 +1,41 @@
+nameOverride: null
+fullnameOverride: null
+imagePullSecrets: []
+loki:
+  # -- Check https://grafana.com/docs/loki/latest/configuration/#schema_config for more info on how to configure schemas
+  schemaConfig:
+    configs:
+    - from: 2022-01-01
+      store: boltdb-shipper
+      object_store: azure
+      schema: v11
+      index:
+        prefix: loki_index_
+        period: 24h
+
+  # -- Check https://grafana.com/docs/loki/latest/configuration/#storage_config for more info on how to configure storages
+  storageConfig:
+    boltdb_shipper:
+      shared_store: azure
+      cache_ttl: 24h
+    azure:
+      account_name: ${storage_account_name}
+      container_name: loki
+      use_managed_identity: true
+      user_assigned_id: ${user_assigned_identity_id}
+
+ingester:
+  persistence:
+    enabled: true
+    size: 100Gi
+querier:
+  persistence:
+    enabled: true
+    size: 100Gi
+tableManager:
+  enabled: false
+compactor:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 50Gi

@@ -11,6 +11,7 @@ concurrency:
 env:
   TERRAFORM_VERSION: 1.3.1
   KUBELOGIN_VERSION: v0.0.20
+  RG_NAME: 'rg-cloud-native-sample-develop'
 jobs:
   infra:
     name: "Deploy cluster-wide services to k8s"
@@ -64,7 +65,10 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}
         working-directory: ./iac/kubernetes
       - name: Terraform Apply
-        run: terraform apply -no-color -auto-approve
+        run: |
+          export TF_VAR_loki_user_assigned_identity_id=$(az identity list -g $RG_NAME --query "[].clientId" -o tsv)
+          export TF_VAR_loki_storage_account_name=$(az storage account list -g $RG_NAME --query "[].name" -otsv)
+          terraform apply -no-color -auto-approve
         env:
           ARM_CLIENT_ID: ${{ secrets.TERRAFORM_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_CLIENT_SECRET }}

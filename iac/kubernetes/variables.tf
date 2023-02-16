@@ -25,3 +25,14 @@ variable "rabbitmq_password" {
   description = "Overwrite this default value using a GitHub Secret"
   sensitive   = true
 }
+
+variable "loki_storage_account_name" {
+  type    = string
+  default = "sattcnsampleloki"
+}
+
+variable "loki_user_assigned_identity_id" {
+  type      = string
+  sensitive = true
+}
+
