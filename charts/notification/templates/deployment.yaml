@@ -47,6 +47,11 @@ spec:
                   name: authentication
                   key: authority
                   optional: true
+            - name: DAPR_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: dapr-api-token
+                  key: token
           ports:
             - name: http-noti
               containerPort: {{ .Values.containerPort }}

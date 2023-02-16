@@ -42,6 +42,11 @@ spec:
               value: new_orders
             - name: ShippingService__TargetTopicName
               value: new_orders
+            - name: DAPR_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: dapr-api-token
+                  key: token
             - name: ShippingService__ZipkinEndpoint
               valueFrom:
                 configMapKeyRef:
