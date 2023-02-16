@@ -7,7 +7,7 @@ resource "helm_release" "prometheus" {
 
   set {
     name  = "serverFiles.alerting_rules.yml"
-    value = file("${path.module}/manifests/alerting_rules.yml")
+    value = yamldecode(file("${path.module}/manifests/alerting_rules.yml"))
   }
 }
 
