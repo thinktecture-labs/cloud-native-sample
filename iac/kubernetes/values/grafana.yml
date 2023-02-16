@@ -10,6 +10,9 @@ ingress:
       hosts:
         - cn-grafana.thinktecture-demos.com
 
+deploymentStrategy:
+  type: Recreate
+
 persistence:
   enabled: true
 
