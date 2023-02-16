@@ -25,7 +25,8 @@ func ValidateApiToken(log *logrus.Logger) gin.HandlerFunc {
 		}
 		a := ctx.GetHeader(apiTokenHeaderName)
 		if a != e {
-			log.Warnf("received invalid token from daprd: %s", a)
+			log.Warnf("%s was expected", e)
+			log.Warnf("%s received from daprd", a)
 			ctx.AbortWithStatus(401)
 			return
 		}
