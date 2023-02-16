@@ -64,7 +64,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers()
-    .RequireAuthorization("ApiScope");
+    .RequireAuthorization("RequiresApiScope");
 
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");

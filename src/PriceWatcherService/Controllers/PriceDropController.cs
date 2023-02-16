@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PriceWatcher.Models;
 using PriceWatcher.Repositories;
@@ -18,6 +19,7 @@ public class PriceDropController : ControllerBase
     }
 
     [HttpPost("invoke")]
+    [Authorize(Policy = "RequiresAdminScope")]
     public IActionResult InvokePriceDrop([FromBody] PriceDropModel model)
     {
         var dropped = _repository.DropPrice(model.ProductId, model.DropPriceBy);

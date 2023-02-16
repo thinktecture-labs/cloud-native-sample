@@ -56,7 +56,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers()
-    .RequireAuthorization("ApiScope");
+    .RequireAuthorization("RequiresApiScope");
 
 if (cfg.ExposePrometheusMetrics)
 {

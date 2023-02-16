@@ -130,10 +130,16 @@ public static class WebApplicationBuilderExtensions
     {
         builder.Services.AddAuthorization(options =>
         {
-            options.AddPolicy("ApiScope", policy =>
+            options.AddPolicy("RequiresApiScope", policy =>
             {
                 policy.RequireAuthenticatedUser();
                 policy.RequireClaim(cfg.Authorization.RequiredClaimName, cfg.Authorization.RequiredClaimValue);
+            });
+
+            options.AddPolicy("RequiresAdminScope", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireClaim(cfg.Authorization.RequiredClaimName, cfg.Authorization.AdminScopeName);
             });
         });
         return builder;

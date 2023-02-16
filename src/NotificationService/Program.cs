@@ -51,7 +51,7 @@ logger.LogInformation(" - Authentication activated");
 app.UseAuthorization();
 logger.LogInformation(" - Authorization activated");
 app.MapHub<NotificationHub>(Constants.NotificationHubEndpoint)
-    .RequireAuthorization("ApiScope");
+    .RequireAuthorization("RequiresApiScope");
 logger.LogInformation(" - SignalR Hubs activated");
 app.MapControllers();
 logger.LogInformation(" - API Controllers activated");

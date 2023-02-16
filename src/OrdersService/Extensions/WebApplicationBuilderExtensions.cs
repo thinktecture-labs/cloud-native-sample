@@ -131,7 +131,7 @@ public static class WebApplicationBuilderExtensions
     {
         builder.Services.AddAuthorization(options =>
         {
-            options.AddPolicy("ApiScope", policy =>
+            options.AddPolicy("RequiresApiScope", policy =>
             {
                 policy.RequireAuthenticatedUser();
                 policy.RequireClaim(cfg.Authorization.RequiredClaimName, cfg.Authorization.RequiredClaimValue);
