@@ -51,13 +51,6 @@ resource "azurerm_role_assignment" "aks_reader" {
   principal_id         = azuread_group.k8s_admins.object_id
 }
 
-resource "azurerm_user_assigned_identity" "id_loki" {
-  name                = "id-loki"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
-  tags                = local.tags
-}
-
 resource "azurerm_storage_account" "loki" {
   name                     = "sattcnsampleloki"
   resource_group_name      = azurerm_resource_group.main.name
@@ -72,10 +65,4 @@ resource "azurerm_storage_container" "loki" {
   name                  = "loki"
   storage_account_name  = azurerm_storage_account.loki.name
   container_access_type = "private"
-}
-
-resource "azurerm_role_assignment" "loki_storage_account_contributor" {
-  scope                = azurerm_storage_account.loki.id
-  role_definition_name = "Storage Account Contributor"
-  principal_id         = azurerm_user_assigned_identity.id_loki.principal_id
 }
