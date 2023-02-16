@@ -4,4 +4,10 @@ resource "helm_release" "prometheus" {
   chart            = "prometheus"
   namespace        = "prometheus"
   create_namespace = true
+
+  set {
+    name  = "serverFiles.alerting_rules.yml"
+    value = file("${path.module}/manifests/alerting_rules.yml")
+  }
 }
+
