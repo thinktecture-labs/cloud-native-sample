@@ -72,3 +72,5 @@ jobs:
           kubectl rollout restart deploy orders -n cloud-native-sample
           kubectl rollout restart deploy shipping -n cloud-native-sample
           kubectl rollout restart deploy notification -n cloud-native-sample
+          kubectl rollout restart deploy price-watcher -n cloud-native-sample
+          kubectl rollout restart deploy price-drop-notifier -n cloud-native-sample
