@@ -42,6 +42,16 @@ resource "kubernetes_manifest" "dapr_component_email" {
   manifest = yamldecode(file("${path.module}/manifests/email.yml"))
 }
 
+resource "kubernetes_secret_v1" "dapr_auth_token" {
+  metadata {
+    name      = "dapr-api-auth"
+    namespace = data.kubernetes_namespace.app.metadata[0].name
+  }
+  // todo: set this to a value provided via variable
+  data = {
+    token = var.dapr_api_auth_token
+  }
+}
 resource "kubernetes_ingress_v1" "dapr_dashboard" {
   depends_on = [
     helm_release.dapr

@@ -3,7 +3,10 @@ variable "dapr_config_sample_rate" {
   default = 1
 }
 
-
+variable "dapr_api_auth_token" {
+  type      = string
+  sensitive = true
+}
 variable "app_namespace" {
   type    = string
   default = "cloud-native-sample"
