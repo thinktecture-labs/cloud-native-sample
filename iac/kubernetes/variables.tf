@@ -31,7 +31,7 @@ variable "loki_storage_account_name" {
   default = "sattcnsampleloki"
 }
 
-variable "loki_user_assigned_identity_id" {
+variable "loki_storage_account_key" {
   type      = string
   sensitive = true
 }

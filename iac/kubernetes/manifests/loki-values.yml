@@ -20,9 +20,9 @@ loki:
       cache_ttl: 24h
     azure:
       account_name: ${storage_account_name}
+      account_key: ${storage_account_key}
       container_name: loki
-      use_managed_identity: true
-      user_assigned_id: ${user_assigned_identity_id}
+      use_managed_identity: false
 
 ingester:
   persistence:

@@ -66,8 +66,8 @@ jobs:
         working-directory: ./iac/kubernetes
       - name: Terraform Apply
         run: |
-          export TF_VAR_loki_user_assigned_identity_id=$(az identity list -g $RG_NAME --query "[].clientId" -o tsv)
           export TF_VAR_loki_storage_account_name=$(az storage account list -g $RG_NAME --query "[].name" -otsv)
+          export TF_VAR_loki_storage_account_key=$(az storage account keys list -n $TF_VAR_loki_storage_account_name -g $RG_NAME -otsv --query "[0].value")
           terraform apply -no-color -auto-approve
         env:
           ARM_CLIENT_ID: ${{ secrets.TERRAFORM_CLIENT_ID }}

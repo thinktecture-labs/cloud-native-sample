@@ -7,8 +7,8 @@ resource "helm_release" "grafana_loki" {
 
   values = [
     templatefile("${path.module}/manifests/loki-values.yml", {
-      storage_account_name      = var.loki_storage_account_name
-      user_assigned_identity_id = var.loki_user_assigned_identity_id
+      storage_account_name = var.loki_storage_account_name
+      storage_account_key  = var.loki_storage_account_key
     }),
   ]
 }
