@@ -1,0 +1,57 @@
+name: "CI/CD: PriceDropNotifier Service"
+on:
+  push:
+    branches:
+      - "main"
+    paths:
+      - "src/PriceDropNotifierService/**"
+      - "charts/price-drop-notifier/**"
+      - ".github/workflows/cn.pricedropnotifier.*.yml"
+      - ".github/templates/**/*.yml"
+  workflow_dispatch:
+jobs:
+  ci:
+    name: "CI: PriceDropNotifierService"
+    
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Build & Push Products Service of Cloud-Native Sample
+        uses: "./.github/templates/build-and-push"
+        with:
+          acr_name: ${{ secrets.ACR_NAME}}
+          acr_token_name: ${{ secrets.ACR_TOKEN_NAME }}
+          acr_token_password: ${{ secrets.ACR_TOKEN_PASSWORD }}
+          app_name: price-drop-notifier
+          app_display_name: PriceDropNotifier Service
+          working_dir: ./src/PriceDropNotifierService
+          github_token: ${{ secrets.github_token }}
+  cd:
+    name: "CD: PriceDropNotifierService"
+    runs-on: ubuntu-latest
+    needs: ci
+    env:
+      AKS_NAME: aks-cloud-native-sample
+      RG_NAME: rg-cloud-native-sample-develop
+      KUBELOGIN_VERSION: v0.0.24
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Deploy PriceDropNotifier Service of Cloud-Native Sample
+        uses: "./.github/templates/deploy"
+        with:
+          acr_name: ${{ secrets.ACR_NAME}}
+          app_name: price-drop-notifier
+          app_display_name: PriceDropNotifier Service
+          working_dir: ./src/PriceDropNotifierService
+          helm_chart_location: ./charts/price-drop-notifier
+          aks_name: ${{ env.AKS_NAME }}
+          aks_resource_group_name: ${{ env.RG_NAME }}
+          kubelogin_version: ${{ env.KUBELOGIN_VERSION }}
+          kubernetes_namespace: cloud-native-sample
+          github_token: ${{ secrets.github_token }}
+          terraform_client_id: ${{ secrets.TERRAFORM_CLIENT_ID }}
+          terraform_client_secret: ${{ secrets.TERRAFORM_CLIENT_SECRET }}
+          terraform_subscription_id: ${{ secrets.TERRAFORM_SUBSCRIPTION_ID }}
+          terraform_tenant_id: ${{ secrets.TERRAFORM_TENANT_ID }}

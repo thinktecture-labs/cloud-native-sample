@@ -1,5 +1,5 @@
 replicaCount: 1
-
+exposePrometheusMetrics: true
 image:
   repository: nginx
   pullPolicy: IfNotPresent
