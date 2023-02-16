@@ -32,7 +32,7 @@ public static class ClientsProvider
 
                 RedirectUris = interactiveClientConfig.RedirectUris,
                 FrontChannelLogoutUri = interactiveClientConfig.FrontChannelLogoutUri,
-                PostLogoutRedirectUris = interactiveClientConfig.RedirectUris,
+                PostLogoutRedirectUris = interactiveClientConfig.PostLogoutRedirectUris,
 
                 AllowOfflineAccess = interactiveClientConfig.AllowOfflineAccess,
                 AllowedScopes = { "openid", "profile", "sample" },
@@ -48,7 +48,7 @@ public static class ClientsProvider
 
                 RedirectUris = interactiveClientConfig.RedirectUris,
                 FrontChannelLogoutUri = interactiveClientConfig.FrontChannelLogoutUri,
-                PostLogoutRedirectUris = interactiveClientConfig.RedirectUris,
+                PostLogoutRedirectUris = interactiveClientConfig.PostLogoutRedirectUris,
 
                 AllowOfflineAccess = interactiveClientConfig.AllowOfflineAccess,
                 AllowedScopes = { "openid", "profile", "sample", "admin" },
