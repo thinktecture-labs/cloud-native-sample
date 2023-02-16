@@ -9,7 +9,8 @@ resource "helm_release" "grafana" {
   values = [
     templatefile("${path.module}/values/grafana.yml", {
       prometheus_endpoint = local.prometheus_endpoint
-      loki_endpoint       = local.loki_endpoint
+      loki_endpoint       = local.loki_query_endpoint
+      zipkin_endpoint     = local.zipkin_endpoint
     }),
   ]
 }

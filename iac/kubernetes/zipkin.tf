@@ -64,6 +64,10 @@ resource "kubernetes_config_map_v1" "name" {
   }
 }
 
+locals {
+  zipkin_endpoint = "http://${kubernetes_service.zipkin.metadata[0].name}.${kubernetes_service.zipkin.metadata[0].namespace}.svc.cluster.local:9411/"
+}
+
 resource "kubernetes_ingress_v1" "zipkin" {
   metadata {
     name      = "zipkin"

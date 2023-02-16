@@ -17,13 +17,23 @@ datasources:
   datasources.yaml:
     apiVersion: 1
     datasources:
-      - name: Prometheus
+      - name: Prometheus (Cloud-Native Sample)
+        uid: cnprometheus
         type: prometheus
         url: ${prometheus_endpoint}
         access: proxy
         isDefault: true
-      - name: Loki
+        editable: true
+      - name: Grafana Loki (Cloud-Native Sample)
+        uid: cnloki
         type: loki
         url: ${loki_endpoint}
         access: proxy
+        editable: true
+      - name: Zipkin (Cloud-Native Sample)
+        uid: cnzipkin
+        type: zipkin
+        url: ${zipkin_endpoint}
+        access: proxy
+        editable: true
         
