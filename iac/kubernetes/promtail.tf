@@ -10,6 +10,6 @@ resource "helm_release" "grafana_promtail" {
   ]
   set {
     name  = "config.clients[0].url"
-    value = local.loki_endpoint
+    value = local.loki_distributor_endpoint
   }
 }
