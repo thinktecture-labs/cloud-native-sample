@@ -6,10 +6,10 @@ resource "helm_release" "grafana_promtail" {
   create_namespace = true
 
   values = [
-    "${file("promtail.values.yml")}"
+    file("${path.module}/values/promtail.yml")
   ]
   set {
     name  = "config.clients[0].url"
-    value = "http://${helm_release.grafana_loki.name}.${helm_release.grafana_loki.namespace}.svc.cluster.local:3100/loki/api/v1/push"
+    value = "http://${helm_release.grafana_loki.name}-loki-distributed-ingester.${helm_release.grafana_loki.namespace}.svc.cluster.local:3100/loki/api/v1/push"
   }
 }

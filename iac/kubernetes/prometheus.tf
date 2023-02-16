@@ -5,6 +5,6 @@ resource "helm_release" "prometheus" {
   namespace        = "prometheus"
   create_namespace = true
 
-  values = [file("${path.module}/manifests/prometheus-values.yml")]
+  values = [file("${path.module}/values/prometheus.yml")]
 }
 
