@@ -1,3 +1,6 @@
+server:
+  persistentVolume:
+    storageClass: azurefile-csi
 serverFiles:
   alerting_rules.yml:
     groups:
