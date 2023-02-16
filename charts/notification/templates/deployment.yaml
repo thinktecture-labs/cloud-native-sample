@@ -50,7 +50,7 @@ spec:
             - name: DAPR_API_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: dapr-api-token
+                  name: dapr-api-auth
                   key: token
           ports:
             - name: http-noti

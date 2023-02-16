@@ -45,7 +45,7 @@ spec:
             - name: DAPR_API_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: dapr-api-token
+                  name: dapr-api-auth
                   key: token
             - name: ShippingService__ZipkinEndpoint
               valueFrom:
