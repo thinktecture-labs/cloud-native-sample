@@ -11,3 +11,20 @@ serverFiles:
           annotations:
             summary: High order Volume detected
             description: We've detected a high order volume on cn.thinktecture-demos.com ("{{ $value }}").
+alertmanager:
+  route:
+    receiver: 'mail'
+    group_wait: 10s
+    group_interval: 2m
+    repeat_interval: 3h
+    group_by: [ alertname ]
+
+  receivers:
+    - name: 'mail'
+      email_configs:
+      - smarthost: 'fakesmtp-smtp.fake-smtp.svc.cluster.local:5025'
+        auth_username: 'cnadmin'
+        auth_password: 'somepassword'
+        require_tls: false
+        from: 'alert@cn.thinktecture-demos.com'
+        to: 'thorsten.hans@thinktecture.com'
