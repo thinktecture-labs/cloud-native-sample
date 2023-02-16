@@ -33,6 +33,20 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: PriceWatcherService__ZipkinEndpoint
+              valueFrom:
+                configMapKeyRef:
+                  name: zipkin
+                  key: endpoint
+            - name: PriceWatcherService__ExposePrometheusMetrics
+              value: {{ .Values.exposePrometheusMetrics | quote }}
+            - name: PriceWatcherService__IdentityServer__Authority
+              valueFrom:
+                configMapKeyRef:
+                  name: authentication
+                  key: authority
+                  optional: true
           ports:
             - name: http-pwatcher
               containerPort: {{ .Values.containerPort }}
