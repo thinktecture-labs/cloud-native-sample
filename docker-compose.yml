@@ -53,7 +53,6 @@ services:
       - zipkin
       - rabbit
     environment:
-      DAPR_GRPC_PORT: 10000
       OrdersService__ExposePrometheusMetrics: true
       OrdersService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
       OrdersService__IdentityServer__Authority: http://localhost:5009
@@ -68,7 +67,6 @@ services:
     build: ./src/ProductsService
     container_name: products
     environment:
-      DAPR_GRPC_PORT: 10000
       ProductsService__ExposePrometheusMetrics: true
       ProductsService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
       ProductsService__IdentityServer__Authority: http://localhost:5009
@@ -105,7 +103,6 @@ services:
     build: ./src/NotificationService
     container_name: notification
     environment:
-      DAPR_GRPC_PORT: 10000
       NotificationService__ExposePrometheusMetrics: true
       NotificationService__IdentityServer__Authority: http://localhost:5009
       NotificationService__IdentityServer__RequireHttpsMetadata: false
@@ -125,7 +122,6 @@ services:
     build: ./src/ShippingService
     container_name: shipping
     environment:
-      DAPR_GRPC_PORT: 10000
       ShippingService__Environment: Development
       ShippingService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
     networks:
@@ -177,7 +173,6 @@ services:
     depends_on:
       - rabbit
     environment:
-      DAPR_GRPC_PORT: 10000
       PriceWatcherService__ExposePrometheusMetrics: true
       PriceWatcherService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
       PriceWatcherService__IdentityServer__Authority: http://localhost:5009
@@ -196,7 +191,6 @@ services:
     depends_on:
       - smtp
     environment:
-      DAPR_GRPC_PORT: 10000
       PriceDropNotifierService__ExposePrometheusMetrics: true
       PriceDropNotifierService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
       PriceDropNotifierService__IdentityServer__Authority: http://localhost:5009
@@ -246,10 +240,6 @@ services:
         "orders",
         "-app-port",
         "5000",
-        "-dapr-http-port",
-        "9000",
-        "-dapr-grpc-port",
-        "10000",
         "-components-path",
         "/dapr/components",
         "-config",
@@ -271,10 +261,6 @@ services:
         "products",
         "-app-port",
         "5000",
-        "-dapr-http-port",
-        "9000",
-        "-dapr-grpc-port",
-        "10000",
         "-components-path",
         "/dapr/components",
         "-config",
@@ -321,10 +307,6 @@ services:
         "notification",
         "-app-port",
         "5000",
-        "-dapr-http-port",
-        "9000",
-        "-dapr-grpc-port",
-        "10000",
         "-components-path",
         "/dapr/components",
         "-config",
@@ -346,10 +328,6 @@ services:
         "shipping",
         "-app-port",
         "5000",
-        "-dapr-http-port",
-        "9000",
-        "-dapr-grpc-port",
-        "10000",
         "-components-path",
         "/dapr/components",
         "-config",
@@ -371,10 +349,6 @@ services:
         "pricewatcher",
         "-app-port",
         "5000",
-        "-dapr-http-port",
-        "9000",
-        "-dapr-grpc-port",
-        "10000",
         "-components-path",
         "/dapr/components",
         "-config",
@@ -396,10 +370,6 @@ services:
         "pricedropnotifier",
         "-app-port",
         "5000",
-        "-dapr-http-port",
-        "9000",
-        "-dapr-grpc-port",
-        "10000",
         "-components-path",
         "/dapr/components",
         "-config",
