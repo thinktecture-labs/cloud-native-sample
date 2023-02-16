@@ -55,7 +55,7 @@ func main() {
 	r.Use(gin.Recovery())
 	r.GET("/dapr/subscribe", dapr.GetSubscriptionHandler(cfg))
 
-	r.POST("/orders", func(ctx *gin.Context) {
+	r.POST("/orders", dapr.ValidateApiToken(log), func(ctx *gin.Context) {
 		_, span := tracer.Start(ctx.Request.Context(), "process_order")
 		defer span.End()
 		var envelope cloudevents.CloudEvent

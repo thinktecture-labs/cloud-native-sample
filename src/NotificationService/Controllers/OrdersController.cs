@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.SignalR;
 using NotificationService.Configuration;
 using NotificationService.Models;
 using Dapr;
+using Microsoft.AspNetCore.Authorization;
+using System.Net;
+
 namespace NotificationService.Controllers;
 
 [ApiController]
@@ -23,8 +26,23 @@ public class OrdersController : Controller
     [HttpPost]
     [Route("processed")]
     [Topic("orders", "processed_orders")]
+    [AllowAnonymous]
     public async Task<IActionResult> OnOrderProcessedAsync([FromBody] DispatchedOrder order)
     {
+        try
+        {
+            if (!HttpContext.Request.HasValidDaprApiToken())
+            {
+                _logger.LogWarning("OnOrderProcessed: Received invalid Dapr API token.");
+                return Unauthorized();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while validating Dapr API token.");
+            return StatusCode((int)HttpStatusCode.InternalServerError);
+        }
+
         if (order == null)
         {
             _logger.LogWarning("OnOrderProcessed: Received null as order.");

@@ -103,6 +103,7 @@ services:
     build: ./src/NotificationService
     container_name: notification
     environment:
+      DAPR_API_TOKEN: dGhpcyBpcyBmb3IgZGVtbyBvbmx5LCBpbiByZWFsLXdvcmxkIHVzZSBzb21ldGhpbmcgdGhhdCBpcyBzdG9yZWQgc2VjdXJlbHkK
       NotificationService__ExposePrometheusMetrics: true
       NotificationService__IdentityServer__Authority: http://localhost:5009
       NotificationService__IdentityServer__RequireHttpsMetadata: false
@@ -122,6 +123,7 @@ services:
     build: ./src/ShippingService
     container_name: shipping
     environment:
+      DAPR_API_TOKEN: dGhpcyBpcyBmb3IgZGVtbyBvbmx5LCBpbiByZWFsLXdvcmxkIHVzZSBzb21ldGhpbmcgdGhhdCBpcyBzdG9yZWQgc2VjdXJlbHkK
       ShippingService__Environment: Development
       ShippingService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
     networks:
@@ -191,6 +193,7 @@ services:
     depends_on:
       - smtp
     environment:
+      DAPR_API_TOKEN: dGhpcyBpcyBmb3IgZGVtbyBvbmx5LCBpbiByZWFsLXdvcmxkIHVzZSBzb21ldGhpbmcgdGhhdCBpcyBzdG9yZWQgc2VjdXJlbHkK
       PriceDropNotifierService__ExposePrometheusMetrics: true
       PriceDropNotifierService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
       PriceDropNotifierService__IdentityServer__Authority: http://localhost:5009
@@ -313,6 +316,8 @@ services:
         "/dapr/config/config.yml"
       ]
     network_mode: "service:notification"
+    environment:
+      APP_API_TOKEN: dGhpcyBpcyBmb3IgZGVtbyBvbmx5LCBpbiByZWFsLXdvcmxkIHVzZSBzb21ldGhpbmcgdGhhdCBpcyBzdG9yZWQgc2VjdXJlbHkK
     volumes:
       - ./docker-compose-configs/dapr/config.yml:/dapr/config/config.yml:ro
       - ./docker-compose-configs/dapr/components:/dapr/components:ro
@@ -334,6 +339,8 @@ services:
         "/dapr/config/config.yml"
       ]
     network_mode: "service:shipping"
+    environment:
+      APP_API_TOKEN: dGhpcyBpcyBmb3IgZGVtbyBvbmx5LCBpbiByZWFsLXdvcmxkIHVzZSBzb21ldGhpbmcgdGhhdCBpcyBzdG9yZWQgc2VjdXJlbHkK
     volumes:
       - ./docker-compose-configs/dapr/config.yml:/dapr/config/config.yml:ro
       - ./docker-compose-configs/dapr/components:/dapr/components:ro
@@ -376,6 +383,8 @@ services:
         "/dapr/config/config.yml"
       ]
     network_mode: "service:pricedropnotifier"
+    environment:
+      APP_API_TOKEN: dGhpcyBpcyBmb3IgZGVtbyBvbmx5LCBpbiByZWFsLXdvcmxkIHVzZSBzb21ldGhpbmcgdGhhdCBpcyBzdG9yZWQgc2VjdXJlbHkK
     volumes:
       - ./docker-compose-configs/dapr/config.yml:/dapr/config/config.yml:ro
       - ./docker-compose-configs/dapr/components:/dapr/components:ro
