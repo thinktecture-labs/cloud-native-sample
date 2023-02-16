@@ -66,7 +66,8 @@ func main() {
 		}
 		log.Infof("Processing CloudEvent of type %s (id %s)", envelope.Type, envelope.Id)
 		s := shipping.NewShipping(cfg, log)
-		if err = s.ProcessOrder(&envelope.Data); err != nil {
+		traceId := span.SpanContext().TraceID().String()
+		if err = s.ProcessOrder(&envelope.Data, traceId); err != nil {
 			ctx.AbortWithStatus(500)
 			return
 		}

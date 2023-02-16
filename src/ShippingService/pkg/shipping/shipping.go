@@ -43,10 +43,10 @@ type OrderPosition struct {
 	Quantity  int    `json:"quantity"`
 }
 
-func (s *Shipping) ProcessOrder(o *Order) error {
+func (s *Shipping) ProcessOrder(o *Order, traceId string) error {
 	c, err := dapr.NewClient()
 	if err != nil {
-		return fmt.Errorf("Error while creating dapr client %s", err)
+		return fmt.Errorf("error while creating dapr client %s", err)
 	}
 
 	// invoke business logic ;-)
@@ -67,8 +67,9 @@ func (s *Shipping) ProcessOrder(o *Order) error {
 		UserId:       o.UserId,
 	}
 	s.log.Infof("Publishing event to %s %s", s.cfg.TargetPubSubName, s.cfg.TargetTopicName)
+	c.WithTraceID(context.TODO(), traceId)
 	if err = c.PublishEvent(context.Background(), s.cfg.TargetPubSubName, s.cfg.TargetTopicName, m); err != nil {
-		return fmt.Errorf("Will fail because publishing order-processed event failed: %s", err)
+		return fmt.Errorf("will fail because publishing order-processed event failed: %s", err)
 	}
 	return nil
 }
