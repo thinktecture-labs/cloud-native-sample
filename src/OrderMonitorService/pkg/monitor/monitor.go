@@ -102,6 +102,7 @@ func getData(ctx context.Context, wg *sync.WaitGroup, r chan backendResult, serv
 
 	req, _ := http.NewRequest(http.MethodGet, u, nil)
 	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", ctx.Value(utils.AuthKey).(string))
 
 	res, err := client.Do(req)

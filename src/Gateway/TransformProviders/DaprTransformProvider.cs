@@ -31,6 +31,7 @@ namespace Gateway.TransformProviders
                         .Add(1, new KeyValuePair<string, object?>("kind", "dapr"));
                     context.AddRequestTransform(t =>
                     {
+                        t.ProxyRequest.Headers.Add("Content-Type", "application/json");
                         t.ProxyRequest.RequestUri =
                             new Uri(
                                 $"http://localhost:{_daprHttpPort}/v1.0/invoke/{context.Route.RouteId}/method{t.Path.Value}");
