@@ -1,6 +1,13 @@
 controller:
   metrics:
     enabled: true
+    port: 9999
+    portName: metrics
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9999"
+
   service:
     annotations:
       service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/healthz"
