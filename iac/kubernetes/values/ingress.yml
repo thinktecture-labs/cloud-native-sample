@@ -1,12 +1,13 @@
 controller:
   metrics:
     enabled: true
-    port: 9999
+    port: 10254
     portName: metrics
     service:
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/port: "9999"
+        prometheus.io/port: "10254"
+      servicePort: 10254
 
   service:
     annotations:
