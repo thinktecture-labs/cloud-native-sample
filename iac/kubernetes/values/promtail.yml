@@ -19,6 +19,7 @@ config:
             severity: null
             statusCode: null
             timestamp: null
+            message: null
         - static_labels: 
             language: "Go"
     - match:
@@ -33,5 +34,6 @@ config:
         - labels:
             dotNetNamespace: null
             severity: null
+            message: null
         - static_labels:
             language: ".NET"
