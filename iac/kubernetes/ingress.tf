@@ -6,10 +6,9 @@ resource "helm_release" "ingress" {
   namespace        = "ingress"
   create_namespace = true
 
-  set {
-    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-health-probe-request-path"
-    value = "/healthz"
-  }
+  values = [
+    file("${path.module}/values/ingress.yml"),
+  ]
 }
 
 data "kubernetes_service" "ing" {
