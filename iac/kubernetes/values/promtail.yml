@@ -18,7 +18,8 @@ config:
             severity: null
             statusCode: null
             timestamp: null
-        - static_labels: Go
+        - static_labels: 
+            language: "Go"
     - match:
         selector: '{container="orders"}'
         stages:
@@ -31,7 +32,7 @@ config:
             dotNetNamespace: null
             severity: null
         - static_labels:
-            language: DotNet
+            language: ".NET"
     - match:
         selector: '{container="authentication"}'
         stages:
@@ -44,4 +45,4 @@ config:
             dotNetNamespace: null
             severity: null
         - static_labels:
-            language: DotNet
+            language: ".NET"
