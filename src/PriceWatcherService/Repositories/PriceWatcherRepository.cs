@@ -8,7 +8,6 @@ namespace PriceWatcher.Repositories;
 
 public class PriceWatcherRepository : IPriceWatcherRepository
 {
-    private readonly DaprClient _dapr;
     private readonly PriceWatcherServiceConfiguration _cfg;
     private readonly ILogger<PriceWatcherRepository> _logger;
     private readonly List<Watcher> _watchers = new List<Watcher>();
@@ -26,9 +25,8 @@ public class PriceWatcherRepository : IPriceWatcherRepository
         new Product { Id = Guid.Parse("2620540e-bfcb-4a06-87a4-f6ed2b3c069b"), Name = "Pizza", Description = "It comes with Bacon. You know! Because everything is better with bacon", Price = 7.99 }
     };
 
-    public PriceWatcherRepository(DaprClient dapr, PriceWatcherServiceConfiguration cfg, ILogger<PriceWatcherRepository> logger)
+    public PriceWatcherRepository(PriceWatcherServiceConfiguration cfg, ILogger<PriceWatcherRepository> logger)
     {
-        _dapr = dapr;
         _cfg = cfg;
         _logger = logger;
     }
@@ -78,22 +76,10 @@ public class PriceWatcherRepository : IPriceWatcherRepository
             {
                 _logger.LogInformation("Issue notification for {Watcher} because price dropped for {ProductName} ({ProductId})", w.Email, found.Name, found.Id);
                 _logger.LogWarning($"Publishing message in {_cfg.PriceDropsPubSubName}:{_cfg.PriceDropsTopicName}");
-                var model = new PriceDropNotificationModel
-                {
-                    Recipient = w.Email,
-                    ProductName = found.Name,
-                    Price = found.Price
-                };
-                var cloudEvent = new CloudEvent<PriceDropNotificationModel>(model){
-                    Type = "com.thinktecture/price-drop-notification"
-                }; 
-
-                await _dapr.PublishEventAsync<CloudEvent<PriceDropNotificationModel>>(
-                    _cfg.PriceDropsPubSubName, 
-                    _cfg.PriceDropsTopicName,
-                    cloudEvent,
-                    cancellationToken: CancellationToken.None);
-
+                await Task.Run(() => {
+                    Thread.Sleep(10);
+                    _logger.LogInformation("TODO: Published message | and remove this async Task.Run...");
+                });
             });
         return true;
     }
