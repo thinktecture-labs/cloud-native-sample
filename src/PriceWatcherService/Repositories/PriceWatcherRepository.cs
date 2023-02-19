@@ -78,21 +78,9 @@ public class PriceWatcherRepository : IPriceWatcherRepository
             {
                 _logger.LogInformation("Issue notification for {Watcher} because price dropped for {ProductName} ({ProductId})", w.Email, found.Name, found.Id);
                 _logger.LogWarning($"Publishing message in {_cfg.PriceDropsPubSubName}:{_cfg.PriceDropsTopicName}");
-                var model = new PriceDropNotificationModel
-                {
-                    Recipient = w.Email,
-                    ProductName = found.Name,
-                    Price = found.Price
-                };
-                var cloudEvent = new CloudEvent<PriceDropNotificationModel>(model){
-                    Type = "com.thinktecture/price-drop-notification"
-                }; 
-
-                await _dapr.PublishEventAsync<CloudEvent<PriceDropNotificationModel>>(
-                    _cfg.PriceDropsPubSubName, 
-                    _cfg.PriceDropsTopicName,
-                    cloudEvent,
-                    cancellationToken: CancellationToken.None);
+                await Task.Run(()=> {
+                    _logger.LogInformation("Publish Message");
+                });
 
             });
         return true;
