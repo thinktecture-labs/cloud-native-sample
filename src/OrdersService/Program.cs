@@ -18,12 +18,8 @@ if (cfgSection == null || !cfgSection.Exists())
 cfgSection.Bind(cfg);
 builder.Services.AddSingleton(cfg);
 
-// logging
-builder.ConfigureLogging(cfg);
-// tracing
-builder.ConfigureTracing(cfg);
-// metrics
-builder.ConfigureMetrics(cfg);
+// todo: add observability
+
 
 // Configure AuthN
 builder.ConfigureAuthN(cfg);
@@ -69,10 +65,7 @@ app.MapControllers()
 app.MapHealthChecks("/healthz/readiness");
 app.MapHealthChecks("/healthz/liveness");
 
-if (cfg.ExposePrometheusMetrics)
-{
-    Console.WriteLine("Registering Prometheus scraping endpoint");
-    app.UseOpenTelemetryPrometheusScrapingEndpoint();
-}
+// todo: expose metrics
+
 
 app.Run();

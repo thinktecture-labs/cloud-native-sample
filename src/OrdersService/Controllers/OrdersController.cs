@@ -62,7 +62,8 @@ public class OrdersController : ControllerBase
             cloudEvent,
             metadata,
             CancellationToken.None)!;
-        CustomMetrics.OrdersCreated.Add(1);
+        
+        //todo: increment custom metric
         
         return Accepted(new { OrderId = newOrder.Id });
     }
