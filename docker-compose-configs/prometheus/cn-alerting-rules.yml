@@ -2,8 +2,8 @@ groups:
   - name: cloud-native-sample
     rules:
       - alert: HighOrderVolume
-        expr: increase(cloud_native_sample_orders_created[5m]) > 5
-        for: 1m
+        expr: increase(cloud_native_sample_orders_created[1m]) > 5
+        for: 30s
         labels:
           severity: high
         annotations:
