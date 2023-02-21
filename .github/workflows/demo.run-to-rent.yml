@@ -70,9 +70,6 @@ jobs:
         working-directory: ./iac/dapr
       - name: Restart Deployments
         run: |
-          kubectl rollout restart deploy orders -n cloud-native-sample
-          kubectl rollout restart deploy shipping -n cloud-native-sample
-          kubectl rollout restart deploy notification -n cloud-native-sample
-          kubectl rollout restart deploy price-watcher -n cloud-native-sample
-          kubectl rollout restart deploy price-drop-notifier -n cloud-native-sample
+          kubectl config set-context --current --namespace cloud-native-sample
+          kubectl get deploy --no-headers=true | grep -v authentication | awk '{print $1}' | xargs -I _ kubectl kubectl rollout restart deploy _
 
