@@ -6,6 +6,7 @@ namespace AuthenticationService;
 public static class ClientsProvider
 {
 
+    // TODO: shouldn't we cache the Client[], e.g. in a static readonly field/property?
     public static IEnumerable<Client> GetAll(InteractiveClientConfig interactiveClientConfig) =>
         new Client[]
         {
@@ -54,5 +55,15 @@ public static class ClientsProvider
                 AllowedScopes = { "openid", "profile", "sample", "admin" },
                 AllowedCorsOrigins = interactiveClientConfig.AllowedCorsOrigins,
             },
+            new Client
+            {
+                ClientId = "admin-cli",
+                ClientName = "Command Line Interface App for Administrators",
+                
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                ClientSecrets = { new Secret("46E345BC-9C72-4694-8BFF-27AA6BB2B6A2".Sha256()) },
+                
+                AllowedScopes = { "admin" }
+            }
         };
 }
