@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderMonitorClient", "Order
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthenticationService", "AuthenticationService\AuthenticationService.csproj", "{94224E64-0B3C-46DF-88C6-FF712BA5D3EE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PriceDropNotifier", "PriceDropNotifierService\PriceDropNotifier.csproj", "{9B3C6BB0-1B9F-4635-B677-5D3F8477237B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,5 +45,9 @@ Global
 		{94224E64-0B3C-46DF-88C6-FF712BA5D3EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94224E64-0B3C-46DF-88C6-FF712BA5D3EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94224E64-0B3C-46DF-88C6-FF712BA5D3EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B3C6BB0-1B9F-4635-B677-5D3F8477237B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B3C6BB0-1B9F-4635-B677-5D3F8477237B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B3C6BB0-1B9F-4635-B677-5D3F8477237B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B3C6BB0-1B9F-4635-B677-5D3F8477237B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
