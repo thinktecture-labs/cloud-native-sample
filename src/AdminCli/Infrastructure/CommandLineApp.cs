@@ -21,6 +21,8 @@ public static class CommandLineApp
             context.ConfigureCommand<ListProductsCommand>("list-products");
             context.ConfigureCommand<DropPriceCommand>("drop-price");
 
+            app.OnExecute(() => app.ShowHelp());
+
             return app;
         });
     }
