@@ -14,6 +14,7 @@ public static class Program
         try
         {
             await using var container = DependencyInjection.CreateContainer();
+            container.SetLogLevelFromAppSettings();
             var app = container.GetRequiredService<CommandLineApplication>();
             return await app.ExecuteAsync(args);
         }

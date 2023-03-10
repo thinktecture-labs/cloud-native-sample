@@ -6,5 +6,6 @@ public static class CliCommandsModule
 {
     public static IServiceCollection AddCliCommands(this IServiceCollection services) =>
         services.AddSingleton<ListProductsCommand>()
-                .AddSingleton<DropPriceCommand>();
+                .AddSingleton<DropPriceCommand>()
+                .AddSingleton<ChangeLogLevelCommand>();
 }

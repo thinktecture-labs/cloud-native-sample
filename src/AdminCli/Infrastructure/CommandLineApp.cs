@@ -18,8 +18,9 @@ public static class CommandLineApp
             app.HelpOption(inherited: true);
 
             var context = new CommandConfigurationContext(app, container);
-            context.ConfigureCommand<ListProductsCommand>("list-products");
-            context.ConfigureCommand<DropPriceCommand>("drop-price");
+            context.ConfigureCommand<ListProductsCommand>("list-products")
+                   .ConfigureCommand<DropPriceCommand>("drop-price")
+                   .ConfigureCommand<ChangeLogLevelCommand>("change-log-level");
 
             app.OnExecute(() => app.ShowHelp());
 
