@@ -6,8 +6,10 @@ namespace AdminCli.Configuration;
 
 public sealed class AppSettings
 {
+    public const string DefaultLocalGatewayUrl = "http://locahost:5000";
+    public const string DefaultCloudGatewayUrl = "https://cn.thinktecture-demos.com/api";
     public IdentityServerSettings IdentityServerSettings { get; set; } = new ();
-    public string GatewayUrl { get; set; } = "http://localhost:5000";
+    public string GatewayUrl { get; set; } = DefaultLocalGatewayUrl;
     public TokenInfo? CurrentTokenInfo { get; set; }
     public LogEventLevel LogLevel { get; set; } = LogEventLevel.Warning;
 

@@ -14,6 +14,8 @@ public sealed class ChangeLogLevelCommand : ICliCommand
 
     public void ConfigureCommand(CommandLineApplication config)
     {
+        config.Description = "Allows you to change the log level to see more or less internal log messages.";
+        
         var logLevelArgument =
             config.Argument("logLevel",
                             "Possible values are \"Verbose\", \"Debug\", \"Information\", \"Warning\", \"Error\", or \"Fatal\"")

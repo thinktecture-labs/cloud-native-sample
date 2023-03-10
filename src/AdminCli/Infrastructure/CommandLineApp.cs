@@ -20,7 +20,9 @@ public static class CommandLineApp
             var context = new CommandConfigurationContext(app, container);
             context.ConfigureCommand<ListProductsCommand>("list-products")
                    .ConfigureCommand<DropPriceCommand>("drop-price")
-                   .ConfigureCommand<ChangeLogLevelCommand>("change-log-level");
+                   .ConfigureCommand<ChangeLogLevelCommand>("change-log-level")
+                   .ConfigureCommand<TargetLocalCommand>("target-local")
+                   .ConfigureCommand<TargetCloudCommand>("target-cloud");
 
             app.OnExecute(() => app.ShowHelp());
 
