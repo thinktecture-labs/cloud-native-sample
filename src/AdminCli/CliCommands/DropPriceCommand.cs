@@ -13,6 +13,7 @@ public sealed class DropPriceCommand : ICliCommand
 
     public void ConfigureCommand(CommandLineApplication config)
     {
+        config.Description = "Drops the price of a specified product.";
         var productIdOption =
             config.Option("-p|--productId <ProductId>",
                           "The ID of the product whose price should be dropped. Must be a GUID.",

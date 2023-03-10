@@ -17,6 +17,7 @@ public sealed class ListProductsCommand : ICliCommand
 
     public void ConfigureCommand(CommandLineApplication config)
     {
+        config.Description = "Lists all available products.";
         config.OnExecuteAsync(async cancellationToken =>
         {
             var products = await HttpService.GetAsync<List<ProductListModel>>("/products", cancellationToken);
