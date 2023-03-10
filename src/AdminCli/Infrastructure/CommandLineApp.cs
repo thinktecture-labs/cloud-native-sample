@@ -19,6 +19,7 @@ public static class CommandLineApp
 
             var context = new CommandConfigurationContext(app, container);
             context.ConfigureCommand<ListProductsCommand>("list-products");
+            context.ConfigureCommand<DropPriceCommand>("drop-price");
 
             return app;
         });
