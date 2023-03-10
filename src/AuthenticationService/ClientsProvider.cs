@@ -63,7 +63,7 @@ public static class ClientsProvider
                 AllowedGrantTypes = GrantTypes.ClientCredentials,
                 ClientSecrets = { new Secret("46E345BC-9C72-4694-8BFF-27AA6BB2B6A2".Sha256()) },
                 
-                AllowedScopes = { "admin" }
+                AllowedScopes = { "sample", "admin" }
             }
         };
 }
