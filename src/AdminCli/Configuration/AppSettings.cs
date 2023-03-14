@@ -17,7 +17,7 @@ public sealed class AppSettings
     {
         var now = DateTime.UtcNow;
         if (CurrentTokenInfo is null ||
-            CurrentTokenInfo.ValidTo.AddSeconds(-30) > now)
+            CurrentTokenInfo.ValidTo.AddSeconds(-30) < now)
         {
             accessToken = default;
             return false;
