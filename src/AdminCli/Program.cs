@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AdminCli.CliCommands.Environment;
-using AdminCli.Configuration;
 using AdminCli.Infrastructure;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace AdminCli;
 
@@ -12,12 +12,10 @@ public static class Program
 {
     public static async Task<int> Main(string[] args)
     {
-        var logger = Logging.CreateLogger();
+        var loggerFactory = Logging.CreateLoggingFactory(args);
         try
         {
-            await using var container = DependencyInjection.CreateContainer();
-            var configurationManager = container.GetRequiredService<IConfigurationManager>();
-            configurationManager.SetLogLevelFromAppSettings();
+            await using var container = DependencyInjection.CreateContainer(loggerFactory);
             container.GetRequiredService<ShowEnvironmentCommand>().Execute();
 
             var app = container.GetRequiredService<CommandLineApplication>();
@@ -25,8 +23,13 @@ public static class Program
         }
         catch (Exception exception)
         {
-            logger.Fatal(exception, "Admin CLI encountered an error");
+            var logger = loggerFactory.CreateLogger(typeof(Program));
+            logger.LogCritical(exception, "Admin CLI encountered an error");
             return 1;
+        }
+        finally
+        {
+            loggerFactory.Dispose();
         }
     }
 }

@@ -1,30 +1,40 @@
 using System;
-using AdminCli.Configuration;
-using Serilog;
-using Serilog.Core;
-using Serilog.Events;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace AdminCli.Infrastructure;
 
 public static class Logging
 {
-    private static LoggingLevelSwitch LoggingLevelSwitch { get; } = new (LogEventLevel.Warning);
-
-    public static ILogger CreateLogger()
+    public static ILoggerFactory CreateLoggingFactory(string[] args)
     {
-        var logger = new LoggerConfiguration().MinimumLevel.ControlledBy(LoggingLevelSwitch)
-                                              .WriteTo.Console()
-                                              .CreateLogger();
-        Log.Logger = logger;
-        return logger;
+        var logLevel = DetermineLogLevel(args);
+        var loggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder.AddConsole()
+                   .SetMinimumLevel(logLevel);
+        });
+
+        return loggerFactory;
     }
 
-    public static void SetLogLevelFromAppSettings(this IConfigurationManager configurationManager) =>
-        LoggingLevelSwitch.MinimumLevel = configurationManager.CurrentSettings.LogLevel;
-    
-    public static void ShowTarget(this IConfigurationManager configurationManager)
+    public static IServiceCollection AddLogging(this IServiceCollection services,
+                                                ILoggerFactory loggerFactory)
     {
-        Console.Write("You are targeting ");
-        Console.WriteLine(configurationManager.CurrentSettings.GatewayUrl);
+        services.AddSingleton(loggerFactory);
+        services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
+        return services;
+    }
+
+    private static LogLevel DetermineLogLevel(string[] args)
+    {
+        var configuration = new ConfigurationBuilder().AddCommandLine(args)
+                                                      .Build();
+
+        var logLevelText = configuration["log-level"];
+        return Enum.TryParse<LogLevel>(logLevelText, true, out var parsedLogLevel) ?
+            parsedLogLevel :
+            LogLevel.Warning;
     }
 }

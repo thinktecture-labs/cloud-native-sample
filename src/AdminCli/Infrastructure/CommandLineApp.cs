@@ -15,7 +15,8 @@ public static class CommandLineApp
             var app = new CommandLineApplication
             {
                 Name = "admin-cli",
-                Description = "The Command Line Interface of the Thinktecture Cloud Native Sample that allows admins to run internal commands."
+                Description = "The Command Line Interface of the Thinktecture Cloud Native Sample that allows admins to run internal commands.",
+                UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.CollectAndContinue
             };
             app.HelpOption(inherited: true);
 
