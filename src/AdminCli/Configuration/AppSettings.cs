@@ -10,6 +10,7 @@ public sealed class AppSettings
     public const string DefaultCloudGatewayUrl = "https://cn.thinktecture-demos.com/api";
     public IdentityServerSettings IdentityServerSettings { get; set; } = new ();
     public string GatewayUrl { get; set; } = DefaultLocalGatewayUrl;
+    public int AccessTokenValidToThreshold { get; set; } = 10;
     public TokenInfo? CurrentTokenInfo { get; set; }
     public LogEventLevel LogLevel { get; set; } = LogEventLevel.Warning;
 
@@ -17,7 +18,7 @@ public sealed class AppSettings
     {
         var now = DateTime.UtcNow;
         if (CurrentTokenInfo is null ||
-            CurrentTokenInfo.ValidTo.AddSeconds(-30) < now)
+            CurrentTokenInfo.ValidTo.AddSeconds(-AccessTokenValidToThreshold) < now)
         {
             accessToken = default;
             return false;
