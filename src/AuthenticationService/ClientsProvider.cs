@@ -60,6 +60,10 @@ public static class ClientsProvider
                 ClientId = "admin-cli",
                 ClientName = "Command Line Interface App for Administrators",
                 
+                // As this is a demo, we use 4 hours - you should normally use a way shorter lifetime
+                // (e.g. 5 to 20 minutes)
+                AccessTokenLifetime = 4 * 60 * 60,
+                
                 AllowedGrantTypes = GrantTypes.ClientCredentials,
                 ClientSecrets = { new Secret("46E345BC-9C72-4694-8BFF-27AA6BB2B6A2".Sha256()) },
                 
