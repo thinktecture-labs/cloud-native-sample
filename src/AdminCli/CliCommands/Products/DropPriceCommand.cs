@@ -15,13 +15,13 @@ public sealed class DropPriceCommand : ICliCommand
     {
         config.Description = "Drops the price of a specified product.";
         var productIdOption =
-            config.Option("-p|--productId <ProductId>",
+            config.Option("-p|--product-id <Product ID>",
                           "The ID of the product whose price should be dropped. Must be a GUID.",
                           CommandOptionType.SingleValue)
                   .IsRequired();
         var dropPriceByOption =
-            config.Option("-d|--dropPriceBy <Price>",
-                          "The amount of money the price should be dropped to. You must specify a decimal number.",
+            config.Option("-d|--drop-price-by <Price>",
+                          "The amount of money the price should be dropped by. You must specify a decimal number.",
                           CommandOptionType.SingleValue)
                   .IsRequired();
         
