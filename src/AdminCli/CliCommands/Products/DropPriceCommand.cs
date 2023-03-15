@@ -1,6 +1,6 @@
 using System;
+using System.Globalization;
 using AdminCli.HttpAccess;
-using AdminCli.NumberParsing;
 using McMaster.Extensions.CommandLineUtils;
 
 namespace AdminCli.CliCommands.Products;
@@ -33,7 +33,7 @@ public sealed class DropPriceCommand : ICliCommand
                 return;
             }
 
-            if (!DoubleParser.TryParse(dropPriceByOption.Value(), out var parsedPriceDrop))
+            if (!double.TryParse(dropPriceByOption.Value(), CultureInfo.CurrentCulture, out var parsedPriceDrop))
             {
                 Console.WriteLine($"Could not parse \"{dropPriceByOption.Value()}\" to a decimal number.");
                 return;
