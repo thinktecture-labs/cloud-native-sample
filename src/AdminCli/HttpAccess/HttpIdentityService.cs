@@ -41,7 +41,7 @@ public sealed class HttpIdentityService
         if (response.IsError)
             throw new IOException("Could not obtain Bearer token", response.Exception);
 
-        var jwtSecurityToken = JwtSecurityTokenHandler.ReadJwtToken(response.AccessToken);
-        return new (response.AccessToken, jwtSecurityToken.ValidTo);
+        var token = JwtSecurityTokenHandler.ReadJwtToken(response.AccessToken);
+        return new (response.AccessToken, token.ValidTo);
     }
 }
