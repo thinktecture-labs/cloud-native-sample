@@ -44,17 +44,11 @@ public sealed class SecureFileConfigurationManager : IConfigurationManager
     private static AppSettings DeserializeOrCreateAppSettings(IDataProtector dataProtector,
                                                               JsonSerializerOptions jsonSerializerOptions)
     {
-        if (File.Exists(SettingsFilePath))
-        {
-            var fileContent = File.ReadAllText(SettingsFilePath);
-            var json = dataProtector.Unprotect(fileContent);
-            return JsonSerializer.Deserialize<AppSettings>(json, jsonSerializerOptions)!;
-        }
-
-        var appSettings = new AppSettings();
-        var configuration = new ConfigurationBuilder().AddEnvironmentVariables("AdminCli_")
-                                                      .Build();
-        configuration.Bind(appSettings);
-        return appSettings;
+        if (!File.Exists(SettingsFilePath))
+            return new ();
+        
+        var fileContent = File.ReadAllText(SettingsFilePath);
+        var json = dataProtector.Unprotect(fileContent);
+        return JsonSerializer.Deserialize<AppSettings>(json, jsonSerializerOptions)!;
     }
 }

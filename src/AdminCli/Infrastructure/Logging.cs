@@ -1,5 +1,4 @@
 using System;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -29,12 +28,27 @@ public static class Logging
 
     private static LogLevel DetermineLogLevel(string[] args)
     {
-        var configuration = new ConfigurationBuilder().AddCommandLine(args)
-                                                      .Build();
+        var indexOfLogLevel = FindIndexForLogLevel(args);
+        var logLevelArgument = indexOfLogLevel != -1 ? args[indexOfLogLevel] : "";
+        var logLevel = LogLevel.Warning;
+        if (Enum.TryParse<LogLevel>(logLevelArgument, true, out var parsedLogLevel))
+            logLevel = parsedLogLevel;
 
-        var logLevelText = configuration["log-level"];
-        return Enum.TryParse<LogLevel>(logLevelText, true, out var parsedLogLevel) ?
-            parsedLogLevel :
-            LogLevel.Warning;
+        return logLevel;
+    }
+
+    private static int FindIndexForLogLevel(string[] args)
+    {
+        for (var i = 0; i < args.Length; i++)
+        {
+            var argument = args[i];
+            if (argument is "-l" or "--log-level")
+            {
+                var targetIndex = i + 1;
+                return targetIndex < args.Length ? targetIndex : -1;
+            }
+        }
+
+        return -1;
     }
 }
