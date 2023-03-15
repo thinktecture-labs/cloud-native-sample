@@ -21,7 +21,7 @@ public sealed class ListProductsCommand : ICliCommand
         config.OnExecuteAsync(async cancellationToken =>
         {
             var products = await HttpService.GetAsync<List<ProductListModel>>("/products", cancellationToken);
-            if (products is not { Count: >0 })
+            if (products is null || products.Count == 0)
             {
                 Console.WriteLine("No products were found");
                 return;
