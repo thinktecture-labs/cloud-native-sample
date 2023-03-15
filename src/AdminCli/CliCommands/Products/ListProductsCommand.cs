@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using AdminCli.HttpAccess;
 using McMaster.Extensions.CommandLineUtils;
 
-namespace AdminCli.CliCommands;
+namespace AdminCli.CliCommands.Products;
 
 public sealed class ListProductsCommand : ICliCommand
 {

@@ -3,7 +3,7 @@ using AdminCli.HttpAccess;
 using AdminCli.NumberParsing;
 using McMaster.Extensions.CommandLineUtils;
 
-namespace AdminCli.CliCommands;
+namespace AdminCli.CliCommands.Products;
 
 public sealed class DropPriceCommand : ICliCommand
 {

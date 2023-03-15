@@ -1,4 +1,6 @@
 using AdminCli.CliCommands;
+using AdminCli.CliCommands.Environment;
+using AdminCli.CliCommands.Products;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,11 +20,8 @@ public static class CommandLineApp
             app.HelpOption(inherited: true);
 
             var context = new CommandConfigurationContext(app, container);
-            context.ConfigureCommand<ListProductsCommand>("list-products")
-                   .ConfigureCommand<DropPriceCommand>("drop-price")
-                   .ConfigureCommand<ChangeLogLevelCommand>("change-log-level")
-                   .ConfigureCommand<TargetLocalCommand>("target-local")
-                   .ConfigureCommand<TargetCloudCommand>("target-cloud");
+            context.ConfigureCommand<ProductsCommand>("products")
+                   .ConfigureCommand<EnvironmentCommand>("environment");
 
             app.OnExecute(() => app.ShowHelp());
 

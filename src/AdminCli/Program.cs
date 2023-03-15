@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AdminCli.CliCommands.Environment;
 using AdminCli.Configuration;
 using AdminCli.Infrastructure;
 using McMaster.Extensions.CommandLineUtils;
@@ -17,7 +18,7 @@ public static class Program
             await using var container = DependencyInjection.CreateContainer();
             var configurationManager = container.GetRequiredService<IConfigurationManager>();
             configurationManager.SetLogLevelFromAppSettings();
-            configurationManager.ShowTarget();
+            container.GetRequiredService<ShowEnvironmentCommand>().Execute();
 
             var app = container.GetRequiredService<CommandLineApplication>();
             return await app.ExecuteAsync(args);
