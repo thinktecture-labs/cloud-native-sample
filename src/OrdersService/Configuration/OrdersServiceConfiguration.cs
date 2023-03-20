@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging.Console;
 
 namespace OrdersService.Configuration;
@@ -19,4 +20,20 @@ public class OrdersServiceConfiguration
     public string ApplicationInsightsConnectionString {get;set;}
     public IdentityServerConfiguration IdentityServer { get;set; }
     public Authorization Authorization { get; set; }
+
+    public string ConnectionString { get; set; } = string.Empty;
+
+    public bool CheckIfConnectionStringIsPresent() => !string.IsNullOrWhiteSpace(ConnectionString);
+
+    public bool TryGetConnectionString([NotNullWhen(true)] out string? connectionString)
+    {
+        if (CheckIfConnectionStringIsPresent())
+        {
+            connectionString = ConnectionString;
+            return true;
+        }
+
+        connectionString = default;
+        return false;
+    }
 }

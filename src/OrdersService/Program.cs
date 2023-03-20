@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 var cfg = new OrdersServiceConfiguration();
 var cfgSection = builder.Configuration.GetSection(OrdersServiceConfiguration.SectionName);
 
-if (cfgSection == null || !cfgSection.Exists())
+if (!cfgSection.Exists())
 {
     throw new ApplicationException(
         $"Could not find service config. Please provide a '{OrdersServiceConfiguration.SectionName}' config section");
@@ -31,7 +31,14 @@ builder.ConfigureAuthN(cfg);
 builder.ConfigureAuthZ(cfg);
 
 builder.Services.AddDbContext<OrdersServiceContext>(options =>
-    options.UseInMemoryDatabase(databaseName: "OrdersService"));
+{
+    // Depending on whether OrdersService:ConnectionString is set,
+    // we target either an in-memory provider or a real SQL Server database
+    if (cfg.TryGetConnectionString(out var connectionString))
+        options.UseSqlServer(connectionString);
+    else
+        options.UseInMemoryDatabase(databaseName: "OrdersService");
+});
 
 builder.Services.AddScoped<IOrdersRepository, OrdersRepository>();
 builder.Services.AddScoped<DaprClient>(_ => new DaprClientBuilder().Build()!);
@@ -57,6 +64,17 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
+
+// Apply migrations on startup. Microsoft does not recommend this approach in real projects.
+// You should use generated SQL scripts that are applied manually instead.
+// For the sake of simplicity, we call Migrate here.
+// See: https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying
+if (cfg.CheckIfConnectionStringIsPresent())
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<OrdersServiceContext>();
+    dbContext.Database.Migrate();
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();
