@@ -22,14 +22,4 @@
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="Data\" />
-    <None Remove="Data\Entities\" />
-    <None Remove="Data\Repositories\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\" />
-    <Folder Include="Data\Entities\" />
-    <Folder Include="Data\Repositories\" />
-  </ItemGroup>
 </Project>

@@ -1,18 +1,13 @@
-﻿using Microsoft.Extensions.Logging.Console;
-using Microsoft.OpenApi.Models;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
+﻿using Microsoft.OpenApi.Models;
 using ProductsService.Configuration;
 using ProductsService.Data.Repositories;
-using ProductsService.Migrations;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var cfg = new ProductsServiceConfiguration();
 var cfgSection = builder.Configuration.GetSection(ProductsServiceConfiguration.SectionName);
 
-if (cfgSection == null || !cfgSection.Exists())
+if (!cfgSection.Exists())
 {
     throw new ApplicationException(
         $"Could not find service config. Please provide a '{ProductsServiceConfiguration.SectionName}' config section");
@@ -36,15 +31,10 @@ builder.ConfigureAuthN(cfg);
 // Configure AuthZ
 builder.ConfigureAuthZ(cfg);
 
-builder.Services.AddScoped<IProductsRepository>(services =>
-{
-    var cfg = services.GetRequiredService<ProductsServiceConfiguration>();
-    if (string.IsNullOrWhiteSpace(cfg.ConnectionString))
-    {
-        return new InMemoryProductsRepository(services.GetRequiredService<ILogger<InMemoryProductsRepository>>());
-    }
-    return new ProductsRepository(cfg, services.GetRequiredService<ILogger<ProductsRepository>>());
-});
+if (string.IsNullOrWhiteSpace(cfg.ConnectionString))
+    builder.Services.AddSingleton<IProductsRepository, InMemoryProductsRepository>();
+else
+    builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
 
 builder.Services.AddHealthChecks();
 builder.Services.AddControllers();
