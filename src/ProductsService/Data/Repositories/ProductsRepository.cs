@@ -29,7 +29,7 @@ namespace ProductsService.Data.Repositories
             return product;
         }
 
-        public async Task<IEnumerable<Product>> GetAllAsync()
+        public async Task<List<Product>> GetAllAsync()
         {
             using var con = new SqlConnection(_cfg.ConnectionString);
             con.Open();

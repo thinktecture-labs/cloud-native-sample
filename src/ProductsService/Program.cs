@@ -1,6 +1,9 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using System.Data.SqlClient;
 using ProductsService.Configuration;
+using ProductsService.Controllers;
 using ProductsService.Data.Repositories;
+using ProductsService.Data.UnitOfWork;
+using ProductsService.OutboxProcessing;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,10 +34,52 @@ builder.ConfigureAuthN(cfg);
 // Configure AuthZ
 builder.ConfigureAuthZ(cfg);
 
+// Configure data access layer
 if (string.IsNullOrWhiteSpace(cfg.ConnectionString))
-    builder.Services.AddSingleton<IProductsRepository, InMemoryProductsRepository>();
+{
+    builder.Services
+           .AddSingleton<InMemoryProductsRepository>()
+           .AddSingleton<IProductsRepository>(c => c.GetRequiredService<InMemoryProductsRepository>())
+           .AddUnitOfWorkWithFactory<IPriceDropUnitOfWork, InMemoryPriceDropUnitOfWork>()
+           .AddUnitOfWorkWithFactory<IOutboxUnitOfWork, InMemoryOutboxUnitOfWork>(
+                unitOfWorkLifetime: ServiceLifetime.Singleton,
+                factoryLifetime: ServiceLifetime.Singleton
+            );
+}
 else
-    builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
+{
+    builder.Services
+           .AddScoped<IProductsRepository, ProductsRepository>()
+           .AddTransient(_ => new SqlConnection(cfg.ConnectionString))
+           .AddUnitOfWorkWithFactory<IPriceDropUnitOfWork, SqlPriceDropUnitOfWork>()
+           .AddUnitOfWorkWithFactory<IOutboxUnitOfWork, SqlOutboxUnitOfWork>(
+                unitOfWorkLifetime: ServiceLifetime.Transient,
+                factoryLifetime: ServiceLifetime.Singleton
+            );
+}
+
+// Configure Transactional Outbox
+if (cfg.EnableOutboxProcessing)
+    builder.Services
+           .AddSingleton<OutboxProcessor>()
+           .AddHostedService(serviceProvider => serviceProvider.GetRequiredService<OutboxProcessor>())
+           .AddSingleton<IOutboxProcessor>(serviceProvider => serviceProvider.GetRequiredService<OutboxProcessor>());
+else
+    builder.Services
+           .AddSingleton<IOutboxProcessor, NullOutboxProcessor>();
+
+// Configure Dapr PubSub
+if (cfg.UseFakeEventPublisher)
+{
+    builder.Services
+           .AddSingleton<IEventPublisher, FakeEventPublisher>();
+}
+else
+{
+    builder.Services
+           .AddSingleton<IEventPublisher, DaprEventPublisher>()
+           .AddDaprClient();
+}
 
 builder.Services.AddHealthChecks();
 builder.Services.AddControllers();
@@ -43,18 +88,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.EnableAnnotations();
-    c.SwaggerDoc("v1", new OpenApiInfo()
-    {
-        Version = "v1",
-        Title = "Products Service",
-        Description = "Fairly simple .NET API to interact with product data",
-        Contact = new OpenApiContact
-        {
-            Name = "Thinktecture AG",
-            Email = "info@thinktecture.com",
-            Url = new Uri("https://thinktecture.com")
-        }
-    });
+    c.SwaggerDoc("v1",
+                 new()
+                 {
+                     Version = "v1",
+                     Title = "Products Service",
+                     Description = "Fairly simple .NET API to interact with product data",
+                     Contact = new()
+                     {
+                         Name = "Thinktecture AG",
+                         Email = "info@thinktecture.com",
+                         Url = new ("https://thinktecture.com")
+                     }
+                 });
 });
 
 var app = builder.Build();
@@ -65,8 +111,7 @@ app.UseSwaggerUI();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers()
-    .RequireAuthorization("RequiresApiScope");
+app.MapControllers();
 
 if (cfg.ExposePrometheusMetrics)
 {
