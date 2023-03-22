@@ -117,7 +117,7 @@ public sealed class SqlPriceDropUnitOfWork : SqlAsyncUnitOfWork, IPriceDropUnitO
     public async Task InsertPriceDropIntoOutbox(Product product, CancellationToken cancellationToken)
     {
         await using var command = CreateCommand("INSERT INTO Outbox(Type, Data) VALUES (@Type, @Data);");
-        var priceDropMessageData = new PriceDropMessageData(product.Id, product.Price);
+        var priceDropMessageData = new PriceDropMessageData(product.Id, product.Name, product.Price);
         var json = JsonSerializer.Serialize(priceDropMessageData);
         command.Parameters.Add("@Type", SqlDbType.NVarChar).Value = OutboxItemTypes.PriceDrop;
         command.Parameters.Add("@Data", SqlDbType.NVarChar).Value = json;
@@ -141,7 +141,7 @@ public sealed class InMemoryPriceDropUnitOfWork : InMemoryAsyncUnitOfWork, IPric
 
     public Task InsertPriceDropIntoOutbox(Product product, CancellationToken cancellationToken)
     {
-        var data = new PriceDropMessageData(product.Id, product.Price);
+        var data = new PriceDropMessageData(product.Id, product.Name, product.Price);
         var json = JsonSerializer.Serialize(data);
         var outboxEntry = new OutboxItem(0,
                                          OutboxItemTypes.PriceDrop,
@@ -152,4 +152,4 @@ public sealed class InMemoryPriceDropUnitOfWork : InMemoryAsyncUnitOfWork, IPric
     }
 }
 
-public sealed record PriceDropMessageData(Guid ProductId, double Price);
+public sealed record PriceDropMessageData(Guid ProductId, string ProductName, double Price);

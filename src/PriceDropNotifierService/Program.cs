@@ -1,6 +1,6 @@
-using Microsoft.Extensions.Logging.Console;
 using Microsoft.OpenApi.Models;
 using PriceDropNotifier.Configuration;
+using PriceDropNotifier.Data;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 var cfg = new PriceDropNotifierServiceConfiguration();
 var cfgSection = builder.Configuration.GetSection(PriceDropNotifierServiceConfiguration.SectionName);
 
-if (cfgSection == null || !cfgSection.Exists())
+if (!cfgSection.Exists())
 {
     throw new ApplicationException(
         $"Could not find service config. Please provide a '{PriceDropNotifierServiceConfiguration.SectionName}' section in your appsettings.json file."
@@ -19,16 +19,17 @@ cfgSection.Bind(cfg);
 builder.Services.AddSingleton(cfg);
 
 builder.ConfigureLogging(cfg)
-    .ConfigureTracing(cfg)
-    .ConfigureMetrics(cfg)
-    .ConfigureAuthN(cfg)
-    .ConfigureAuthZ(cfg)
-    .Services.AddHealthChecks()
-    .Services.AddDaprClient();
+       .ConfigureTracing(cfg)
+       .ConfigureMetrics(cfg)
+       .ConfigureAuthN(cfg)
+       .ConfigureAuthZ(cfg)
+       .Services.AddHealthChecks()
+       .Services.AddDaprClient();
 
 // Add services to the container.
-
-builder.Services.AddControllers();
+builder.Services
+       .AddDataAccess()
+       .AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(config =>

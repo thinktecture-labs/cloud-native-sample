@@ -2,14 +2,15 @@ using System.Text.Json.Serialization;
 
 namespace PriceDropNotifier.Models;
 
-public class NotificationRequest 
+public class NotificationRequest
 {
+    [JsonPropertyName("productId")]
 
-    [JsonPropertyName("recipient")]
-    public string Recipient {get;set;}
+    public Guid ProductId { get; set; }
+
     [JsonPropertyName("productName")]
-    public string ProductName {get;set;}
-    [JsonPropertyName("price")]
-    public double Price {get;set;}
+    public string ProductName { get; set; } = string.Empty;
 
+    [JsonPropertyName("price")]
+    public double Price { get; set; }
 }
