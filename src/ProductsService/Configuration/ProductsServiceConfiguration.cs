@@ -20,4 +20,8 @@ public class ProductsServiceConfiguration
     public IdentityServerConfiguration IdentityServer { get;set; }
     public Authorization Authorization { get; set; }
     public string ConnectionString { get; set; }
+    public string PriceDropsPubSubName { get; set; } = "pricedrops";
+    public string PriceDropsTopicName { get; set; } = "notifications";
+    public bool UseFakeEventPublisher { get; set; }
+    public bool EnableOutboxProcessing { get; set; } = true;
 }

@@ -8,6 +8,7 @@ using OpenTelemetry.Trace;
 using ProductsService.Configuration;
 using ProductsService.Migrations;
 using ProductsService;
+using ProductsService.Extensions;
 
 namespace Microsoft.AspNetCore.Builder;
 
@@ -149,11 +150,20 @@ public static class WebApplicationBuilderExtensions
     {
         builder.Services.AddAuthorization(options =>
         {
-            options.AddPolicy("RequiresApiScope", policy =>
-            {
-                policy.RequireAuthenticatedUser();
-                policy.RequireClaim(cfg.Authorization.RequiredClaimName, cfg.Authorization.RequiredClaimValue);
-            });
+            options.AddPolicy(AuthPolicies.RequiresApiScope,
+                              policy =>
+                              {
+                                  policy.RequireAuthenticatedUser();
+                                  policy.RequireClaim(cfg.Authorization.RequiredClaimName,
+                                                      cfg.Authorization.RequiredClaimValue);
+                              });
+            options.AddPolicy(AuthPolicies.RequiresAdminScope,
+                              policy =>
+                              {
+                                  policy.RequireAuthenticatedUser()
+                                        .RequireClaim(cfg.Authorization.RequiredClaimName,
+                                                      cfg.Authorization.RequiredAdminClaimValue);
+                              });
         });
         return builder;
     }

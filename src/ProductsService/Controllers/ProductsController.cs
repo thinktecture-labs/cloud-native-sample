@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProductsService.Data.Repositories;
 using ProductsService.Extensions;
 using ProductsService.Models;
@@ -7,6 +8,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace ProductsService.Controllers;
 
 [ApiController]
+[Authorize(AuthPolicies.RequiresApiScope)]
 [Route("products")]
 [Produces("application/json")]
 public class ProductsController : ControllerBase

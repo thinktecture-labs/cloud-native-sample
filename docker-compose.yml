@@ -167,24 +167,6 @@ services:
       options:
         loki-url: http://10.5.0.99:3100/loki/api/v1/push
         loki-retries: 5
-  pricewatcher:
-    build: ./src/PriceWatcherService
-    container_name: pricewatcher
-    networks:
-      - cloud-native
-    depends_on:
-      - rabbit
-    environment:
-      PriceWatcherService__ExposePrometheusMetrics: true
-      PriceWatcherService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
-      PriceWatcherService__IdentityServer__Authority: http://localhost:5009
-      PriceWatcherService__IdentityServer__RequireHttpsMetadata: false
-      PriceWatcherService__IdentityServer__MetadataAddress: http://authn:5000/.well-known/openid-configuration
-    logging:
-      driver: loki
-      options:
-        loki-url: http://10.5.0.99:3100/loki/api/v1/push
-        loki-retries: 5
   pricedropnotifier:
     build: ./src/PriceDropNotifierService
     container_name: pricedropnotifier
@@ -346,27 +328,6 @@ services:
       - ./docker-compose-configs/dapr/components:/dapr/components:ro
     depends_on:
       - shipping
-  pricewatcher-dapr:
-    image: "daprio/daprd:edge"
-    container_name: pricewatcher-dapr
-    command:
-      [
-        "./daprd",
-        "-app-id",
-        "pricewatcher",
-        "-app-port",
-        "5000",
-        "-components-path",
-        "/dapr/components",
-        "-config",
-        "/dapr/config/config.yml"
-      ]
-    network_mode: "service:pricewatcher"
-    volumes:
-      - ./docker-compose-configs/dapr/config.yml:/dapr/config/config.yml:ro
-      - ./docker-compose-configs/dapr/components:/dapr/components:ro
-    depends_on:
-      - pricewatcher
   pricedropnotifier-dapr:
     image: "daprio/daprd:edge"
     container_name: pricedropnotifier-dapr

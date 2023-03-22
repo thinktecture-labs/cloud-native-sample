@@ -20,16 +20,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+    <PackageReference Include="Dapr.AspNetCore" Version="1.9.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="Data\" />
-    <None Remove="Data\Entities\" />
-    <None Remove="Data\Repositories\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\" />
-    <Folder Include="Data\Entities\" />
-    <Folder Include="Data\Repositories\" />
-  </ItemGroup>
 </Project>

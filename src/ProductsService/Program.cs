@@ -1,18 +1,16 @@
-﻿using Microsoft.Extensions.Logging.Console;
-using Microsoft.OpenApi.Models;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
+﻿using System.Data.SqlClient;
 using ProductsService.Configuration;
+using ProductsService.Controllers;
 using ProductsService.Data.Repositories;
-using ProductsService.Migrations;
+using ProductsService.Data.UnitOfWork;
+using ProductsService.OutboxProcessing;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var cfg = new ProductsServiceConfiguration();
 var cfgSection = builder.Configuration.GetSection(ProductsServiceConfiguration.SectionName);
 
-if (cfgSection == null || !cfgSection.Exists())
+if (!cfgSection.Exists())
 {
     throw new ApplicationException(
         $"Could not find service config. Please provide a '{ProductsServiceConfiguration.SectionName}' config section");
@@ -36,15 +34,52 @@ builder.ConfigureAuthN(cfg);
 // Configure AuthZ
 builder.ConfigureAuthZ(cfg);
 
-builder.Services.AddScoped<IProductsRepository>(services =>
+// Configure data access layer
+if (string.IsNullOrWhiteSpace(cfg.ConnectionString))
 {
-    var cfg = services.GetRequiredService<ProductsServiceConfiguration>();
-    if (string.IsNullOrWhiteSpace(cfg.ConnectionString))
-    {
-        return new InMemoryProductsRepository(services.GetRequiredService<ILogger<InMemoryProductsRepository>>());
-    }
-    return new ProductsRepository(cfg, services.GetRequiredService<ILogger<ProductsRepository>>());
-});
+    builder.Services
+           .AddSingleton<InMemoryProductsRepository>()
+           .AddSingleton<IProductsRepository>(c => c.GetRequiredService<InMemoryProductsRepository>())
+           .AddUnitOfWorkWithFactory<IPriceDropUnitOfWork, InMemoryPriceDropUnitOfWork>()
+           .AddUnitOfWorkWithFactory<IOutboxUnitOfWork, InMemoryOutboxUnitOfWork>(
+                unitOfWorkLifetime: ServiceLifetime.Singleton,
+                factoryLifetime: ServiceLifetime.Singleton
+            );
+}
+else
+{
+    builder.Services
+           .AddScoped<IProductsRepository, ProductsRepository>()
+           .AddTransient(_ => new SqlConnection(cfg.ConnectionString))
+           .AddUnitOfWorkWithFactory<IPriceDropUnitOfWork, SqlPriceDropUnitOfWork>()
+           .AddUnitOfWorkWithFactory<IOutboxUnitOfWork, SqlOutboxUnitOfWork>(
+                unitOfWorkLifetime: ServiceLifetime.Transient,
+                factoryLifetime: ServiceLifetime.Singleton
+            );
+}
+
+// Configure Transactional Outbox
+if (cfg.EnableOutboxProcessing)
+    builder.Services
+           .AddSingleton<OutboxProcessor>()
+           .AddHostedService(serviceProvider => serviceProvider.GetRequiredService<OutboxProcessor>())
+           .AddSingleton<IOutboxProcessor>(serviceProvider => serviceProvider.GetRequiredService<OutboxProcessor>());
+else
+    builder.Services
+           .AddSingleton<IOutboxProcessor, NullOutboxProcessor>();
+
+// Configure Dapr PubSub
+if (cfg.UseFakeEventPublisher)
+{
+    builder.Services
+           .AddSingleton<IEventPublisher, FakeEventPublisher>();
+}
+else
+{
+    builder.Services
+           .AddSingleton<IEventPublisher, DaprEventPublisher>()
+           .AddDaprClient();
+}
 
 builder.Services.AddHealthChecks();
 builder.Services.AddControllers();
@@ -53,18 +88,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.EnableAnnotations();
-    c.SwaggerDoc("v1", new OpenApiInfo()
-    {
-        Version = "v1",
-        Title = "Products Service",
-        Description = "Fairly simple .NET API to interact with product data",
-        Contact = new OpenApiContact
-        {
-            Name = "Thinktecture AG",
-            Email = "info@thinktecture.com",
-            Url = new Uri("https://thinktecture.com")
-        }
-    });
+    c.SwaggerDoc("v1",
+                 new()
+                 {
+                     Version = "v1",
+                     Title = "Products Service",
+                     Description = "Fairly simple .NET API to interact with product data",
+                     Contact = new()
+                     {
+                         Name = "Thinktecture AG",
+                         Email = "info@thinktecture.com",
+                         Url = new ("https://thinktecture.com")
+                     }
+                 });
 });
 
 var app = builder.Build();
@@ -75,8 +111,7 @@ app.UseSwaggerUI();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers()
-    .RequireAuthorization("RequiresApiScope");
+app.MapControllers();
 
 if (cfg.ExposePrometheusMetrics)
 {
