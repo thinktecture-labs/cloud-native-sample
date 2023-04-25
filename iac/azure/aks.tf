@@ -4,7 +4,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   node_resource_group = "${azurerm_resource_group.main.name}-nrg"
   location            = azurerm_resource_group.main.location
   dns_prefix          = "cnsample"
-  kubernetes_version  = "1.24.6"
+  kubernetes_version  = "1.25.5"
   sku_tier            = "Free"
 
   identity {
