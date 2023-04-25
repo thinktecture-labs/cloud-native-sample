@@ -17,3 +17,12 @@ resource "azurerm_mssql_database" "products" {
 
   tags = local.tags
 }
+
+resource "azurerm_mssql_database" "orders" {
+  name           = "cnorders"
+  server_id      = azurerm_mssql_server.main.id
+  sku_name       = "S0"
+  zone_redundant = false
+
+  tags = local.tags
+}
