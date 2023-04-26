@@ -73,7 +73,7 @@ public static class WebApplicationBuilderExtensions
                     o.Endpoint = new Uri(cfg.ZipkinEndpoint);
                 });
             }
-        }).StartWithHost();
+        });
         return builder;
     }
 
@@ -99,7 +99,7 @@ public static class WebApplicationBuilderExtensions
                 Console.WriteLine("Exposing Prometheus Metrics");
                 options.AddPrometheusExporter();
             }
-        }).StartWithHost();
+        });
         return builder;
     }
 }
