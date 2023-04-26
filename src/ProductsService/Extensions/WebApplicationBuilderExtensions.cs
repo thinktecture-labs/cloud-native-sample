@@ -96,7 +96,7 @@ public static class WebApplicationBuilderExtensions
                     o.Endpoint = new Uri(cfg.ZipkinEndpoint);
                 });
             }
-        }).StartWithHost();
+        });
         return builder;
     }
 
