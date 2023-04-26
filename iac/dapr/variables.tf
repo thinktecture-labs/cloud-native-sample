@@ -3,6 +3,10 @@ variable "dapr_config_sample_rate" {
   default = 1
 }
 
+variable "dapr_version" {
+  type    = string
+  default = "1.10.5"
+}
 variable "dapr_api_auth_token" {
   type      = string
   sensitive = true

@@ -5,6 +5,7 @@ resource "helm_release" "dapr" {
   chart            = "dapr"
   timeout          = 600
   namespace        = "dapr-system"
+  version          = var.dapr_version
   create_namespace = true
 }
 
