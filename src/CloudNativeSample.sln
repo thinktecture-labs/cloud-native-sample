@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminCli", "AdminCli\AdminC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PriceWatcher", "PriceWatcherService\PriceWatcher.csproj", "{1233E6B0-796B-451C-A04D-11C5FAD6EDD6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShippingService", "ShippingService\ShippingService.csproj", "{2E7AB1BC-1B6D-49F3-A279-3BABA24D574B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,5 +63,9 @@ Global
 		{1233E6B0-796B-451C-A04D-11C5FAD6EDD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1233E6B0-796B-451C-A04D-11C5FAD6EDD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1233E6B0-796B-451C-A04D-11C5FAD6EDD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E7AB1BC-1B6D-49F3-A279-3BABA24D574B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E7AB1BC-1B6D-49F3-A279-3BABA24D574B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E7AB1BC-1B6D-49F3-A279-3BABA24D574B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E7AB1BC-1B6D-49F3-A279-3BABA24D574B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

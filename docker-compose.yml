@@ -126,6 +126,8 @@ services:
       DAPR_API_TOKEN: dGhpcyBpcyBmb3IgZGVtbyBvbmx5LCBpbiByZWFsLXdvcmxkIHVzZSBzb21ldGhpbmcgdGhhdCBpcyBzdG9yZWQgc2VjdXJlbHkK
       ShippingService__Environment: Development
       ShippingService__ZipkinEndpoint: http://zipkin:9411/api/v2/spans
+    ports:
+      - "5099:5000"
     networks:
       - cloud-native
     depends_on:

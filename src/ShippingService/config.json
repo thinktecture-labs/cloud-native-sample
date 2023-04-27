@@ -1,9 +1,0 @@
-{
-  "port": 5003,
-  "environment": "Development",
-  "sourcePubSubName": "orders",
-  "sourceTopicName": "new_orders",
-  "targetPubSubName": "orders",
-  "targetTopicName": "processed_orders",
-  "disableConsoleLog": false
-}

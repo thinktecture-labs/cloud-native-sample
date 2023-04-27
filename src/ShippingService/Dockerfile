@@ -1,19 +1,26 @@
-#build stage
-FROM golang:alpine AS builder
-RUN apk add --no-cache git
-WORKDIR /go/src/app
-COPY . .
-RUN go get -d -v ./...
-RUN go build -o /app/shipping-service ./cmd
-
-#final stage
-FROM alpine:latest
-RUN apk --no-cache add ca-certificates
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup -h /app
-USER appuser
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
-COPY --chown=appuser:appgroup ./config.json .
-COPY --chown=appuser:appgroup --from=builder /app/shipping-service .
 EXPOSE 5000
-ENV PORT=5000
-CMD ["./shipping-service"]
+
+ENV ASPNETCORE_URLS=http://+:5000
+
+# Creates a non-root user with an explicit UID and adds permission to access the /app folder
+# For more info, please refer to https://aka.ms/vscode-docker-dotnet-configure-containers
+RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
+USER appuser
+
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+WORKDIR /src
+COPY ["ShippingService.csproj", "./"]
+RUN dotnet restore "ShippingService.csproj"
+COPY . .
+WORKDIR "/src/."
+RUN dotnet build "ShippingService.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "ShippingService.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "ShippingService.dll"]
