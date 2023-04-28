@@ -1,5 +1,5 @@
 environment: Production
-replicaCount: 1
+replicaCount: 3
 image:
   repository: nginx
   pullPolicy: IfNotPresent
