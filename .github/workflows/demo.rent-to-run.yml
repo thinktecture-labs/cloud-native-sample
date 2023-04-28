@@ -73,4 +73,4 @@ jobs:
       - name: Restart Deployments
         run: |
           kubectl config set-context --current --namespace cloud-native-sample
-          kubectl get deploy --no-headers=true | grep -v authentication | awk '{print $1}' | xargs -I _ kubectl kubectl rollout restart deploy _
+          kubectl get deploy --no-headers=true | grep -v authentication | awk '{print $1}' | xargs -I _ kubectl rollout restart deploy _
