@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging.Console;
 using Microsoft.OpenApi.Models;
 using PriceDropNotifier.Configuration;
 
@@ -23,8 +22,7 @@ builder.ConfigureLogging(cfg)
     .ConfigureMetrics(cfg)
     .ConfigureAuthN(cfg)
     .ConfigureAuthZ(cfg)
-    .Services.AddHealthChecks()
-    .Services.AddDaprClient();
+    .Services.AddHealthChecks();
 
 // Add services to the container.
 
