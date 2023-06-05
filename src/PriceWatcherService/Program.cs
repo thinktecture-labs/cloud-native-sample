@@ -18,10 +18,13 @@ builder.Services.AddSingleton(cfg);
 
 // Add further services to the container.
 builder
+   .ConfigureLogging(cfg)
+   .ConfigureTracing(cfg)
+   .ConfigureMetrics(cfg)
    .ConfigureAuthN(cfg)
    .ConfigureAuthZ(cfg);
-   
 
+builder.Services.AddHealthChecks();
 builder.Services.AddSingleton<IPriceWatcherRepository, PriceWatcherRepository>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -49,6 +52,12 @@ app.UseSwaggerUI();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapHealthChecks("/healthz/readiness");
+app.MapHealthChecks("/healthz/liveness");
+
+if (cfg.ExposePrometheusMetrics)
+    app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.MapControllers().RequireAuthorization("RequiresApiScope");
 
