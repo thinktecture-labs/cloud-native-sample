@@ -19,8 +19,8 @@ builder.Services.AddSingleton(cfg);
 // Add further services to the container.
 builder
    .ConfigureAuthN(cfg)
-   .ConfigureAuthZ(cfg)
-   .Services.AddDaprClient();
+   .ConfigureAuthZ(cfg);
+   
 
 builder.Services.AddSingleton<IPriceWatcherRepository, PriceWatcherRepository>();
 builder.Services.AddControllers();
