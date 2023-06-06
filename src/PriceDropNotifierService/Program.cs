@@ -27,6 +27,7 @@ builder.ConfigureLogging(cfg)
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddDaprClient();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(config =>
