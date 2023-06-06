@@ -441,8 +441,11 @@ services:
     image: gessnerfl/fake-smtp-server
     container_name: smtp
     environment:
-      - SPRING_MAIL_USERNAME=cnadmin
-      - SPRING_MAIL_PASSWORD=somepassword
+      - FAKESMTP_PORT=5025
+      - SERVER_PORT=5080
+      - MANAGEMENT_SERVER_PORT=5081
+      - FAKESMTP_AUTHENTICATION_USERNAME=cnadmin
+      - FAKESMTP_AUTHENTICATION_PASSWORD=somepassword
     ports:
       - "5080:5080"
     networks:
