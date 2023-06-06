@@ -20,9 +20,9 @@ public class PriceDropController : ControllerBase
 
     [HttpPost("invoke")]
     [Authorize(Policy = "RequiresAdminScope")]
-    public IActionResult InvokePriceDrop([FromBody] PriceDropModel model)
+    public async Task<IActionResult> InvokePriceDrop([FromBody] PriceDropModel model)
     {
-        var dropped = _repository.DropPrice(model.ProductId, model.DropPriceBy);
+        var dropped = await _repository.DropPriceAsync(model.ProductId, model.DropPriceBy);
         if (!dropped)
         {
             return NotFound($"Product with Id {model.ProductId} not found");

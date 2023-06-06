@@ -27,6 +27,7 @@ builder
 builder.Services.AddHealthChecks();
 builder.Services.AddSingleton<IPriceWatcherRepository, PriceWatcherRepository>();
 builder.Services.AddControllers();
+builder.Services.AddDaprClient();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(config => {
