@@ -438,16 +438,15 @@ services:
     networks:
       - cloud-native
   smtp:
-    image: gessnerfl/fake-smtp-server
+    image: rnwood/smtp4dev
     container_name: smtp
     environment:
-      - FAKESMTP_PORT=5025
-      - SERVER_PORT=5080
-      - MANAGEMENT_SERVER_PORT=5081
-      - FAKESMTP_AUTHENTICATION_USERNAME=cnadmin
-      - FAKESMTP_AUTHENTICATION_PASSWORD=somepassword
+      - ServerOptions__Port=5025
+      - ServerOptions__HostName=smtp
+      - ServerOptions__LockSettings=true
+      - ServerOptions__TlsMode=StartTls
     ports:
-      - "5080:5080"
+      - "5080:80"
     networks:
       - cloud-native
   cadvisor:
