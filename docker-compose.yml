@@ -409,7 +409,7 @@ services:
       - "3000:3000"
     volumes:
       - ./docker-compose-configs/grafana/datasources:/etc/grafana/provisioning/datasources
-      - ./docker-compose-configs/grafana/dashboards:/var/lib/grafana/dashboards
+      - ./docker-compose-configs/grafana/dashboards:/etc/grafana/provisioning/dashboards
     networks:
       - cloud-native
   prometheus:
