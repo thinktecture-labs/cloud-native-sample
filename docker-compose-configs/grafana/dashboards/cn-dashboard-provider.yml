@@ -1,0 +1,10 @@
+apiVersion: 1
+
+providers:
+  - name: 'CNS dashboard provider'
+    disableDeletion: true
+    updateIntervalSeconds: 1000
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards
+      foldersFromFilesStructure: false
