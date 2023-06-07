@@ -1,8 +1,6 @@
-﻿using ProductsService.Data.Entities;
+﻿namespace PriceWatcher.Entities;
 
-namespace ProductsService.Data;
-
-// This class is copied to PriceWatcher. Everything you change here should also be changed over there.
+// This class is copied from ProductService. Everything you change here should also be changed over there.
 public static class InMemoryProducts
 {
     public static List<Product> Products { get; } =

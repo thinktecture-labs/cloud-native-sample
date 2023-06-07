@@ -22,13 +22,4 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\ProductsService\Data\Entities\Product.cs">
-      <Link>Entities\Product.cs</Link>
-    </Compile>
-    <Compile Include="..\ProductsService\Data\InMemoryProducts.cs">
-      <Link>Entities\InMemoryProducts.cs</Link>
-    </Compile>
-  </ItemGroup>
-
 </Project>

@@ -3,8 +3,6 @@ using Dapr.Client;
 using PriceWatcher.Configuration;
 using PriceWatcher.Entities;
 using PriceWatcher.Models;
-using ProductsService.Data;
-using ProductsService.Data.Entities;
 
 namespace PriceWatcher.Repositories;
 
