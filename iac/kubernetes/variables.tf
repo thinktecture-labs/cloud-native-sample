@@ -36,3 +36,13 @@ variable "loki_storage_account_key" {
   sensitive = true
 }
 
+variable "grafana_password" {
+    type = string
+    sensitive = true
+}
+
+variable "grafana_username" {
+    type = string
+    default = "admin"
+    sensitive = false
+}
