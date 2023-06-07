@@ -22,33 +22,24 @@ CREATE TABLE Products (
   	Price DECIMAL(2)
 );";
 
-    public async void PostMigrate(SqlConnection con)
+    public void PostMigrate(SqlConnection connection, SqlTransaction transaction)
     {
         var products = new List<Product> {
             new Product (Guid.NewGuid(), "Beer", "Tasty craft beer", new List<string> { "Drinks", "Food" }, 3.99),
             new Product (Guid.NewGuid(), "Whisky", "Gentle drink for cold evenings", new List<string> { "Drinks", "Food" }, 49.99),
             new Product (Guid.NewGuid(), "Bacon Burger", "Everything is better with bacon", new List<string> { "Food" }, 8.99),
         };
-        var tx = con.BeginTransaction();
-        try
+        
+        products.ForEach(p =>
         {
-            products.ForEach(p =>
-            {
-                var cmd = new SqlCommand("INSERT INTO Products (Name, Description, Tags, Price) VALUES (@Name, @Description, @Tags, @Price)");
-                cmd.Connection = con;
-                cmd.Transaction = tx;
-                cmd.Parameters.AddWithValue("@Name", p.Name);
-                cmd.Parameters.AddWithValue("@Description", p.Description);
-                cmd.Parameters.AddWithValue("@Tags", string.Join(',', p.Categories));
-                cmd.Parameters.AddWithValue("@Price", p.Price);
-                cmd.ExecuteNonQuery();
-            });
-            tx.Commit();
-        }
-        catch
-        {
-            tx.Rollback();
-            throw;
-        }
+            var cmd = new SqlCommand("INSERT INTO Products (Name, Description, Tags, Price) VALUES (@Name, @Description, @Tags, @Price)");
+            cmd.Connection = connection;
+            cmd.Transaction = transaction;
+            cmd.Parameters.AddWithValue("@Name", p.Name);
+            cmd.Parameters.AddWithValue("@Description", p.Description);
+            cmd.Parameters.AddWithValue("@Tags", string.Join(',', p.Categories));
+            cmd.Parameters.AddWithValue("@Price", p.Price);
+            cmd.ExecuteNonQuery();
+        });
     }
 }
