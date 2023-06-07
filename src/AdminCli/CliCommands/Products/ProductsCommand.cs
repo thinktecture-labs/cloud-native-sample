@@ -14,6 +14,7 @@ public sealed class ProductsCommand : ICliCommand
         config.Description = "Allows you to list products or issue a price drop";
         var context = new CommandConfigurationContext(config, ServiceProvider);
         context.ConfigureCommand<ListProductsCommand>("list");
+        context.ConfigureCommand<SignUpForPriceDropCommand>("sign-up");
         context.ConfigureCommand<DropPriceCommand>("drop-price");
 
         config.OnExecute(() => config.ShowHelp());
