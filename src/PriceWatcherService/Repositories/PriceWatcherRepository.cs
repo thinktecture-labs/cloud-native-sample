@@ -1,10 +1,14 @@
+using Dapr;
+using Dapr.Client;
 using PriceWatcher.Configuration;
 using PriceWatcher.Entities;
+using PriceWatcher.Models;
 
 namespace PriceWatcher.Repositories;
 
 public class PriceWatcherRepository : IPriceWatcherRepository
 {
+    private readonly DaprClient _daprClient;
     private readonly PriceWatcherServiceConfiguration _cfg;
     private readonly ILogger<PriceWatcherRepository> _logger;
     private readonly List<Watcher> _watchers = new List<Watcher>();
@@ -22,8 +26,9 @@ public class PriceWatcherRepository : IPriceWatcherRepository
         new Product { Id = Guid.Parse("2620540e-bfcb-4a06-87a4-f6ed2b3c069b"), Name = "Pizza", Description = "It comes with Bacon. You know! Because everything is better with bacon", Price = 7.99 }
     };
 
-    public PriceWatcherRepository(PriceWatcherServiceConfiguration cfg, ILogger<PriceWatcherRepository> logger)
+    public PriceWatcherRepository(DaprClient daprClient, PriceWatcherServiceConfiguration cfg, ILogger<PriceWatcherRepository> logger)
     {
+        _daprClient = daprClient;
         _cfg = cfg;
         _logger = logger;
     }
@@ -53,7 +58,7 @@ public class PriceWatcherRepository : IPriceWatcherRepository
         return true;
     }
 
-    public bool DropPrice(Guid productId, double dropBy)
+    public async Task<bool> DropPriceAsync(Guid productId, double dropBy)
     {
 
         var found = _products.FirstOrDefault(p => p.Id.Equals(productId));
@@ -63,13 +68,35 @@ public class PriceWatcherRepository : IPriceWatcherRepository
             return false;
         }
 
-        found.Price *= 1 - dropBy;
+        found.Price *= (1 - dropBy);
         _logger.LogInformation(
             "Price for {ProductName} dropped by {DroppedBy}% - new price: {NewPrice} ",
             found.Name,
             dropBy * 100,
             found.Price
         );
+
+        var targetWatchers = _watchers.Where(w => w.ProductId == productId && w.Price > found.Price);
+               
+        foreach (var watcher in targetWatchers)
+        {
+            var model = new PriceDropNotificationModel
+            {
+                Recipient = watcher.Email, ProductName = found.Name, Price = found.Price
+            };
+            
+            var cloudEvent = new CloudEvent<PriceDropNotificationModel>(model)
+            {
+                Type = "com.thinktecture/price-drop-notification"
+            };
+
+            await _daprClient.PublishEventAsync(
+                _cfg.PriceDropsPubSubName,
+                _cfg.PriceDropsTopicName,
+                cloudEvent
+            );
+        }
+           
         return true;
     }
 }
