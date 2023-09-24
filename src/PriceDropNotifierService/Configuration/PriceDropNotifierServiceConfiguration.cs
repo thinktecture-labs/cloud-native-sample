@@ -4,7 +4,6 @@ namespace PriceDropNotifier.Configuration;
 
 public class PriceDropNotifierServiceConfiguration
 {
-
     public PriceDropNotifierServiceConfiguration()
     {
         IdentityServer = new ();
@@ -20,4 +19,6 @@ public class PriceDropNotifierServiceConfiguration
     public string ApplicationInsightsConnectionString { get; set; } = string.Empty;
     public IdentityServerConfiguration IdentityServer { get; set; }
     public Authorization Authorization { get; set; }
+    public string NotificationBindingName { get; set; } = "email";
+    public string NotificationBindingOperation { get; set; } = "create";
 }
