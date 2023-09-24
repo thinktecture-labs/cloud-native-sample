@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging.Console;
 using Microsoft.OpenApi.Models;
 using PriceDropNotifier.Configuration;
 
@@ -18,13 +17,13 @@ if (cfgSection == null || !cfgSection.Exists())
 cfgSection.Bind(cfg);
 builder.Services.AddSingleton(cfg);
 
-builder.ConfigureLogging(cfg)
-    .ConfigureTracing(cfg)
-    .ConfigureMetrics(cfg)
-    .ConfigureAuthN(cfg)
-    .ConfigureAuthZ(cfg)
-    .Services.AddHealthChecks()
-    .Services.AddDaprClient();
+builder
+   .ConfigureLogging(cfg)
+   .ConfigureTracing(cfg)
+   .ConfigureMetrics(cfg)
+   .ConfigureAuthN(cfg)
+   .ConfigureAuthZ(cfg)
+   .Services.AddHealthChecks();
 
 // Add services to the container.
 

@@ -3,29 +3,24 @@ using PriceWatcher.Configuration;
 using PriceWatcher.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Create and register strongly-typed config object
 var cfg = new PriceWatcherServiceConfiguration();
 var cfgSection = builder.Configuration.GetSection(PriceWatcherServiceConfiguration.SectionName);
-
-if (cfgSection == null || !cfgSection.Exists())
+if (!cfgSection.Exists())
 {
     throw new ApplicationException(
         $"Could not find service config. Please provide a '{PriceWatcherServiceConfiguration.SectionName}' section in your appsettings.json file."
     );
 }
-
 cfgSection.Bind(cfg);
 builder.Services.AddSingleton(cfg);
 
-builder.ConfigureLogging(cfg)
-    .ConfigureTracing(cfg)
-    .ConfigureMetrics(cfg)
-    .ConfigureAuthN(cfg)
-    .ConfigureAuthZ(cfg)
-    .Services.AddHealthChecks()
-    .Services.AddDaprClient();
+// Add further services to the container.
+builder
+   .ConfigureAuthN(cfg)
+   .ConfigureAuthZ(cfg);
 
-
-// Add services to the container.
 builder.Services.AddSingleton<IPriceWatcherRepository, PriceWatcherRepository>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -54,15 +49,6 @@ app.UseSwaggerUI();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers()
-    .RequireAuthorization("RequiresApiScope");
-
-if (cfg.ExposePrometheusMetrics)
-{
-    app.UseOpenTelemetryPrometheusScrapingEndpoint();
-}
-
-app.MapHealthChecks("/healthz/readiness");
-app.MapHealthChecks("/healthz/liveness");
+app.MapControllers().RequireAuthorization("RequiresApiScope");
 
 app.Run();

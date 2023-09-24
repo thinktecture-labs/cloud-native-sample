@@ -2,5 +2,5 @@ namespace PriceWatcher.Models;
 
 public class ResponseMessage
 {
-    public string Message { get; set; }
+    public string Message { get; set; } = string.Empty;
 }
