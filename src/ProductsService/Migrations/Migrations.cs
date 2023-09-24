@@ -36,9 +36,8 @@ public class Migrations
             con.Open();
             var currentVersion = GetCurrentDatabaseVersion(con);
             
-            _FindMigrations(currentVersion).ForEach(async m => {
+            _FindMigrations(currentVersion).ForEach(m => {
                 ExecuteMigration(con, m);
-                m.PostMigrate(con);
             });
         }
         catch (Exception)
@@ -48,7 +47,7 @@ public class Migrations
 
     }
 
-    private int GetCurrentDatabaseVersion(SqlConnection con)
+    private static int GetCurrentDatabaseVersion(SqlConnection con)
     {
         using var cmd = new SqlCommand("SELECT Version FROM DatabaseVersion");
         cmd.Connection = con;
@@ -65,30 +64,41 @@ public class Migrations
         {
             return 0;
         }
-
     }
 
-    private void ExecuteMigration(SqlConnection con, IMigration m)
+    private void ExecuteMigration(SqlConnection connection, IMigration migration)
     {
-        using var tx = con.BeginTransaction();
-        using var cmd = new SqlCommand(m.Script);
-        cmd.Connection = con;
-        cmd.Transaction = tx;
-        cmd.ExecuteNonQuery();
-        using var updateVersionCmd = new SqlCommand("UPDATE DatabaseVersion SET Version = @Version");
-        updateVersionCmd.Connection = con;
-        updateVersionCmd.Transaction = tx;
-        updateVersionCmd.Parameters.AddWithValue("@Version", m.Version);
-        updateVersionCmd.ExecuteNonQuery();
+        SqlTransaction? transaction = null;
         try
         {
-            tx.Commit();
-        }
-        catch (Exception)
-        {
-            tx.Rollback();
-            throw;
+            transaction = connection.BeginTransaction();
+            if (!string.IsNullOrWhiteSpace(migration.Script))
+            {
+                using var cmd = new SqlCommand(migration.Script);
+                cmd.Connection = connection;
+                cmd.Transaction = transaction;
+                cmd.ExecuteNonQuery();
+            }
+            
+            migration.PostMigrate(connection, transaction);
 
+            using var updateVersionCmd = new SqlCommand("UPDATE DatabaseVersion SET Version = @Version");
+            updateVersionCmd.Connection = connection;
+            updateVersionCmd.Transaction = transaction;
+            updateVersionCmd.Parameters.AddWithValue("@Version", migration.Version);
+            updateVersionCmd.ExecuteNonQuery();
+            
+            transaction.Commit();
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Could not apply migration {MigrationId}", migration.Version);
+            transaction?.Rollback();
+            throw;
+        }
+        finally
+        {
+            transaction?.Dispose();
         }
     }
 }

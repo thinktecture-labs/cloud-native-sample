@@ -7,5 +7,6 @@ public static class ProductCommandsModule
     public static IServiceCollection AddProductCommands(this IServiceCollection services) =>
         services.AddSingleton<ProductsCommand>()
                 .AddSingleton<ListProductsCommand>()
-                .AddSingleton<DropPriceCommand>();
+                .AddSingleton<DropPriceCommand>()
+                .AddSingleton<SignUpForPriceDropCommand>();
 }

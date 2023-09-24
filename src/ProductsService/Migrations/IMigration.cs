@@ -5,6 +5,6 @@ namespace ProductsService.Migrations;
 public interface IMigration
 {
     int Version { get; }
-    string Script {get;}
-    void PostMigrate(SqlConnection con);
+    string Script { get; }
+    void PostMigrate(SqlConnection connection, SqlTransaction transaction);
 }
