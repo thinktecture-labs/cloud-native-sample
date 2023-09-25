@@ -28,10 +28,10 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - name: web
-              containerPort: 5080
+              containerPort: 8080
               protocol: TCP
             - name: smtp
-              containerPort: 5025
+              containerPort: 8025
               protocol: TCP
           livenessProbe:
             httpGet:
