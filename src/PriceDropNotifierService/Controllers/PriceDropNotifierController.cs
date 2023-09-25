@@ -23,6 +23,7 @@ public class PriceDropNotifierController : ControllerBase
 
     [HttpPost]
     [Route("notify")]
+    [Topic("pricedrops", "notifications")]
     [AllowAnonymous]
     public async Task<IActionResult> Notify([FromBody] CloudEvent<NotificationRequest> model)
     {
