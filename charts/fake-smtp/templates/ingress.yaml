@@ -50,10 +50,10 @@ spec:
               service:
                 name: {{ $svcName }}
                 port:
-                  number: 8080
+                  number: 5080
               {{- else }}
               serviceName: {{ $svcName }}
-              servicePort: 8080
+              servicePort: 5080
               {{- end }}
           {{- end }}
     {{- end }}
