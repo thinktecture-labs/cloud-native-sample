@@ -438,7 +438,7 @@ services:
     networks:
       - cloud-native
   smtp:
-    image: gessnerfl/fake-smtp-server
+    image: gessnerfl/fake-smtp-server:1.10.4
     container_name: smtp
     environment:
       - SPRING_MAIL_USERNAME=cnadmin
