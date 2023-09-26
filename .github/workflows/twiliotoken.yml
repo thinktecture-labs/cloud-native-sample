@@ -28,4 +28,6 @@ jobs:
           az aks get-credentials -g $RG_NAME -n $AKS_NAME && \
           kubelogin convert-kubeconfig -l azurecli
       - name: Store Twilio SendGrid API Key
-        run: kubectl create secret generic twilio -n cloud-native-sample --from-literal apiKey=${{ secrets.TWILIO_SENDGRID_API_KEY}}
+        run: |
+          kubectl delete secret twilio -n cloud-native-sample --ignore-not-found
+          kubectl create secret generic twilio -n cloud-native-sample --from-literal apiKey=${{ secrets.TWILIO_SENDGRID_API_KEY}}
