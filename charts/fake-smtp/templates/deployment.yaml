@@ -24,7 +24,7 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "gessnerfl/fake-smtp-server:latest"
+          image: "gessnerfl/fake-smtp-server:1.10.4"
           imagePullPolicy: IfNotPresent
           ports:
             - name: web
