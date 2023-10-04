@@ -9,7 +9,7 @@ on:
 concurrency:
   group: azure-terraform
 env:
-  TERRAFORM_VERSION: 1.3.1
+  TERRAFORM_VERSION: 1.4.6
 jobs:
   infra:
     name: "Destroy Azure (AKS) Infrastructure (${{ github.event.inputs.vmSku }})"

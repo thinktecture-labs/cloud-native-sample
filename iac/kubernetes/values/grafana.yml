@@ -39,4 +39,7 @@ datasources:
         url: ${zipkin_endpoint}
         access: proxy
         editable: true
-        
+admin:
+  existingSecret: "cngrafana"
+  userKey: "adminuser"
+  passwordKey: "adminpassword"

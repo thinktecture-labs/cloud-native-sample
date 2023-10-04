@@ -14,3 +14,15 @@ resource "helm_release" "grafana" {
     }),
   ]
 }
+
+resource "kubernetes_secret" "grafana" {
+  metadata {
+    name      = "cngrafana"
+    namespace = helm_release.grafana.namespace
+  }
+
+  data = {
+    adminuser = var.grafana_username
+    adminpassword = var.grafana_password
+  }
+}
